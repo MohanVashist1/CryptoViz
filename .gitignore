@@ -1,2 +1,4 @@
 env
 backend/scripts/cryptoData/*
+backend/.vscode/*
+backend/__pycache__/*
