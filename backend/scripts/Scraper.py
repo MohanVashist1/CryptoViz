@@ -12,38 +12,26 @@ def scrape(url, html_id):
         info = ele.find_all('td')
         tmp['Rank'] = int(info[0].find('a').text)
         tmp['Symbol'] = info[1].find('a').text
-        tmp['Market Cap'] = info[2].find('a').text[1:].replace(',','')
-        if tmp['Market Cap'][-1] == "K":
-            tmp['Market Cap'] = float(tmp['Market Cap'][:-1]) * 1000
-        elif tmp['Market Cap'][-1] == "M":
-            tmp['Market Cap'] = float(tmp['Market Cap'][:-1]) * 1000000
-        elif tmp['Market Cap'][-1] == "B":
-            tmp['Market Cap'] = float(tmp['Market Cap'][:-1]) * 1000000000
-        else:
-            tmp['Market Cap'] = float(tmp['Market Cap'])
-        tmp['Price'] = info[3].find('a').text[1:].replace(',','')
-        if tmp['Price'][-1] == "K":
-            tmp['Price'] = float(tmp['Price'][:-1]) * 1000
-        elif tmp['Price'][-1] == "M":
-            tmp['Price'] = float(tmp['Price'][:-1]) * 1000000
-        elif tmp['Price'][-1] == "B":
-            tmp['Price'] = float(tmp['Price'][:-1]) * 1000000000
-        else:
-            tmp['Price'] = float(tmp['Price'])
-        tmp['Volume'] = info[4].find('a').text[1:].replace(',','')
-        if tmp['Volume'][-1] == "K":
-            tmp['Volume'] = float(tmp['Volume'][:-1]) * 1000
-        elif tmp['Volume'][-1] == "M":
-            tmp['Volume'] = float(tmp['Volume'][:-1]) * 1000000
-        elif tmp['Volume'][-1] == "B":
-            tmp['Volume'] = float(tmp['Volume'][:-1]) * 1000000000
-        else:
-            tmp['Volume'] = float(tmp['Volume'])
+        tmp['Market Cap'] = normalize_val(info[2].find('a').text)
+        tmp['Price'] = normalize_val(info[3].find('a').text)
+        tmp['Volume'] = normalize_val(info[4].find('a').text)
         top_10.append(tmp)
         count += 1
         if count == 10:
             break
     return top_10
+
+def normalize_val(val):
+    val = val[1:].replace(',','')
+    if val[-1] == "K":
+            val = float(val[:-1]) * 1000
+    elif val[-1] == "M":
+        val = float(val[:-1]) * 1000000
+    elif val[-1] == "B":
+        val = float(val[:-1]) * 1000000000
+    else:
+        val = float(val)
+    return val
 
 # def scrape_test():
 #     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers'))
