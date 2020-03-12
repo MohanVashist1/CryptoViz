@@ -2,45 +2,53 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-ranks = []
-symbols = []
-market_caps = []
-prices = []
-volumes = []
-page = requests.get('https://bitscreener.com/screener/gainers-losers')
+def scrape(url, html_id):
+    top_10 = []
+    res = requests.get(url)
+    soup = BeautifulSoup(res.content, 'html.parser')
+    count = 0
+    for ele in soup.find(id=html_id).find('tbody').find_all('tr'):
+        tmp = {}
+        info = ele.find_all('td')
+        tmp['Rank'] = int(info[0].find('a').text)
+        tmp['Symbol'] = info[1].find('a').text
+        tmp['Market Cap'] = info[2].find('a').text[1:].replace(',','')
+        if tmp['Market Cap'][-1] == "K":
+            tmp['Market Cap'] = float(tmp['Market Cap'][:-1]) * 1000
+        elif tmp['Market Cap'][-1] == "M":
+            tmp['Market Cap'] = float(tmp['Market Cap'][:-1]) * 1000000
+        elif tmp['Market Cap'][-1] == "B":
+            tmp['Market Cap'] = float(tmp['Market Cap'][:-1]) * 1000000000
+        else:
+            tmp['Market Cap'] = float(tmp['Market Cap'])
+        tmp['Price'] = info[3].find('a').text[1:].replace(',','')
+        if tmp['Price'][-1] == "K":
+            tmp['Price'] = float(tmp['Price'][:-1]) * 1000
+        elif tmp['Price'][-1] == "M":
+            tmp['Price'] = float(tmp['Price'][:-1]) * 1000000
+        elif tmp['Price'][-1] == "B":
+            tmp['Price'] = float(tmp['Price'][:-1]) * 1000000000
+        else:
+            tmp['Price'] = float(tmp['Price'])
+        tmp['Volume'] = info[4].find('a').text[1:].replace(',','')
+        if tmp['Volume'][-1] == "K":
+            tmp['Volume'] = float(tmp['Volume'][:-1]) * 1000
+        elif tmp['Volume'][-1] == "M":
+            tmp['Volume'] = float(tmp['Volume'][:-1]) * 1000000
+        elif tmp['Volume'][-1] == "B":
+            tmp['Volume'] = float(tmp['Volume'][:-1]) * 1000000000
+        else:
+            tmp['Volume'] = float(tmp['Volume'])
+        top_10.append(tmp)
+        count += 1
+        if count == 10:
+            break
+    return top_10
 
-soup = BeautifulSoup(page.content, 'html.parser')
-count = 0
-for gainer in soup.find(id='gainers').find('tbody').find_all('tr'):
-    gainer_info = gainer.find_all('td')
-    ranks.append(gainer_info[0].find('a').text)
-    symbols.append(gainer_info[1].find('a').text)
-    market_caps.append(gainer_info[2].find('a').text)
-    prices.append(gainer_info[3].find('a').text)
-    volumes.append(gainer_info[4].find('a').text)
-    count += 1
-    if count == 10:
-        break
+# def scrape_test():
+#     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers'))
+#     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers'))
+#     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers'))
+#     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers'))
 
-df = pd.DataFrame({'Rank': ranks, 'Symbol': symbols, 'Market Cap': market_caps, 'Price': prices, 'Volume': volumes}) 
-df.to_csv('gainers.csv', index=False, encoding='utf-8')
-
-ranks = []
-symbols = []
-market_caps = []
-prices = []
-volumes = []
-count = 0
-for loser in soup.find(id='losers').find('tbody').find_all('tr'):
-    loser_info = loser.find_all('td')
-    ranks.append(loser_info[0].find('a').text)
-    symbols.append(loser_info[1].find('a').text)
-    market_caps.append(loser_info[2].find('a').text)
-    prices.append(loser_info[3].find('a').text)
-    volumes.append(loser_info[4].find('a').text)
-    count += 1
-    if count == 10:
-        break
-
-df = pd.DataFrame({'Rank': ranks, 'Symbol': symbols, 'Market Cap': market_caps, 'Price': prices, 'Volume': volumes}) 
-df.to_csv('losers.csv', index=False, encoding='utf-8')
+# scrape_test()
