@@ -6,8 +6,7 @@ def scrape(url, html_id):
     top_10 = []
     res = requests.get(url)
     soup = BeautifulSoup(res.content, 'html.parser')
-    count = 0
-    for ele in soup.find(id=html_id).find('tbody').find_all('tr'):
+    for ele in soup.find(id=html_id).find('tbody').find_all('tr')[:10]:
         tmp = {}
         info = ele.find_all('td')
         tmp['Rank'] = int(info[0].find('a').text)
@@ -16,9 +15,6 @@ def scrape(url, html_id):
         tmp['Price'] = normalize_val(info[3].find('a').text)
         tmp['Volume'] = normalize_val(info[4].find('a').text)
         top_10.append(tmp)
-        count += 1
-        if count == 10:
-            break
     return top_10
 
 def normalize_val(val):
