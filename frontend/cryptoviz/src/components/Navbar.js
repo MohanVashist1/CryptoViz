@@ -1,13 +1,14 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React from "react";
 import { BrowserRouter, Link, Router } from "react-router-dom";
+import "../style/navbar.css";
 
 function Navbar() {
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <Link to="/" className="navbar-brand">
-          CryptoViz
+          <div className="logo"></div>
         </Link>
         <button
           className="navbar-toggler"
