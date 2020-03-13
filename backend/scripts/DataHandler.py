@@ -30,7 +30,7 @@ class BinanceWrapper:
                            "1h": 60, "1d": 1440, "1M": 2592000}
         self.binance_client = Client(
             api_key=self.__apiKey, api_secret=self.__secretKey)
-        self._klines = ["1m", "5m", "1h", "1d", "1w", "1m"]
+        self._klines = ["1m", "5m", "1h", "1d", "1w", "1M"]
         self._startTimes = {"1m": "1 Feb 2020", "5m": "1 Feb 2020", "1h": "1 Feb 2020",
                             "1d": "1 Jan 2019", "1w": "1 Jan 2019", "1M": "1 Jan 2018"}
 
@@ -100,7 +100,7 @@ class BinanceWrapper:
         allCryptos = self.getcryptoSymbols(tether="USDT")[0:5]
         for crypto in allCryptos:
             self.getCryptoDataBinance(
-                crypto, kline_size, save=True)
+                crypto, kline_size, save)
 
 class _Scraper:
     def scrape(self, url, html_id):
@@ -116,6 +116,7 @@ class _Scraper:
             tmp['Price'] = self.__normalize_val(info[3].find('a').text)
             tmp['Volume'] = self.__normalize_val(info[4].find('a').text)
             top_10.append(tmp)
+        print(top_10)
         return top_10
 
     def __normalize_val(self, val):
