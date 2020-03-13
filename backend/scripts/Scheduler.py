@@ -23,27 +23,32 @@ def retrieve_top_gainers_hourly():
         dh.retrieve_top_gainers_hourly()
         time.sleep(3600)
 
-def crypto_data_minute(bw):
+def crypto_data_minute():
+    bw = dh.BinanceWrapper()
     while True:
         bw.getAllCryptoDataBinance("1m", True)
         time.sleep(60)
 
-def crypto_data_five_minutes(bw):
+def crypto_data_five_minutes():
+    bw = dh.BinanceWrapper()
     while True:
         bw.getAllCryptoDataBinance("5m", True)
         time.sleep(300)
 
-def crypto_data_hour(bw):
+def crypto_data_hour():
+    bw = dh.BinanceWrapper()
     while True:
         bw.getAllCryptoDataBinance("1h", True)
         time.sleep(3600)
 
-def crypto_data_day(bw):
+def crypto_data_day():
+    bw = dh.BinanceWrapper()
     while True:
         bw.getAllCryptoDataBinance("1d", True)
         time.sleep(86400)
 
-def crypto_data_month(bw):
+def crypto_data_month():
+    bw = dh.BinanceWrapper()
     while True:
         bw.getAllCryptoDataBinance("1M", True)
         time.sleep(2592000)
@@ -51,9 +56,8 @@ def crypto_data_month(bw):
 def schedule_tasks():
     processes = []
     funcs = [crypto_data_minute, crypto_data_five_minutes, crypto_data_hour, crypto_data_day, crypto_data_month]
-    bw = dh.BinanceWrapper()
     for func in funcs:
-        process = mp.Process(target=func, args=(bw,))
+        process = mp.Process(target=func)
         processes.append(process)
         process.start()
     funcs = [retrieve_top_gainers_daily, retrieve_top_losers_daily, retrieve_top_gainers_hourly, retrieve_top_losers_hourly]
