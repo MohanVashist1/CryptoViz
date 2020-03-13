@@ -3,7 +3,6 @@ import multiprocessing as mp
 import DataHandler as dh
 
 processes = []
-binance = dh.BinanceWrapper()
 
 def retrieve_top_gainers_daily():
     while True:
@@ -26,28 +25,33 @@ def retrieve_top_gainers_hourly():
         time.sleep(3600)
 
 def crypto_data_minute():
+    bw = dh.BinanceWrapper()
     while True:
-        binance.getAllCryptoDataBinance("1m", True)
+        bw.getAllCryptoDataBinance("1m", True)
         time.sleep(60)
 
 def crypto_data_five_minutes():
+    bw = dh.BinanceWrapper()
     while True:
-        binance.getAllCryptoDataBinance("5m", True)
+        bw.getAllCryptoDataBinance("5m", True)
         time.sleep(300)
 
 def crypto_data_hour():
+    bw = dh.BinanceWrapper()
     while True:
-        binance.getAllCryptoDataBinance("1h", True)
+        bw.getAllCryptoDataBinance("1h", True)
         time.sleep(3600)
 
 def crypto_data_day():
+    bw = dh.BinanceWrapper()
     while True:
-        binance.getAllCryptoDataBinance("1d", True)
+        bw.getAllCryptoDataBinance("1d", True)
         time.sleep(86400)
 
 def crypto_data_month():
+    bw = dh.BinanceWrapper()
     while True:
-        binance.getAllCryptoDataBinance("1M", True)
+        bw.getAllCryptoDataBinance("1M", True)
         time.sleep(2592000)
 
 funcs = [retrieve_top_gainers_daily, retrieve_top_losers_daily, retrieve_top_gainers_hourly, retrieve_top_losers_hourly, crypto_data_minute, crypto_data_five_minutes, crypto_data_hour, crypto_data_day, crypto_data_month]
