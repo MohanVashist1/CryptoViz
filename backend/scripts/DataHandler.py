@@ -155,31 +155,56 @@ def retrieve_top_gainers_hourly():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('top_gainers_hourly')
-    # table.put_item(
-
-    # )
-    return sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers')
+    scan = table.scan()
+    with table.batch_writer() as batch:
+        for item in scan['Items']:
+            batch.delete_item(
+                Key={'symbol': item['symbol']}
+            )
+    for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers'):
+        table.put_item(Item=item)
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('top_losers_hourly')
-    return sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers')
+    scan = table.scan()
+    with table.batch_writer() as batch:
+        for item in scan['Items']:
+            batch.delete_item(
+                Key={'symbol': item['symbol']}
+            )
+    for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers'):
+        table.put_item(Item=item)
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('top_gainers_daily')
-    return sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers')
+    scan = table.scan()
+    with table.batch_writer() as batch:
+        for item in scan['Items']:
+            batch.delete_item(
+                Key={'symbol': item['symbol']}
+            )
+    for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers'):
+        table.put_item(Item=item)
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_losers_daily')
-    return sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers')
+    table = dynamodb.Table('top_losers_daily')]
+    scan = table.scan()
+    with table.batch_writer() as batch:
+        for item in scan['Items']:
+            batch.delete_item(
+                Key={'symbol': item['symbol']}
+            )
+    for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers'):
+        table.put_item(Item=item)
 
 if __name__ == "__main__":
-    BinanceWrapper().getAllCryptoDataBinance("1M", save=True)
+    # BinanceWrapper().getAllCryptoDataBinance("1M", save=True)
     # # dynamoTable.put_item(
     # #     item={
     # #         'Ticker': "BTCUSDT",

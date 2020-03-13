@@ -55,13 +55,7 @@ def crypto_data_month():
 
 def schedule_tasks():
     processes = []
-    funcs = [crypto_data_minute, crypto_data_five_minutes, crypto_data_hour, crypto_data_day, crypto_data_month]
-    for func in funcs:
-        process = mp.Process(target=func)
-        processes.append(process)
-        process.start()
-    funcs = [retrieve_top_gainers_daily, retrieve_top_losers_daily, retrieve_top_gainers_hourly, retrieve_top_losers_hourly]
-    #dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
+    funcs = [retrieve_top_gainers_daily, retrieve_top_losers_daily, retrieve_top_gainers_hourly, retrieve_top_losers_hourly, crypto_data_minute, crypto_data_five_minutes, crypto_data_hour, crypto_data_day, crypto_data_month]
     for func in funcs:
         process = mp.Process(target=func)
         processes.append(process)
