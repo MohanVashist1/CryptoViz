@@ -16,23 +16,23 @@ def create_gainers_losers_table(table_name):
             AttributeDefinitions = [
                 {
                     'AttributeName': 'rank',
-                    'KeyType': 'N'
+                    'AttributeType': 'N'
                 },
                 {
                     'AttributeName': 'symbol',
-                    'KeyType': 'S'
+                    'AttributeType': 'S'
                 },
                 {
                     'AttributeName': 'market_cap',
-                    'KeyType': 'N'
+                    'AttributeType': 'N'
                 },
                 {
                     'AttributeName': 'price',
-                    'KeyType': 'N'
+                    'AttributeType': 'N'
                 },
                 {
                     'AttributeName': 'volume',
-                    'KeyType': 'N'
+                    'AttributeType': 'N'
                 }
             ],
             ProvisionedThroughput = {
