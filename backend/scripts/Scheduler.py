@@ -1,7 +1,6 @@
 import time
 import multiprocessing as mp
 import DataHandler as dh
-import boto3
 
 def retrieve_top_gainers_daily():
     while True:
@@ -68,4 +67,4 @@ def schedule_tasks():
                 p.terminate()
             print("Oops: Some processes died")
 
-schedule_tasks()
+# schedule_tasks()
