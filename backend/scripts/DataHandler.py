@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import urljoin
+import boto3
 
 import pandas as pd
 import requests
@@ -15,7 +16,6 @@ from binance.client import Client
 from dateutil import parser
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
-
 
 class BinanceWrapper:
     def __init__(self):
@@ -110,11 +110,11 @@ class _Scraper:
         for ele in soup.find(id=html_id).find('tbody').find_all('tr')[:10]:
             tmp = {}
             info = ele.find_all('td')
-            tmp['Rank'] = int(info[0].find('a').text)
-            tmp['Symbol'] = info[1].find('a').text
-            tmp['Market Cap'] = self.__normalize_val(info[2].find('a').text)
-            tmp['Price'] = self.__normalize_val(info[3].find('a').text)
-            tmp['Volume'] = self.__normalize_val(info[4].find('a').text)
+            tmp['rank'] = int(info[0].find('a').text)
+            tmp['symbol'] = info[1].find('a').text
+            tmp['market_cap'] = self.__normalize_val(info[2].find('a').text)
+            tmp['price'] = self.__normalize_val(info[3].find('a').text)
+            tmp['volume'] = self.__normalize_val(info[4].find('a').text)
             top_10.append(tmp)
         print(top_10)
         return top_10
@@ -133,18 +133,29 @@ class _Scraper:
 
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('top_gainers_hourly')
+    # table.put_item(
+
+    # )
     return sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers')
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('top_losers_hourly')
     return sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers')
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('top_gainers_daily')
     return sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers')
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('top_losers_daily')
     return sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers')
 
 if __name__ == "__main__":
