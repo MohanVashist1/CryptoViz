@@ -1,11 +1,12 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React from "react";
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import Credits from "./Credits";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import Home from "./Home";
+import Crypto from "./Crypto";
 import "../style/App.css";
-import Credits from "./credits";
-import Navbar from "./navbar";
-import Home from "./home";
-import Crypto from "./crypto";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/credits" component={Credits}></Route>
           <Route path="/crypto/:ticker" component={crypto}></Route>
         </Switch>
+        <Footer />
       </BrowserRouter>
     </div>
   );

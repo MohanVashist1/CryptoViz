@@ -1,0 +1,12 @@
+footer {
+    position:absolute;
+    left:0;
+    bottom:0;
+    right:0;
+    text-align: center;
+    padding: 10px 0px;
+}
+
+.credits {
+    text-transform: uppercase;
+}
