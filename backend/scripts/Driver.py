@@ -7,7 +7,7 @@ def create_gainers_losers_table(table_name):
     try:
         dynamodb.create_table (
             TableName = table_name,
-            KeyShcema = [
+            KeySchema = [
                 {
                     'AttributeName': 'symbol',
                     'KeyType': 'HASH'
