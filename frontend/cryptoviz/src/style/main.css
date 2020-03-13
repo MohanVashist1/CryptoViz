@@ -1,3 +1,7 @@
 .container-fluid {
     padding-top: 10px;
 }
+
+.uppercase {
+    text-transform: uppercase;
+}
