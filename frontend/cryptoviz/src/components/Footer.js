@@ -6,7 +6,7 @@ import "../style/footer.css";
 function Footer() {
   return (
     <footer>
-      <div class = "credits">
+      <div className = "credits-link">
         <Link to="/credits">Credits</Link>
       </div>
     </footer>
