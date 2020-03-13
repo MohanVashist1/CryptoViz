@@ -11,6 +11,22 @@ def create_gainers_losers_table(table_name):
                 {
                     'AttributeName': 'symbol',
                     'KeyType': 'HASH'
+                },
+                {
+                    'AttributeName': 'rank',
+                    'KeyType': 'RANGE'
+                },
+                {
+                    'AttributeName': 'market_cap',
+                    'KeyType': 'RANGE'
+                },
+                {
+                    'AttributeName': 'price',
+                    'KeyType': 'RANGE'
+                },
+                {
+                    'AttributeName': 'volume',
+                    'KeyType': 'RANGE'
                 }
             ],
             AttributeDefinitions = [
