@@ -17,6 +17,18 @@ def scrape(url, html_id):
         top_10.append(tmp)
     return top_10
 
+def retrieve_top_gainers_hourly():
+    return scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers')
+
+def retrieve_top_losers_hourly():
+    return scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers')
+
+def retrieve_top_gainers_daily():
+    return scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers')
+
+def retrieve_top_losers_daily():
+    return scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers')
+
 def normalize_val(val):
     val = val[1:].replace(',','')
     if val[-1] == "K":
@@ -29,10 +41,7 @@ def normalize_val(val):
         val = float(val)
     return val
 
-# def scrape_test():
-#     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers'))
-#     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers'))
-#     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers'))
-#     print(scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers'))
-
-# scrape_test()
+# print(retrieve_top_gainers_hourly())
+# print(retrieve_top_losers_hourly())
+# print(retrieve_top_losers_daily())
+# print(retrieve_top_gainers_daily())
