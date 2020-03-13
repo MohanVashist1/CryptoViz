@@ -4,3 +4,4 @@ backend/.vscode/*
 backend/__pycache__/*
 .vscode/*
 frontend/cryptoviz/node_modules/*
+backend/scripts/__pycache__/*

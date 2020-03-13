@@ -7,14 +7,16 @@ attrs==19.3.0
 autobahn==19.11.2
 Automat==0.8.0
 autopep8==1.5
+awscli==1.18.20
 beautifulsoup4==4.8.2
 binance==0.3
 boto3==1.12.17
-botocore==1.15.17
+botocore==1.15.20
 certifi==2019.11.28
 cffi==1.13.2
 chardet==3.0.4
 click==7.1.1
+colorama==0.4.3
 constantly==15.1.0
 cryptography==2.8
 dateparser==0.7.2
@@ -40,6 +42,7 @@ MarkupSafe==1.1.1
 mccabe==0.6.1
 numpy==1.18.0
 pandas==0.25.3
+pkg-resources==0.0.0
 promise==2.3
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
@@ -58,6 +61,7 @@ pytz==2019.3
 PyYAML==5.3
 regex==2020.1.8
 requests==2.22.0
+rsa==3.4.2
 Rx==1.6.1
 s3transfer==0.3.3
 service-identity==18.1.0

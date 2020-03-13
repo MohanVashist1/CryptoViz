@@ -8,6 +8,8 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import urljoin
+import cryptocalculator
+from channelfinder import ChannelFinder
 
 import pandas as pd
 import requests
@@ -29,9 +31,11 @@ class BinanceWrapper:
                            "1h": 60, "1d": 1440, "1M": 2592000}
         self.binance_client = Client(
             api_key=self.__apiKey, api_secret=self.__secretKey)
-        self._klines = ["1m", "5m", "1h", "1d", "1w", "1m"]
+        self._klines = ["1m", "5m", "1h", "1d", "1w", "1M"]
         self._startTimes = {"1m": "1 Feb 2020", "5m": "1 Feb 2020", "1h": "1 Feb 2020",
                             "1d": "1 Jan 2019", "1w": "1 Jan 2019", "1M": "1 Jan 2018"}
+        self._indicator_calculator = cryptocalculator.CryptoCalculator()
+        self._chanel_calculator = ChannelFinder()
 
     def getcryptoSymbols(self, tether=None):
         url = urljoin(self._urlBase, self._endpoints['exchangeInfo'])
@@ -63,8 +67,10 @@ class BinanceWrapper:
         return old, new
 
     def getCryptoDataBinance(self, symbol, kline_size, save=False):
+        Path("cryptoData").mkdir(parents=True, exist_ok=True)
         filename = Path(Path().absolute(), "cryptoData", '%s-%s-data.csv' %
                         (symbol, kline_size))
+        
         if filename.exists():
             data_df = pd.read_csv(filename)
         else:
@@ -90,20 +96,34 @@ class BinanceWrapper:
         else:
             data_df = data
         data_df.set_index('timestamp', inplace=True)
+        closing_data = [float(price) for price in data_df['close'].tolist()   ]
+        data_df['rsi'] = self._indicator_calculator.rsi(closing_data)
+        data_df['ema'] = self._indicator_calculator.ema(closing_data)
+        data_df['sma'] = self._indicator_calculator.sma(closing_data)
+        data_df['lbb'] = self._indicator_calculator.lbb(closing_data)
+        data_df['ubb'] = self._indicator_calculator.ubb(closing_data)
+        data_df['mbb'] = self._indicator_calculator.mbb(closing_data)
+        # period = 3 if kline_size is "1M" or kline_size is "1w" else 20
+        # if len(data.index) > period:
+        #     closing_price = data.tail(period)['close']
+        #     closing_price.columns = ["price"]
+        #     self._chanel_calculator.find_resistance(closing_price)
+        #     closing_price = pd.DataFrame(closing_price)
+        #     closing_price.plot()       
         if save:
             data_df.to_csv(filename)
         print('All caught up..!')
         return data_df
 
     def getAllCryptoDataBinance(self, kline_size, save):
-        allCryptos = self.getcryptoSymbols(tether="USDT")[0:5]
+        allCryptos = self.getcryptoSymbols(tether="USDT")[0:1]
         for crypto in allCryptos:
             self.getCryptoDataBinance(
-                crypto, kline_size, save=True)
+                crypto, kline_size, save)
 
 
 if __name__ == "__main__":
-    # BinanceWrapper().getAllCryptoDataBinance("1m", save=True)
+    BinanceWrapper().getAllCryptoDataBinance("1M", save=True)
     # # dynamoTable.put_item(
     # #     item={
     # #         'Ticker': "BTCUSDT",
