@@ -5,7 +5,7 @@ dynamodb = boto3.resource('dynamodb')
 
 def create_gainers_losers_table(table_name):
     try:
-        dynamodb.create_table (
+        table = dynamodb.create_table (
             TableName = table_name,
             KeySchema = [
                 {
@@ -14,18 +14,6 @@ def create_gainers_losers_table(table_name):
                 },
                 {
                     'AttributeName': 'rank',
-                    'KeyType': 'RANGE'
-                },
-                {
-                    'AttributeName': 'market_cap',
-                    'KeyType': 'RANGE'
-                },
-                {
-                    'AttributeName': 'price',
-                    'KeyType': 'RANGE'
-                },
-                {
-                    'AttributeName': 'volume',
                     'KeyType': 'RANGE'
                 }
             ],
@@ -37,18 +25,6 @@ def create_gainers_losers_table(table_name):
                 {
                     'AttributeName': 'symbol',
                     'AttributeType': 'S'
-                },
-                {
-                    'AttributeName': 'market_cap',
-                    'AttributeType': 'N'
-                },
-                {
-                    'AttributeName': 'price',
-                    'AttributeType': 'N'
-                },
-                {
-                    'AttributeName': 'volume',
-                    'AttributeType': 'N'
                 }
             ],
             ProvisionedThroughput = {
@@ -56,8 +32,9 @@ def create_gainers_losers_table(table_name):
                 'WriteCapacityUnits': 10
             }
         )
+        table.meta.client.get_waiter('client_exists').wait(TableName=table_name)
     except dynamodb.exceptions.ResourceInUseException:
-        pass
+        return
 
 if __name__ == "__main__":
     create_gainers_losers_table('top_gainers_hourly')

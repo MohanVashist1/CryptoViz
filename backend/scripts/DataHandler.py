@@ -18,6 +18,7 @@ from binance.client import Client
 from dateutil import parser
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
+from Decimal import *
 
 class BinanceWrapper:
     def __init__(self):
@@ -136,19 +137,18 @@ class _Scraper:
             tmp['price'] = self.__normalize_val(info[3].find('a').text)
             tmp['volume'] = self.__normalize_val(info[4].find('a').text)
             top_10.append(tmp)
-        print(top_10)
         return top_10
 
     def __normalize_val(self, val):
         val = val[1:].replace(',','')
         if val[-1] == "K":
-                val = float(val[:-1]) * 1000
+                val = Decimal(float(val[:-1]) * 1000)
         elif val[-1] == "M":
-            val = float(val[:-1]) * 1000000
+            val = Decimal(float(val[:-1]) * 1000000)
         elif val[-1] == "B":
-            val = float(val[:-1]) * 1000000000
+            val = Decimal(float(val[:-1]) * 1000000000)
         else:
-            val = float(val)
+            val = Decimal(float(val))
         return val
 
 def delete_all_entries(table):
