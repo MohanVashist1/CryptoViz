@@ -151,16 +151,19 @@ class _Scraper:
             val = float(val)
         return val
 
-def retrieve_top_gainers_hourly():
-    sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_gainers_hourly')
+def delete_all_entries(table):
     scan = table.scan()
     with table.batch_writer() as batch:
         for item in scan['Items']:
             batch.delete_item(
                 Key={'symbol': item['symbol']}
             )
+
+def retrieve_top_gainers_hourly():
+    sc = _Scraper()
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('top_gainers_hourly')
+    delete_all_entries(table)
     for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers'):
         table.put_item(Item=item)
 
@@ -168,12 +171,7 @@ def retrieve_top_losers_hourly():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('top_losers_hourly')
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                Key={'symbol': item['symbol']}
-            )
+    delete_all_entries(table)
     for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers'):
         table.put_item(Item=item)
 
@@ -181,25 +179,15 @@ def retrieve_top_gainers_daily():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('top_gainers_daily')
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                Key={'symbol': item['symbol']}
-            )
+    delete_all_entries(table)
     for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers'):
         table.put_item(Item=item)
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_losers_daily')]
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                Key={'symbol': item['symbol']}
-            )
+    table = dynamodb.Table('top_losers_daily')
+    delete_all_entries(table)
     for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers'):
         table.put_item(Item=item)
 
