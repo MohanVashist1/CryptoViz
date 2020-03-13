@@ -116,7 +116,7 @@ class BinanceWrapper:
         return data_df
 
     def getAllCryptoDataBinance(self, kline_size, save):
-        allCryptos = self.getcryptoSymbols(tether="USDT")[0:1]
+        allCryptos = self.getcryptoSymbols(tether="USDT")
         for crypto in allCryptos:
             self.getCryptoDataBinance(
                 crypto, kline_size, save)
