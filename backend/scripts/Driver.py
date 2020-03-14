@@ -1,7 +1,7 @@
 import Scheduler as sc
 import boto3
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.client('dynamodb')
 
 def create_gainers_losers_table(table_name):
     try:
