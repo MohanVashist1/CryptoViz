@@ -18,6 +18,9 @@ from binance.client import Client
 from dateutil import parser
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
+from decimal import *
+from boto3.dynamodb.conditions import Key
+
 
 class BinanceWrapper:
     def __init__(self):
@@ -136,71 +139,66 @@ class _Scraper:
             tmp['price'] = self.__normalize_val(info[3].find('a').text)
             tmp['volume'] = self.__normalize_val(info[4].find('a').text)
             top_10.append(tmp)
-        print(top_10)
         return top_10
 
     def __normalize_val(self, val):
         val = val[1:].replace(',','')
         if val[-1] == "K":
-                val = float(val[:-1]) * 1000
+                val = Decimal(str(float(val[:-1]) * 1000))
         elif val[-1] == "M":
-            val = float(val[:-1]) * 1000000
+            val = Decimal(str(float(val[:-1]) * 1000000))
         elif val[-1] == "B":
-            val = float(val[:-1]) * 1000000000
+            val = Decimal(str(float(val[:-1]) * 1000000000))
         else:
-            val = float(val)
+            val = Decimal(val)
         return val
+
+def delete_all_entries(table):
+    scan = table.scan()
+    with table.batch_writer() as batch:
+        for item in scan['Items']:
+            batch.delete_item(
+                    Key={'symbol': item['symbol'], 'rank': item['rank']}
+            )
 
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('top_gainers_hourly')
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                Key={'symbol': item['symbol']}
-            )
-    for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers'):
+    #result = table.query(
+     #   KeyConditionExpression=Key('Username').eq('bob')
+    #)
+    #print(result)
+    delete_all_entries(table)
+    result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers')
+    for item in result:
         table.put_item(Item=item)
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('top_losers_hourly')
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                Key={'symbol': item['symbol']}
-            )
-    for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers'):
+    delete_all_entries(table)
+    result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers')
+    for item in result:
         table.put_item(Item=item)
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('top_gainers_daily')
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                Key={'symbol': item['symbol']}
-            )
-    for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers'):
+    delete_all_entries(table)
+    result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers')
+    for item in result:
         table.put_item(Item=item)
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_losers_daily')]
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                Key={'symbol': item['symbol']}
-            )
-    for item in sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers'):
+    table = dynamodb.Table('top_losers_daily')
+    delete_all_entries(table)
+    result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers')
+    for item in result:
         table.put_item(Item=item)
 
 if __name__ == "__main__":
@@ -217,7 +215,7 @@ if __name__ == "__main__":
     # #     }
     # # )
     # # print(response)
-    # print(retrieve_top_gainers_hourly())
+    print(retrieve_top_gainers_hourly())
     # print(retrieve_top_losers_hourly())
     # print(retrieve_top_losers_daily())
     # print(retrieve_top_gainers_daily())
