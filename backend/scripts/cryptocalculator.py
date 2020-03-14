@@ -13,25 +13,43 @@ import pandas as pd
 class CryptoCalculator:
 
     def ema(self, df):
-        data = ema(df, 9)
+        period = 9
+        if len(df) < period:
+            period = len(df) // 2
+        data = ema(df, period)
         return(data)
     
     def sma(self, df):
+        period = 15
+        if len(df) < period:
+            period = len(df) // 2
         data = sma(df,15)
         return(data)
     
     def rsi(self, df):
-        data = rsi(df, 14)
+        period = 14
+        if len(df) < period:
+            period = len(df) // 2
+        data = rsi(df, period)
         return(data)
 
     def ubb(self, df):
-        data = ubb(df,20)
+        period = 20
+        if len(df) < period:
+            period = len(df) // 2
+        data = ubb(df,period)
         return(data)
     
     def mbb(self, df):
-        data = mbb(df,20)
+        period = 20
+        if len(df) < period:
+            period = len(df) // 2
+        data = mbb(df,period)
         return(data)
 
     def lbb(self, df):
-        data = lbb(df,20)
+        period = 20
+        if len(df) < period:
+            period = len(df) // 2
+        data = lbb(df,period)
         return(data)
