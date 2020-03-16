@@ -161,29 +161,42 @@ def retrieve_top_gainers_hourly():
     sc = _Scraper()
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers')
     gainers = db['top_gainers_hourly']
-    gainers.delete_many({})
-    gainers.insert_many(result)
+    for res in result:
+        if gainers.find_one({'rank':res['rank']}):
+            gainers.update_one({'rank': res['rank']}, res)
+        else:
+            gainers.insert(res)
+
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers')
     losers = db['top_losers_hourly']
-    losers.delete_many({})
-    losers.insert_many(result)
+    for res in result:
+        if losers.find_one({'rank':res['rank']}):
+            losers.update_one({'rank': res['rank']}, res)
+        else:
+            losers.insert(res)
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers')
     gainers = db['top_gainers_daily']
-    gainers.delete_many({})
-    gainers.insert_many(result)
+    for res in result:
+        if gainers.find_one({'rank':res['rank']}):
+            gainers.update_one({'rank': res['rank']}, res)
+        else:
+            gainers.insert(res)
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers')
     losers = db['top_losers_daily']
-    losers.delete_many({})
-    losers.insert_many(result)
+    for res in result:
+        if losers.find_one({'rank':res['rank']}):
+            losers.update_one({'rank': res['rank']}, res)
+        else:
+            losers.insert(res)
 
 if __name__ == "__main__":
     # BinanceWrapper().getAllCryptoDataBinance("1M", save=True)
