@@ -8,25 +8,23 @@ from fastapi_users.authentication import JWTAuthentication
 from fastapi_users.db import MongoDBUserDatabase
 from starlette.requests import Request
 from fastapi import BackgroundTasks
+from typing import Optional
 
 background_tasks_running = False
 DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
 SECRET = "|X|Th!5iS@S3CR3t|X|"
 
 class User(models.BaseUser):
-    pass
-
+    watchlist: Optional[list] = []
 
 class UserCreate(User, models.BaseUserCreate):
-    pass
-
+    watchlist: list
 
 class UserUpdate(User, models.BaseUserUpdate):
-    pass
-
+    watchlist: Optional[list]
 
 class UserDB(User, models.BaseUserDB):
-    pass
+    watchlist: list
 
 
 client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URL)
