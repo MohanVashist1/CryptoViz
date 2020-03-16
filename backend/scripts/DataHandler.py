@@ -11,6 +11,7 @@ from urllib.parse import urljoin
 import boto3
 import cryptocalculator
 from channelfinder import ChannelFinder
+import pymongo
 
 import pandas as pd
 import requests
@@ -21,6 +22,9 @@ from bs4 import BeautifulSoup
 from decimal import *
 from boto3.dynamodb.conditions import Key
 
+DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
+client = pymongo.MongoClient(DATABASE_URL)
+db = client["cryptoviz"]
 
 class BinanceWrapper:
     def __init__(self):
@@ -144,62 +148,42 @@ class _Scraper:
     def __normalize_val(self, val):
         val = val[1:].replace(',','')
         if val[-1] == "K":
-                val = Decimal(str(float(val[:-1]) * 1000))
+                val = float(val[:-1]) * 1000
         elif val[-1] == "M":
-            val = Decimal(str(float(val[:-1]) * 1000000))
+            val = float(val[:-1]) * 1000000
         elif val[-1] == "B":
-            val = Decimal(str(float(val[:-1]) * 1000000000))
+            val = float(val[:-1]) * 1000000000
         else:
-            val = Decimal(val)
+            val = float(val)
         return val
-
-def delete_all_entries(table):
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                    Key={'symbol': item['symbol'], 'rank': item['rank']}
-            )
 
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_gainers_hourly')
-    #result = table.query(
-     #   KeyConditionExpression=Key('Username').eq('bob')
-    #)
-    #print(result)
-    delete_all_entries(table)
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers')
-    for item in result:
-        table.put_item(Item=item)
+    gainers = db['top_gainers_hourly']
+    gainers.delete_many({})
+    gainers.insert_many(result)
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_losers_hourly')
-    delete_all_entries(table)
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers')
-    for item in result:
-        table.put_item(Item=item)
+    losers = db['top_losers_hourly']
+    losers.delete_many({})
+    losers.insert_many(result)
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_gainers_daily')
-    delete_all_entries(table)
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers')
-    for item in result:
-        table.put_item(Item=item)
+    gainers = db['top_gainers_daily']
+    gainers.delete_many({})
+    gainers.insert_many(result)
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_losers_daily')
-    delete_all_entries(table)
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers')
-    for item in result:
-        table.put_item(Item=item)
+    losers = db['top_losers_daily']
+    losers.delete_many({})
+    losers.insert_many(result)
 
 if __name__ == "__main__":
     # BinanceWrapper().getAllCryptoDataBinance("1M", save=True)
@@ -215,8 +199,4 @@ if __name__ == "__main__":
     # #     }
     # # )
     # # print(response)
-    print(retrieve_top_gainers_hourly())
-    # print(retrieve_top_losers_hourly())
-    # print(retrieve_top_losers_daily())
-    # print(retrieve_top_gainers_daily())
     pass
