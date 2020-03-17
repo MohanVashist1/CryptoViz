@@ -1,4 +1,3 @@
-import decimal
 import hmac
 import json
 import math
@@ -6,22 +5,18 @@ import os
 import os.path
 import time
 from datetime import datetime, timedelta
-from decimal import *
 from pathlib import Path
 from urllib.parse import urljoin
-import boto3
-import cryptocalculator
-from channelfinder import ChannelFinder
+# import cryptocalculator
+# from channelfinder import ChannelFinder
 import pymongo
 
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
 
-import boto3
 import pandas as pd
 from binance.client import Client
-from boto3.dynamodb.conditions import Key
 from dotenv import load_dotenv
 
 from . import channelfinder, cryptocalculator
@@ -227,11 +222,8 @@ if __name__ == "__main__":
     # #     }
     # # )
     # # print(response)
-<<<<<<< HEAD:backend/lib/DataHandler.py
     # print(retrieve_top_gainers_hourly())
     # print(retrieve_top_losers_hourly())
     # print(retrieve_top_losers_daily())
     # print(retrieve_top_gainers_daily())
-=======
->>>>>>> 188426be0e64c86c0912fc446ed59e3822392f83:backend/scripts/DataHandler.py
     pass

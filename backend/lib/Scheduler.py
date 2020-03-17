@@ -1,6 +1,6 @@
 import time
 import multiprocessing as mp
-import DataHandler as dh
+from . import DataHandler as dh
 
 bw = None
 

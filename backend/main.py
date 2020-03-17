@@ -1,13 +1,14 @@
 import time
+import pymongo
 
 from fastapi import FastAPI, HTTPException, Path, Query, WebSocket
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import motor.motor_asyncio
-import sys
-sys.path.insert(1, './scripts')
-import Scheduler as sc
+# import sys
+# sys.path.insert(1, './scripts')
+# import Scheduler as sc
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers, models
 from fastapi_users.authentication import JWTAuthentication
@@ -19,6 +20,24 @@ from typing import Optional
 from flask import escape
 from lib import DataHandler 
 from lib import CryptoData
+from lib import Scheduler as sc
+
+
+background_tasks_running = False
+DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
+SECRET = "|X|Th!5iS@S3CR3t|X|"
+
+class User(models.BaseUser):
+    watchlist: Optional[list] = []
+
+class UserCreate(User, models.BaseUserCreate):
+    watchlist: list
+
+class UserUpdate(User, models.BaseUserUpdate):
+    watchlist: Optional[list]
+
+class UserDB(User, models.BaseUserDB):
+    watchlist: list
 
 app = FastAPI()
 # app.add_middleware(HTTPSRedirectMiddleware)
@@ -27,20 +46,17 @@ cryptoList = dataHandler.getcryptoSymbols()
 cryptoData = CryptoData.CryptoDataReader()
 client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URL)
 db = client["cryptoviz"]
-collection = db["users"]
-user_db = MongoDBUserDatabase(UserDB, collection)
+users = db["users"]
+user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
     JWTAuthentication(secret=SECRET, lifetime_seconds=3600),
 ]
 
-
 fastapi_users = FastAPIUsers(
     user_db, auth_backends, User, UserCreate, UserUpdate, UserDB, SECRET,
 )
 app.include_router(fastapi_users.router, prefix="/users", tags=["users"])
-
-
 
 origins = [
     "http://localhost:3000", "ws://localhost:8000/api/crypto/"
@@ -52,7 +68,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/api/crypto/{ticker}")
 async def getCryptoInfo(ticker: str = Path(..., title="The Ticker of the Crypto to get")):
@@ -91,25 +106,6 @@ async def websocket_crypto_endpoint(websocket: WebSocket):
             else:
                 await websocket.close(code=1000)
 
-
-background_tasks_running = False
-DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
-SECRET = "|X|Th!5iS@S3CR3t|X|"
-
-class User(models.BaseUser):
-    watchlist: Optional[list] = []
-
-class UserCreate(User, models.BaseUserCreate):
-    watchlist: list
-
-class UserUpdate(User, models.BaseUserUpdate):
-    watchlist: Optional[list]
-
-class UserDB(User, models.BaseUserDB):
-    watchlist: list
-
-
-
 @fastapi_users.on_after_register()
 def on_after_register(user: User, request: Request):
     print(f"User {user.id} has registered.")
@@ -121,8 +117,41 @@ def on_after_forgot_password(user: User, token: str, request: Request):
 
 @app.get("/")
 async def root(background_tasks: BackgroundTasks):
+    initiate_background(background_tasks)
+    return {"message": "Hello World"}
+
+@app.get("/api/gainers/")
+async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
+    if time != 1 and time != 24:
+        raise HTTPException(status_code=400, detail="Invalid time.")
+    # initiate_background(background_tasks)
+    client = pymongo.MongoClient(DATABASE_URL)
+    db = client['cryptoviz']
+    collection = None
+    if time == 1:
+        collection = db["top_gainers_hourly"]
+    else:
+        collection = db["top_gainers_daily"]
+    res = list(collection.find({}, {'_id': 0}))
+    return {"gainers": res}
+
+@app.get("/api/losers/")
+async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
+    if time != 1 and time != 24:
+        raise HTTPException(status_code=400, detail="Invalid time.")
+    initiate_background(background_tasks)
+    client = pymongo.MongoClient(DATABASE_URL)
+    db = client['cryptoviz']
+    collection = None
+    if time == 1:
+        collection = db["top_losers_hourly"]
+    else:
+        collection = db["top_losers_daily"]
+    res = list(collection.find({}, {'_id': 0}))
+    return {"losers": res}
+
+def initiate_background(background_tasks):
     global background_tasks_running
     if not background_tasks_running:
         background_tasks_running = True
         background_tasks.add_task(sc.schedule_tasks)
-    return {"message": "Hello World"}
