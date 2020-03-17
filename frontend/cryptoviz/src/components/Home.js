@@ -12,7 +12,7 @@ function Home({ match }) {
     const interval = setInterval(() => {
       fetchGainers();
       fetchLosers();
-    }, 5000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
