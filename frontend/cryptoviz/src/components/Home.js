@@ -53,7 +53,7 @@ function Home({ match }) {
     for (let i = 0; i < data.length; i++) {
       let children = [];
       //Inner loop to create children
-      children.push(<th scope="row">Active</th>);
+      // children.push(<th scope="row">Active</th>);
       children.push(<td>{data[i].rank}</td>);
       children.push(<td>{data[i].symbol}</td>);
       children.push(<td>{data[i].market_cap}</td>);
