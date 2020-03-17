@@ -9,6 +9,10 @@ from datetime import datetime, timedelta
 from decimal import *
 from pathlib import Path
 from urllib.parse import urljoin
+import boto3
+import cryptocalculator
+from channelfinder import ChannelFinder
+import pymongo
 
 import requests
 from bs4 import BeautifulSoup
@@ -23,6 +27,9 @@ from dotenv import load_dotenv
 from . import channelfinder, cryptocalculator
 
 # os.chdir(Path("..")) 
+DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
+client = pymongo.MongoClient(DATABASE_URL)
+db = client["cryptoviz"]
 
 class BinanceWrapper:
     def __init__(self):
@@ -156,62 +163,55 @@ class _Scraper:
     def __normalize_val(self, val):
         val = val[1:].replace(',','')
         if val[-1] == "K":
-                val = Decimal(str(float(val[:-1]) * 1000))
+                val = float(val[:-1]) * 1000
         elif val[-1] == "M":
-            val = Decimal(str(float(val[:-1]) * 1000000))
+            val = float(val[:-1]) * 1000000
         elif val[-1] == "B":
-            val = Decimal(str(float(val[:-1]) * 1000000000))
+            val = float(val[:-1]) * 1000000000
         else:
-            val = Decimal(val)
+            val = float(val)
         return val
-
-def delete_all_entries(table):
-    scan = table.scan()
-    with table.batch_writer() as batch:
-        for item in scan['Items']:
-            batch.delete_item(
-                    Key={'symbol': item['symbol'], 'rank': item['rank']}
-            )
 
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_gainers_hourly')
-    #result = table.query(
-     #   KeyConditionExpression=Key('Username').eq('bob')
-    #)
-    #print(result)
-    delete_all_entries(table)
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers')
-    for item in result:
-        table.put_item(Item=item)
+    gainers = db['top_gainers_hourly']
+    for res in result:
+        if gainers.find_one({'rank':res['rank']}):
+            gainers.update_one({'rank': res['rank']}, res)
+        else:
+            gainers.insert(res)
+
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_losers_hourly')
-    delete_all_entries(table)
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers')
-    for item in result:
-        table.put_item(Item=item)
+    losers = db['top_losers_hourly']
+    for res in result:
+        if losers.find_one({'rank':res['rank']}):
+            losers.update_one({'rank': res['rank']}, res)
+        else:
+            losers.insert(res)
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_gainers_daily')
-    delete_all_entries(table)
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers')
-    for item in result:
-        table.put_item(Item=item)
+    gainers = db['top_gainers_daily']
+    for res in result:
+        if gainers.find_one({'rank':res['rank']}):
+            gainers.update_one({'rank': res['rank']}, res)
+        else:
+            gainers.insert(res)
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('top_losers_daily')
-    delete_all_entries(table)
     result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers')
-    for item in result:
-        table.put_item(Item=item)
+    losers = db['top_losers_daily']
+    for res in result:
+        if losers.find_one({'rank':res['rank']}):
+            losers.update_one({'rank': res['rank']}, res)
+        else:
+            losers.insert(res)
 
 if __name__ == "__main__":
     BinanceWrapper().retrieveCryptoData("BTCUSDT","1m")
@@ -227,8 +227,11 @@ if __name__ == "__main__":
     # #     }
     # # )
     # # print(response)
+<<<<<<< HEAD:backend/lib/DataHandler.py
     # print(retrieve_top_gainers_hourly())
     # print(retrieve_top_losers_hourly())
     # print(retrieve_top_losers_daily())
     # print(retrieve_top_gainers_daily())
+=======
+>>>>>>> 188426be0e64c86c0912fc446ed59e3822392f83:backend/scripts/DataHandler.py
     pass
