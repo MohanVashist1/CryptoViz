@@ -58,9 +58,15 @@ fastapi_users = FastAPIUsers(
 )
 app.include_router(fastapi_users.router, prefix="/users", tags=["users"])
 
-origins = [
-    "http://localhost:3000", "ws://localhost:8000/api/crypto/"
-]
+origins = ['*']
+
+# origins = [
+#     "http://localhost:3000/*",
+#     "ws://localhost:8000/api/crypto/",
+#     # "http://localhost:8000/api/losers/",
+#     # "http://localhost:8000/api/gainers/"
+# ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -124,7 +130,7 @@ async def root(background_tasks: BackgroundTasks):
 async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    initiate_background(background_tasks)
+    # initiate_background(background_tasks)
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client['cryptoviz']
     collection = None
@@ -141,7 +147,7 @@ async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
 async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    initiate_background(background_tasks)
+    # initiate_background(background_tasks)
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client['cryptoviz']
     collection = None
