@@ -9,8 +9,11 @@ function Home({ match }) {
   const [gainers, setGainers] = useState({});
 
   useEffect(() => {
-    fetchGainers();
-    fetchLosers();
+    const interval = setInterval(() => {
+      fetchGainers();
+      fetchLosers();
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
