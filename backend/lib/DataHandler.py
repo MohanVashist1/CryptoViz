@@ -6,21 +6,23 @@ import os
 import os.path
 import time
 from datetime import datetime, timedelta
+from decimal import *
 from pathlib import Path
 from urllib.parse import urljoin
-import boto3
-import cryptocalculator
-from channelfinder import ChannelFinder
 
-import pandas as pd
 import requests
-from binance.client import Client
-from dateutil import parser
-from dotenv import load_dotenv
 from bs4 import BeautifulSoup
-from decimal import *
-from boto3.dynamodb.conditions import Key
+from dateutil import parser
 
+import boto3
+import pandas as pd
+from binance.client import Client
+from boto3.dynamodb.conditions import Key
+from dotenv import load_dotenv
+
+from . import channelfinder, cryptocalculator
+
+# os.chdir(Path("..")) 
 
 class BinanceWrapper:
     def __init__(self):
@@ -35,11 +37,12 @@ class BinanceWrapper:
                            "1h": 60, "1d": 1440, "1M": 2592000}
         self.binance_client = Client(
             api_key=self.__apiKey, api_secret=self.__secretKey)
-        self._klines = ["1m", "5m", "1h", "1d", "1w", "1M"]
+        self.klines = ["1m", "5m", "1h", "1d", "1w", "1M"]
         self._startTimes = {"1m": "1 Feb 2020", "5m": "1 Feb 2020", "1h": "1 Feb 2020",
                             "1d": "1 Jan 2019", "1w": "1 Jan 2019", "1M": "1 Jan 2018"}
         self._indicator_calculator = cryptocalculator.CryptoCalculator()
-        self._chanel_calculator = ChannelFinder()
+        self._chanel_calculator = channelfinder.ChannelFinder()
+        self.tethers = ["USDT"]
 
     def getcryptoSymbols(self, tether=None):
         url = urljoin(self._urlBase, self._endpoints['exchangeInfo'])
@@ -71,8 +74,8 @@ class BinanceWrapper:
         return old, new
 
     def getCryptoDataBinance(self, symbol, kline_size, save=False):
-        Path("cryptoData").mkdir(parents=True, exist_ok=True)
-        filename = Path(Path().absolute(), "cryptoData", '%s-%s-data.csv' %
+        Path("lib","cryptoData").mkdir(parents=True, exist_ok=True)
+        filename = Path(Path().absolute(),"lib","cryptoData", '%s-%s-data.gz' %
                         (symbol, kline_size))
         
         if filename.exists():
@@ -115,7 +118,7 @@ class BinanceWrapper:
         #     closing_price = pd.DataFrame(closing_price)
         #     closing_price.plot()       
         if save:
-            data_df.to_csv(filename)
+            data_df.to_csv(filename, compression='gzip')
         print('All caught up..!')
         return data_df
 
@@ -124,6 +127,15 @@ class BinanceWrapper:
         for crypto in allCryptos:
             self.getCryptoDataBinance(
                 crypto, kline_size, save)
+
+    def retrieveCryptoData(self, symbol, kline_size):
+        filename = Path(Path().absolute(),"lib", "cryptoData", '%s-%s-data.gz' %
+                        (symbol, kline_size))
+        if not filename.exists(): return None
+        return pd.read_csv(filename)
+
+        
+
 
 class _Scraper:
     def scrape(self, url, html_id):
@@ -202,7 +214,7 @@ def retrieve_top_losers_daily():
         table.put_item(Item=item)
 
 if __name__ == "__main__":
-    # BinanceWrapper().getAllCryptoDataBinance("1M", save=True)
+    BinanceWrapper().retrieveCryptoData("BTCUSDT","1m")
     # # dynamoTable.put_item(
     # #     item={
     # #         'Ticker': "BTCUSDT",
@@ -215,7 +227,7 @@ if __name__ == "__main__":
     # #     }
     # # )
     # # print(response)
-    print(retrieve_top_gainers_hourly())
+    # print(retrieve_top_gainers_hourly())
     # print(retrieve_top_losers_hourly())
     # print(retrieve_top_losers_daily())
     # print(retrieve_top_gainers_daily())

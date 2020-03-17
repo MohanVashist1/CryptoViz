@@ -5,3 +5,6 @@ backend/__pycache__/*
 .vscode/*
 frontend/cryptoviz/node_modules/*
 backend/scripts/__pycache__/*
+backend/lib/cryptoData/*.gz
+backend/lib/cryptoData/*.csv
+backend/lib/__pycache__/*

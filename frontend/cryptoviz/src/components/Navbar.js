@@ -8,7 +8,10 @@ function Navbar() {
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <Link to="/" className="navbar-brand">
-          <div className="logo"></div>
+          <div style={{ float: "left", marginTop: "1em", marginRight: "1em" }}>
+            CryptoViz
+          </div>
+          <div style={{ float: "right" }} className="logo"></div>
         </Link>
         <button
           className="navbar-toggler"

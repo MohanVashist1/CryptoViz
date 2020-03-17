@@ -10,7 +10,10 @@
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.0"
+    "react-scripts": "3.4.0",
+    "recharts": "^1.8.5",
+    "socket.io-client": "^2.3.0",
+    "websocket": "^1.0.31"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -24,6 +24,7 @@ dnspython==1.16.0
 docutils==0.15.2
 email-validator==1.0.5
 fastapi==0.52.0
+Flask==1.1.1
 graphene==2.1.8
 graphql-core==2.3.1
 graphql-relay==2.0.1
@@ -51,7 +52,6 @@ pycparser==2.19
 pydantic==1.4
 PyHamcrest==1.9.0
 pylint==2.4.4
-pymongo==3.10.1
 pyOpenSSL==19.1.0
 python-binance==0.7.4
 python-dateutil==2.8.1
@@ -81,5 +81,6 @@ urllib3==1.25.7
 uvicorn==0.11.3
 uvloop==0.14.0
 websockets==8.1
+Werkzeug==1.0.0
 wrapt==1.11.2
 zope.interface==4.7.1

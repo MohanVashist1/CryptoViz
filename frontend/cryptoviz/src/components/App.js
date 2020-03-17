@@ -5,7 +5,7 @@ import Credits from "./Credits";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Home from "./Home";
-import Crypto from "./Crypto";
+import CryptoLanding from "./cryptoLanding";
 import "../style/App.css";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
         <Switch>
           <Route path="/" exact component={Home}></Route>
           <Route path="/credits" component={Credits}></Route>
-          <Route path="/crypto/:ticker" component={crypto}></Route>
+          <Route path="/crypto/:ticker" component={CryptoLanding}></Route>
         </Switch>
         <Footer />
       </BrowserRouter>
