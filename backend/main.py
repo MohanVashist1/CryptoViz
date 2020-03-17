@@ -130,7 +130,7 @@ async def root(background_tasks: BackgroundTasks):
 async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    # initiate_background(background_tasks)
+    initiate_background(background_tasks)
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client['cryptoviz']
     collection = None
@@ -147,7 +147,7 @@ async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
 async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    # initiate_background(background_tasks)
+    initiate_background(background_tasks)
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client['cryptoviz']
     collection = None
