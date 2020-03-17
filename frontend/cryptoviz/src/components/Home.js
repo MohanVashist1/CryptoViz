@@ -47,21 +47,24 @@ function Home({ match }) {
   };
 
   const createTable = (data) => {
-    let table = []
+    let table = [];
+    let rowClass = "table-primary";
     // Outer loop to create parent
     for (let i = 0; i < data.length; i++) {
-      let children = []
+      let children = [];
       //Inner loop to create children
-      children.push(<td>{data[i].rank}</td>)
-      children.push(<td>{data[i].symbol}</td>)
-      children.push(<td>{data[i].market_cap}</td>)
-      children.push(<td>{data[i].price}</td>)
-      children.push(<td>{data[i].volume}</td>)
+      children.push(<th scope="row">Active</th>);
+      children.push(<td>{data[i].rank}</td>);
+      children.push(<td>{data[i].symbol}</td>);
+      children.push(<td>{data[i].market_cap}</td>);
+      children.push(<td>{data[i].price}</td>);
+      children.push(<td>{data[i].volume}</td>);
       //Create the parent and add the children
-      table.push(<tr>{children}</tr>)
+      table.push(<tr className={rowClass}>{children}</tr>);
+      rowClass = (rowClass == "table-primary") ? "table-secondary" : "table-primary";
     }
-    return table
-  }
+    return table;
+  };
 
   return (
     <div>
