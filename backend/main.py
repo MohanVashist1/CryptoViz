@@ -124,15 +124,17 @@ async def root(background_tasks: BackgroundTasks):
 async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    # initiate_background(background_tasks)
-    client = pymongo.MongoClient(DATABASE_URL)
-    db = client['cryptoviz']
+    initiate_background(background_tasks)
+    # client = pymongo.MongoClient(DATABASE_URL)
+    # db = client['cryptoviz']
     collection = None
     if time == 1:
         collection = db["top_gainers_hourly"]
     else:
         collection = db["top_gainers_daily"]
-    res = list(collection.find({}, {'_id': 0}))
+    res = []
+    for document in await collection.find({}, {'_id': 0}).to_list(length=100):
+        res.append(document)
     return {"gainers": res}
 
 @app.get("/api/losers/")
@@ -140,15 +142,17 @@ async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     initiate_background(background_tasks)
-    client = pymongo.MongoClient(DATABASE_URL)
-    db = client['cryptoviz']
+    # client = pymongo.MongoClient(DATABASE_URL)
+    # db = client['cryptoviz']
     collection = None
     if time == 1:
         collection = db["top_losers_hourly"]
     else:
         collection = db["top_losers_daily"]
-    res = list(collection.find({}, {'_id': 0}))
-    return {"losers": res}
+    res = []
+    for document in await collection.find({}, {'_id': 0}).to_list(length=100):
+        res.append(document)
+    return {"gainers": res}
 
 def initiate_background(background_tasks):
     global background_tasks_running
