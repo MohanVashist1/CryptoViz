@@ -1,4 +1,3 @@
-import decimal
 import hmac
 import json
 import math
@@ -6,30 +5,25 @@ import os
 import os.path
 import time
 from datetime import datetime, timedelta
-from decimal import *
 from pathlib import Path
 from urllib.parse import urljoin
-import boto3
-import cryptocalculator
-from channelfinder import ChannelFinder
+# import cryptocalculator
+# import channelfinder
+# from channelfinder import ChannelFinder
 import pymongo
 
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
 
-import boto3
 import pandas as pd
 from binance.client import Client
-from boto3.dynamodb.conditions import Key
 from dotenv import load_dotenv
 
 # from . import channelfinder, cryptocalculator
 
 # os.chdir(Path("..")) 
 DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
-client = pymongo.MongoClient(DATABASE_URL)
-db = client["cryptoviz"]
 
 class BinanceWrapper:
     def __init__(self):
@@ -145,19 +139,21 @@ class BinanceWrapper:
 
 
 class _Scraper:
-    def scrape(self, url, html_id):
+    def scrape(self, url):
         top_10 = []
         res = requests.get(url)
         soup = BeautifulSoup(res.content, 'html.parser')
-        for ele in soup.find(id=html_id).find('tbody').find_all('tr')[:10]:
+        count = 1
+        for ele in soup.find(id='react-listview').find('tbody').find_all('tr')[:10]:
             tmp = {}
             info = ele.find_all('td')
-            tmp['rank'] = int(info[0].find('a').text)
-            tmp['symbol'] = info[1].find('a').text
+            tmp['rank'] = count
+            tmp['symbol'] = info[1].find('div', class_='screener-symbol').text
             tmp['market_cap'] = self.__normalize_val(info[2].find('a').text)
             tmp['price'] = self.__normalize_val(info[3].find('a').text)
             tmp['volume'] = self.__normalize_val(info[4].find('a').text)
             top_10.append(tmp)
+            count += 1
         return top_10
 
     def __normalize_val(self, val):
@@ -174,7 +170,9 @@ class _Scraper:
 
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'gainers')
+    result = sc.scrape('https://bitscreener.com/screener/?o=per_1h&desc=true&f=e_Binance')
+    client = pymongo.MongoClient(DATABASE_URL)
+    db = client["cryptoviz"]
     gainers = db['top_gainers_hourly']
     for res in result:
         if gainers.find_one({'rank':res['rank']}):
@@ -185,7 +183,9 @@ def retrieve_top_gainers_hourly():
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=1h#gainers', 'losers')
+    result = sc.scrape('https://bitscreener.com/screener/?o=per_1h&desc=false&f=e_Binance')
+    client = pymongo.MongoClient(DATABASE_URL)
+    db = client["cryptoviz"]
     losers = db['top_losers_hourly']
     for res in result:
         if losers.find_one({'rank':res['rank']}):
@@ -195,7 +195,9 @@ def retrieve_top_losers_hourly():
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'gainers')
+    result = sc.scrape('https://bitscreener.com/screener/?o=per_24h&desc=true&f=e_Binance')
+    client = pymongo.MongoClient(DATABASE_URL)
+    db = client["cryptoviz"]
     gainers = db['top_gainers_daily']
     for res in result:
         if gainers.find_one({'rank':res['rank']}):
@@ -205,7 +207,9 @@ def retrieve_top_gainers_daily():
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/gainers-losers?tf=24h#gainers', 'losers')
+    result = sc.scrape('https://bitscreener.com/screener/?o=per_24h&desc=false&f=e_Binance')
+    client = pymongo.MongoClient(DATABASE_URL)
+    db = client["cryptoviz"]
     losers = db['top_losers_daily']
     for res in result:
         if losers.find_one({'rank':res['rank']}):

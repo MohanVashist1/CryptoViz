@@ -1,6 +1,7 @@
 import time
 import multiprocessing as mp
-import DataHandler as dh
+from . import DataHandler as dh
+# import DataHandler as dh
 
 bw = None
 
@@ -77,6 +78,7 @@ def run(f_name):
 
 def schedule_tasks():
     funcs = ['top_gainers_daily', 'top_losers_daily', 'top_gainers_hourly', 'top_losers_hourly', 'data_minute', 'data_five_minutes', 'data_hour', 'data_day', 'data_month']
+    # funcs = ['top_gainers_daily', 'top_losers_daily', 'top_gainers_hourly', 'top_losers_hourly']
     with mp.Pool(processes=len(funcs), initializer=global_binance_wrapper) as pool:
         pool.map(run, funcs)
         pool.close()
@@ -89,4 +91,4 @@ def schedule_tasks():
     #             p.terminate()
             # print("Oops: Some processes died")
 
-#schedule_tasks()
+schedule_tasks()

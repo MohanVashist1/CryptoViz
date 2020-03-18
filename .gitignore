@@ -8,3 +8,4 @@ backend/scripts/__pycache__/*
 backend/lib/cryptoData/*.gz
 backend/lib/cryptoData/*.csv
 backend/lib/__pycache__/*
+.DS_Store
