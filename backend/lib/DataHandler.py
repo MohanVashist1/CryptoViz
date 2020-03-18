@@ -20,7 +20,7 @@ import pandas as pd
 from binance.client import Client
 from dotenv import load_dotenv
 
-# from . import channelfinder, cryptocalculator
+from . import channelfinder, cryptocalculator
 
 # os.chdir(Path("..")) 
 DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"

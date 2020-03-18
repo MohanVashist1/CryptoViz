@@ -1,6 +1,7 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+// import Td from './Td'
 
 function Home({ match }) {
   const [losersTimeInterval, setLosersTimeInterval] = useState("1");
@@ -28,9 +29,7 @@ function Home({ match }) {
     const func = await fetch(
       `http://127.0.0.1:8000/api/losers/?time=${losersTimeInterval}`
     );
-    console.log('here')
     const losers = await func.json();
-    console.log(losers)
     setLosers(losers.losers);
   };
 
@@ -38,9 +37,7 @@ function Home({ match }) {
     const func = await fetch(
       `http://127.0.0.1:8000/api/gainers/?time=${gainersTimeInterval}`
     );
-    console.log('here')
     const gainers = await func.json();
-    console.log(gainers)
     setGainers(gainers.gainers);
   };
 
@@ -49,7 +46,7 @@ function Home({ match }) {
     "24": "1 Day",
   };
 
-  const createTable = (data) => {
+  const createTable = data => {
     let table = [];
     let rowClass = "table-primary";
     // Outer loop to create parent
@@ -57,13 +54,13 @@ function Home({ match }) {
       let children = [];
       //Inner loop to create children
       // children.push(<th scope="row">Active</th>);
-      children.push(<td>{data[i].rank}</td>);
-      children.push(<td>{data[i].symbol}</td>);
-      children.push(<td>{data[i].market_cap}</td>);
-      children.push(<td>{data[i].price}</td>);
-      children.push(<td>{data[i].volume}</td>);
+      children.push(<td key={i + 1}>{data[i].rank}</td>);
+      children.push(<td key={i + 2}>{data[i].symbol}</td>);
+      children.push(<td key={i + 3}>${data[i].market_cap}</td>);
+      children.push(<td key={i + 4}>${data[i].price}</td>);
+      children.push(<td key={i + 5}>${data[i].volume}</td>);
       //Create the parent and add the children
-      table.push(<tr className={rowClass}>{children}</tr>);
+      table.push(<tr key={i + 6} className={rowClass}>{children}</tr>);
       rowClass = (rowClass == "table-primary") ? "table-secondary" : "table-primary";
     }
     return table;
@@ -110,7 +107,7 @@ function Home({ match }) {
           </table> 
         </div>
       </div>
-      <div style={{ textAlign: "center", marginTop: "4em" }}>
+      <div style={{ textAlign: "center"}}>
         <h1>
           Top 10 Losers ({timeMapping[losersTimeInterval]})
         </h1>

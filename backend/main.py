@@ -6,9 +6,6 @@ from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import motor.motor_asyncio
-# import sys
-# sys.path.insert(1, './scripts')
-# import Scheduler as sc
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers, models
 from fastapi_users.authentication import JWTAuthentication
@@ -39,29 +36,11 @@ class UserUpdate(User, models.BaseUserUpdate):
 class UserDB(User, models.BaseUserDB):
     watchlist: list
 
-
-DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
-SECRET = "|X|Th!5iS@S3CR3t|X|"
-
-class User(models.BaseUser):
-    watchlist: Optional[list] = []
-
-class UserCreate(User, models.BaseUserCreate):
-    watchlist: list
-
-class UserUpdate(User, models.BaseUserUpdate):
-    watchlist: Optional[list]
-
-class UserDB(User, models.BaseUserDB):
-    watchlist: list
-
 class CryptoRequest(BaseModel):
     ticker: str
     timeInterval: str
     minDate: str
     maxDate: str
-
-
 
 app = FastAPI()
 # app.add_middleware(HTTPSRedirectMiddleware)
@@ -137,41 +116,31 @@ async def getCryptoInfo(ticker: str = Path(..., title="The Ticker of the Crypto 
 #                 await websocket.close(code=1000)
 
 @app.post("/api/crypto/{ticker}")
-async def getCryptoInfo(request: CryptoRequest):
+async def postCryptoData(request: CryptoRequest):
 #TODO: Security
     cryptoData = dataHandler.retrieveCryptoData(escape(request.ticker),escape(request.timeInterval))
     cryptoData = cryptoData[(cryptoData['timestamp']>escape(request.minDate)) & (cryptoData['timestamp']<escape(request.maxDate))]
     cryptoData = cryptoData[["timestamp", "close", "rsi","ema","sma","lbb","ubb","mbb"]]
     return {"data": cryptoData.to_json(orient='records')}
 
-background_tasks_running = False
-
-
-
-
-
-
 @fastapi_users.on_after_register()
 def on_after_register(user: User, request: Request):
     print(f"User {user.id} has registered.")
-
 
 @fastapi_users.on_after_forgot_password()
 def on_after_forgot_password(user: User, token: str, request: Request):
     print(f"User {user.id} has forgot their password. Reset token: {token}")
 
-@app.get("/")
-async def root(background_tasks: BackgroundTasks):
-    initiate_background(background_tasks)
-    return {"message": "Hello World"}
+# @app.get("/")
+# async def root(background_tasks: BackgroundTasks):
+#     initiate_background(background_tasks)
+#     return {"message": "Hello World"}
 
 @app.get("/api/gainers/")
 async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     initiate_background(background_tasks)
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client['cryptoviz']
     collection = None
     if time == 1:
         collection = db["top_gainers_hourly"]
@@ -187,8 +156,6 @@ async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     initiate_background(background_tasks)
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client['cryptoviz']
     collection = None
     if time == 1:
         collection = db["top_losers_hourly"]
