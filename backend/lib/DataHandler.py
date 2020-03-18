@@ -154,6 +154,7 @@ class _Scraper:
             tmp['volume'] = self.__normalize_val(info[4].find('a').text)
             top_10.append(tmp)
             count += 1
+        print(top_10)
         return top_10
 
     def __normalize_val(self, val):

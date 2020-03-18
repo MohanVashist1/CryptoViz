@@ -1,5 +1,5 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 // import Td from './Td'
 
@@ -9,13 +9,10 @@ function Home({ match }) {
   const [losers, setLosers] = useState({});
   const [gainers, setGainers] = useState({});
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchGainers();
-      fetchLosers();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  useInterval(() => {
+    fetchGainers();
+    fetchLosers();
+  }, 30000);
 
   useEffect(() => {
     fetchGainers();
@@ -26,7 +23,7 @@ function Home({ match }) {
   }, [losersTimeInterval]);
 
   const fetchLosers = async () => {
-    console.log("Entered")
+    console.log(losersTimeInterval);
     const func = await fetch(
       `http://127.0.0.1:8000/api/losers/?time=${losersTimeInterval}`
     );
@@ -39,6 +36,7 @@ function Home({ match }) {
       `http://127.0.0.1:8000/api/gainers/?time=${gainersTimeInterval}`
     );
     const gainers = await func.json();
+    console.log(gainers)
     setGainers(gainers.gainers);
   };
 
@@ -149,6 +147,30 @@ function Home({ match }) {
       </div>
     </div>
   );
+}
+
+/********************************************************************************************
+*    Title: Making setInterval Declarative with React Hooks
+*    Author: Abramov, Dan
+*    Date: February 4, 2019
+*    Availability: https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+********************************************************************************************/
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
 }
 
 export default Home;
