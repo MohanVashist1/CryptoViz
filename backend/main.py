@@ -158,7 +158,7 @@ async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
     res = []
     for document in await collection.find({}, {'_id': 0}).to_list(length=100):
         res.append(document)
-    return {"gainers": res}
+    return {"losers": res}
 
 def initiate_background(background_tasks):
     global background_tasks_running
