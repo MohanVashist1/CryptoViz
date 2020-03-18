@@ -13,7 +13,7 @@ function Home({ match }) {
     const interval = setInterval(() => {
       fetchGainers();
       fetchLosers();
-    }, 300000);
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -26,6 +26,7 @@ function Home({ match }) {
   }, [losersTimeInterval]);
 
   const fetchLosers = async () => {
+    console.log("Entered")
     const func = await fetch(
       `http://127.0.0.1:8000/api/losers/?time=${losersTimeInterval}`
     );

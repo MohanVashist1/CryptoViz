@@ -174,11 +174,13 @@ def retrieve_top_gainers_hourly():
     client = pymongo.MongoClient(DATABASE_URL)
     db = client["cryptoviz"]
     gainers = db['top_gainers_hourly']
-    for res in result:
-        if gainers.find_one({'rank':res['rank']}):
-            gainers.update_one({'rank': res['rank']}, res)
-        else:
-            gainers.insert(res)
+    gainers.delete_many({})
+    gainers.insert_many(result)
+    # for res in result:
+    #     if gainers.find_one({'rank':res['rank']}):
+    #         gainers.update_one({'rank': res['rank']}, res)
+    #     else:
+    #         gainers.insert(res)
 
 
 def retrieve_top_losers_hourly():
@@ -187,11 +189,13 @@ def retrieve_top_losers_hourly():
     client = pymongo.MongoClient(DATABASE_URL)
     db = client["cryptoviz"]
     losers = db['top_losers_hourly']
-    for res in result:
-        if losers.find_one({'rank':res['rank']}):
-            losers.update_one({'rank': res['rank']}, res)
-        else:
-            losers.insert(res)
+    losers.delete_many({})
+    losers.insert_many(result)
+    # for res in result:
+    #     if losers.find_one({'rank':res['rank']}):
+    #         losers.update_one({'rank': res['rank']}, res)
+    #     else:
+    #         losers.insert(res)
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
@@ -199,11 +203,13 @@ def retrieve_top_gainers_daily():
     client = pymongo.MongoClient(DATABASE_URL)
     db = client["cryptoviz"]
     gainers = db['top_gainers_daily']
-    for res in result:
-        if gainers.find_one({'rank':res['rank']}):
-            gainers.update_one({'rank': res['rank']}, res)
-        else:
-            gainers.insert(res)
+    gainers.delete_many({})
+    gainers.insert_many(result)
+    # for res in result:
+    #     if gainers.find_one({'rank':res['rank']}):
+    #         gainers.update_one({'rank': res['rank']}, res)
+    #     else:
+    #         gainers.insert(res)
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
@@ -211,11 +217,13 @@ def retrieve_top_losers_daily():
     client = pymongo.MongoClient(DATABASE_URL)
     db = client["cryptoviz"]
     losers = db['top_losers_daily']
-    for res in result:
-        if losers.find_one({'rank':res['rank']}):
-            losers.update_one({'rank': res['rank']}, res)
-        else:
-            losers.insert(res)
+    losers.delete_many({})
+    losers.insert_many(result)
+    # for res in result:
+    #     if losers.find_one({'rank':res['rank']}):
+    #         losers.update_one({'rank': res['rank']}, res)
+    #     else:
+    #         losers.insert(res)
 
 if __name__ == "__main__":
     BinanceWrapper().retrieveCryptoData("BTCUSDT","1m")
