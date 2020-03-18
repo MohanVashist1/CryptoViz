@@ -11,45 +11,12 @@ import {
   Legend
 } from "recharts";
 
-var conn = new WebSocket(`ws://localhost:8000/api/crypto/`);
+// var conn = new WebSocket(`ws://localhost:8000/api/crypto/`);
 
 function CryptoLanding({ match }) {
-  const data1 = [
-    {
-      timestamp: "2020-03-15 02:38:00",
-      close: 5217.2,
-      rsi: 72.3606560103,
-      ema: 5210.6574294803,
-      sma: 5198.16,
-      lbb: 5169.0061759436,
-      ubb: 5219.9598240564,
-      mbb: 5194.483
-    },
-    {
-      timestamp: "2020-03-15 02:39:00",
-      close: 5207.7,
-      rsi: 61.1893655048,
-      ema: 5210.6981347395,
-      sma: 5199.4966666667,
-      lbb: 5171.511957125,
-      ubb: 5220.649042875,
-      mbb: 5196.0805
-    },
-    {
-      timestamp: "2020-03-15 02:40:00",
-      close: 5198.11,
-      rsi: 52.3955918006,
-      ema: 5208.4589323416,
-      sma: 5200.222,
-      lbb: 5172.8073629369,
-      ubb: 5220.7416370631,
-      mbb: 5196.7745
-    }
-  ];
-
   const [ticker, setTicker] = useState({});
   const [timeInterval, setTimeInterval] = useState("1m");
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   let request = {
     action: "Update",
     ticker: match.params.ticker,
@@ -60,22 +27,26 @@ function CryptoLanding({ match }) {
 
   useEffect(() => {
     fetchItem();
-    conn.onmessage = function(e) {
-      setData(JSON.parse(e.data));
-      console.log("data here is", data);
-    };
-    conn.onopen = () => {
-      conn.send(JSON.stringify(request));
-    };
+    fetchData();
+    // conn.onmessage = function(e) {
+    //   console.log(typeof e.data);
+    //   setData(JSON.parse(e.data));
+    //   console.log("erwerwerwer");
+    // };
+    // conn.onopen = () => {
+    //   conn.send(JSON.stringify(request));
+    // };
   }, []);
 
   useEffect(() => {
-    conn.onmessage = function(e) {
-      setData(JSON.parse(e.data));
-    };
-    if (conn.readyState === 1) {
-      conn.send(JSON.stringify(request));
-    }
+    fetchData();
+    // conn.onmessage = function(e) {
+    //   setData(JSON.parse(e.data));
+    //   console.log("erwerwerwer");
+    // };
+    // if (conn.readyState === 1) {
+    //   conn.send(JSON.stringify(request));
+    // }
   }, [timeInterval]);
 
   const fetchItem = async () => {
@@ -84,6 +55,20 @@ function CryptoLanding({ match }) {
     );
     const fullTickerName = await fetchCryptoName.json();
     setTicker(fullTickerName);
+  };
+
+  const fetchData = async () => {
+    await fetch(`http://127.0.0.1:8000/api/crypto/${match.params.ticker}`, {
+      method: "post",
+      body: JSON.stringify(request)
+    })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(res) {
+        console.log("res is", JSON.parse(res.data));
+        setData(JSON.parse(res.data));
+      });
   };
   const timeMapping = {
     "1m": "1 Minute",
@@ -176,15 +161,17 @@ function CryptoLanding({ match }) {
         <div
           style={{
             padding: "10px",
-            width: "800px",
-            height: "800px"
+            marginTop: "2em",
+            width: "1000px",
+            height: "1000px",
+            margin: "auto"
           }}
         >
           {console.log("data down here is", data)}
           {data && (
             <LineChart
-              width={600}
-              height={300}
+              width={1000}
+              height={700}
               data={data}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
@@ -197,6 +184,24 @@ function CryptoLanding({ match }) {
               <Line
                 type="monotone"
                 dataKey="ema"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="ubb"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="lbb"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="mbb"
                 stroke="#8884d8"
                 activeDot={{ r: 8 }}
               />

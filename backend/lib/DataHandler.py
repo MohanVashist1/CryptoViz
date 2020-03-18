@@ -24,7 +24,7 @@ from binance.client import Client
 from boto3.dynamodb.conditions import Key
 from dotenv import load_dotenv
 
-from . import channelfinder, cryptocalculator
+# from . import channelfinder, cryptocalculator
 
 # os.chdir(Path("..")) 
 DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
@@ -48,7 +48,7 @@ class BinanceWrapper:
         self._startTimes = {"1m": "1 Feb 2020", "5m": "1 Feb 2020", "1h": "1 Feb 2020",
                             "1d": "1 Jan 2019", "1w": "1 Jan 2019", "1M": "1 Jan 2018"}
         self._indicator_calculator = cryptocalculator.CryptoCalculator()
-        self._chanel_calculator = channelfinder.ChannelFinder()
+        # self._chanel_calculator = channelfinder.ChannelFinder()
         self.tethers = ["USDT"]
 
     def getcryptoSymbols(self, tether=None):
@@ -227,11 +227,8 @@ if __name__ == "__main__":
     # #     }
     # # )
     # # print(response)
-<<<<<<< HEAD:backend/lib/DataHandler.py
     # print(retrieve_top_gainers_hourly())
     # print(retrieve_top_losers_hourly())
     # print(retrieve_top_losers_daily())
     # print(retrieve_top_gainers_daily())
-=======
->>>>>>> 188426be0e64c86c0912fc446ed59e3822392f83:backend/scripts/DataHandler.py
     pass
