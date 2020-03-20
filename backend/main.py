@@ -85,7 +85,7 @@ background_thread = Thread(target=sc.schedule_tasks)
 background_thread.start()
 
 @app.get("/api/crypto/{ticker}")
-async def getCryptoInfo(background_tasks: BackgroundTasks, ticker: str = Path(..., title="The Ticker of the Crypto to get")):
+async def getCryptoInfo(ticker: str = Path(..., title="The Ticker of the Crypto to get")):
     ticker = escape(ticker)
     if(len(ticker)>5 and len(ticker) < 10 and ticker in cryptoList):
         for tether in dataHandler.tethers:
@@ -144,7 +144,7 @@ def on_after_forgot_password(user: User, token: str, request: Request):
 #     return {"message": "Hello World"}
 
 @app.get("/api/gainers/")
-async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
+async def getTopGainers(time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     # initiate_background(background_tasks)
@@ -164,7 +164,7 @@ async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
     return {"gainers": res}
 
 @app.get("/api/losers/")
-async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
+async def getTopLosers(time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     # initiate_background(background_tasks)
