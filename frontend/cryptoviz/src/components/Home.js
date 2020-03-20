@@ -1,6 +1,7 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 // import { trackPromise } from 'react-promise-tracker';
 // import { usePromiseTracker } from "react-promise-tracker";
 // import Loader from 'react-loader-spinner';
@@ -23,6 +24,7 @@ import { Link } from "react-router-dom";
 // }
 
 function Home() {
+  const history = useHistory();
   const [losersTimeInterval, setLosersTimeInterval] = useState("1");
   const [gainersTimeInterval, setGainersTimeInterval] = useState("1");
   const [losers, setLosers] = useState({});
@@ -131,6 +133,8 @@ function Home() {
 
   return (
     <div>
+      <button style={{ marginTop: "2em", marginLeft: "2em" }} type="button" class="btn btn-outline-primary"
+      onClick = {() => {history.push('/login');}} >Login / Sign Up</button>
       <div style={{ textAlign: "center", marginTop: "4em" }}>
         <h1>Top 10 Gainers ({timeMapping[gainersTimeInterval]})</h1>
         <div style={{ marginTop: "2em" }}>
