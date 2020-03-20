@@ -12,16 +12,22 @@ import {
 } from "recharts";
 
 // var conn = new WebSocket(`ws://localhost:8000/api/crypto/`);
-
+const d = new Date();
 function CryptoLanding({ match }) {
+  var currDate = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  var currTime = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
   const [ticker, setTicker] = useState({});
   const [timeInterval, setTimeInterval] = useState("1m");
   const [data, setData] = useState([]);
+  const [minDate, setminDate] = useState("2020-03-20 13:00:00");
+  const [maxDate, setmaxDate] = useState(currDate + " " + currTime);
+  const [minPrice, setminPrice] = useState(1000000);
+  const [maxPrice, setmaxPrice] = useState(0);
   let request = {
     action: "Update",
     ticker: match.params.ticker,
-    minDate: "2020-03-15 02:37:00",
-    maxDate: "2020-03-15 02:41:00",
+    minDate: minDate,
+    maxDate: maxDate,
     timeInterval: timeInterval
   };
 
@@ -40,6 +46,7 @@ function CryptoLanding({ match }) {
 
   useEffect(() => {
     fetchData();
+    console.log(request);
     // conn.onmessage = function(e) {
     //   setData(JSON.parse(e.data));
     //   console.log("erwerwerwer");
@@ -47,7 +54,7 @@ function CryptoLanding({ match }) {
     // if (conn.readyState === 1) {
     //   conn.send(JSON.stringify(request));
     // }
-  }, [timeInterval]);
+  }, [timeInterval, maxDate]);
 
   const fetchItem = async () => {
     const fetchCryptoName = await fetch(
@@ -66,7 +73,14 @@ function CryptoLanding({ match }) {
         return response.json();
       })
       .then(function(res) {
-        console.log("res is", JSON.parse(res.data));
+        var currData = JSON.parse(res.data);
+        for (var i = 0; i < currData.length; i++) {
+          if (parseFloat(currData[i]["close"]) < minPrice) {
+            setminPrice(parseFloat(currData[i]["close"]));
+          } else if (parseFloat(currData[i]["close"]) > maxPrice) {
+            setmaxPrice(parseFloat(currData[i]["close"]));
+          }
+        }
         setData(JSON.parse(res.data));
       });
   };
@@ -109,6 +123,8 @@ function CryptoLanding({ match }) {
                 <a
                   className="dropdown-item"
                   onClick={() => {
+                    setminDate("2020-03-20 13:00:00");
+                    setmaxDate(currDate + " " + currTime);
                     setTimeInterval("1m");
                   }}
                 >
@@ -117,6 +133,8 @@ function CryptoLanding({ match }) {
                 <a
                   className="dropdown-item"
                   onClick={() => {
+                    setminDate("2020-03-20 13:00:00");
+                    setmaxDate(currDate + " " + currTime);
                     setTimeInterval("5m");
                   }}
                 >
@@ -125,6 +143,8 @@ function CryptoLanding({ match }) {
                 <a
                   className="dropdown-item"
                   onClick={() => {
+                    setminDate("2020-03-20 00:00:00");
+                    setmaxDate(currDate + " " + currTime);
                     setTimeInterval("1h");
                   }}
                 >
@@ -133,6 +153,8 @@ function CryptoLanding({ match }) {
                 <a
                   className="dropdown-item"
                   onClick={() => {
+                    setminDate("2020-00-01");
+                    setmaxDate("2020-03-01");
                     setTimeInterval("1d");
                   }}
                 >
@@ -141,6 +163,8 @@ function CryptoLanding({ match }) {
                 <a
                   className="dropdown-item"
                   onClick={() => {
+                    setminDate("2020-00-00");
+                    setmaxDate("2020-03-01");
                     setTimeInterval("1w");
                   }}
                 >
@@ -149,6 +173,8 @@ function CryptoLanding({ match }) {
                 <a
                   className="dropdown-item"
                   onClick={() => {
+                    setminDate("2019-00-01");
+                    setmaxDate("2020-03-01");
                     setTimeInterval("1M");
                   }}
                 >
@@ -167,7 +193,6 @@ function CryptoLanding({ match }) {
             margin: "auto"
           }}
         >
-          {console.log("data down here is", data)}
           {data && (
             <LineChart
               width={1000}
@@ -176,7 +201,7 @@ function CryptoLanding({ match }) {
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <XAxis dataKey="timestamp" />
-              <YAxis dataKey="close" domain={[5170, 5250]} />
+              <YAxis dataKey="close" domain={[minPrice, maxPrice]} />
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip />
               <Legend />
@@ -184,28 +209,28 @@ function CryptoLanding({ match }) {
               <Line
                 type="monotone"
                 dataKey="ema"
-                stroke="#8884d8"
+                stroke="#db0202"
                 activeDot={{ r: 8 }}
               />
               <Line
                 type="monotone"
                 dataKey="ubb"
-                stroke="#8884d8"
+                stroke="#0f0f0f"
                 activeDot={{ r: 8 }}
               />
               <Line
                 type="monotone"
                 dataKey="lbb"
-                stroke="#8884d8"
+                stroke="#f06e6e"
                 activeDot={{ r: 8 }}
               />
               <Line
                 type="monotone"
                 dataKey="mbb"
-                stroke="#8884d8"
+                stroke="#41db30"
                 activeDot={{ r: 8 }}
               />
-              <Line type="monotone" dataKey="close" stroke="#82ca9d" />
+              <Line type="monotone" dataKey="close" stroke="#131196" />
             </LineChart>
           )}
         </div>

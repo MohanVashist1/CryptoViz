@@ -182,8 +182,8 @@ def initiate_background(background_tasks):
     if not background_tasks_running:
         background_tasks_running = True
         background_tasks.add_task(sc.schedule_tasks)
-        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
-        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
-        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
-        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
-        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)
+        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
+        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
+        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
+        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
+        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)
