@@ -141,14 +141,20 @@ async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     initiate_background(background_tasks)
-    collection = None
+    # collection = None
+    # if time == 1:
+    #     collection = db["top_gainers_hourly"]
+    # else:
+    #     collection = db["top_gainers_daily"]
+    # res = []
+    # for document in await collection.find({}, {'_id': 0}).to_list(length=100):
+    #     res.append(document)
+    res = None
     if time == 1:
-        collection = db["top_gainers_hourly"]
+        res = DataHandler.retrieve_top_gainers_hourly()
     else:
-        collection = db["top_gainers_daily"]
-    res = []
-    for document in await collection.find({}, {'_id': 0}).to_list(length=100):
-        res.append(document)
+        res = DataHandler.retrieve_top_gainers_daily()
+    # print({"gainers": res})
     return {"gainers": res}
 
 @app.get("/api/losers/")
@@ -156,14 +162,19 @@ async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     initiate_background(background_tasks)
-    collection = None
+    # collection = None
+    # if time == 1:
+    #     collection = db["top_losers_hourly"]
+    # else:
+    #     collection = db["top_losers_daily"]
+    # res = []
+    # for document in await collection.find({}, {'_id': 0}).to_list(length=100):
+    #     res.append(document)
+    res = None
     if time == 1:
-        collection = db["top_losers_hourly"]
+        res = DataHandler.retrieve_top_losers_hourly()
     else:
-        collection = db["top_losers_daily"]
-    res = []
-    for document in await collection.find({}, {'_id': 0}).to_list(length=100):
-        res.append(document)
+        res = DataHandler.retrieve_top_losers_daily()
     return {"losers": res}
 
 def initiate_background(background_tasks):
@@ -171,3 +182,8 @@ def initiate_background(background_tasks):
     if not background_tasks_running:
         background_tasks_running = True
         background_tasks.add_task(sc.schedule_tasks)
+        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
+        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
+        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
+        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
+        # background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)

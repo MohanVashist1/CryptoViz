@@ -1,7 +1,6 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-// import Td from './Td'
 
 function Home() {
   const [losersTimeInterval, setLosersTimeInterval] = useState("1");
@@ -48,11 +47,11 @@ function Home() {
     let rowClass = "table-primary";
     let cells = [];
     for (let i = 0; i < data.length; i++) {
-      cells.push(<td key={i + 1}>{data[i].rank}</td>);
-      cells.push(<td key={i + 2}>{data[i].symbol}</td>);
-      cells.push(<td key={i + 3}>${data[i].market_cap}</td>);
-      cells.push(<td key={i + 4}>${data[i].price}</td>);
-      cells.push(<td key={i + 5}>${data[i].volume}</td>);
+      cells.push(<td key={i + 1}><Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].rank}</Link></td>);
+      cells.push(<td key={i + 2}><Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].symbol}</Link></td>);
+      cells.push(<td key={i + 3}><Link to={`/crypto/${data[i].symbol}USDT/`}>${data[i].market_cap}</Link></td>);
+      cells.push(<td key={i + 4}><Link to={`/crypto/${data[i].symbol}USDT/`}>${data[i].price}</Link></td>);
+      cells.push(<td key={i + 5}><Link to={`/crypto/${data[i].symbol}USDT/`}>${data[i].volume}</Link></td>);
       rows.push(<tr key={i + 6} className={rowClass}>{cells}</tr>);
       rowClass = (rowClass == "table-primary") ? "table-secondary" : "table-primary";
       cells = [];

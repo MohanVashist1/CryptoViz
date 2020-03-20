@@ -154,7 +154,7 @@ class _Scraper:
             tmp['volume'] = self.__normalize_val(info[4].find('a').text)
             top_10.append(tmp)
             count += 1
-        print(top_10)
+        # print(top_10)
         return top_10
 
     def __normalize_val(self, val):
@@ -172,59 +172,42 @@ class _Scraper:
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
     result = sc.scrape('https://bitscreener.com/screener/?o=per_1h&desc=true&f=e_Binance')
-    client = pymongo.MongoClient(DATABASE_URL)
-    db = client["cryptoviz"]
-    gainers = db['top_gainers_hourly']
-    gainers.delete_many({})
-    gainers.insert_many(result)
-    # for res in result:
-    #     if gainers.find_one({'rank':res['rank']}):
-    #         gainers.update_one({'rank': res['rank']}, res)
-    #     else:
-    #         gainers.insert(res)
-
+    # client = pymongo.MongoClient(DATABASE_URL)
+    # db = client["cryptoviz"]
+    # gainers = db['top_gainers_hourly']
+    # gainers.delete_many({})
+    # gainers.insert_many(result)
+    return result
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
     result = sc.scrape('https://bitscreener.com/screener/?o=per_1h&desc=false&f=e_Binance')
-    client = pymongo.MongoClient(DATABASE_URL)
-    db = client["cryptoviz"]
-    losers = db['top_losers_hourly']
-    losers.delete_many({})
-    losers.insert_many(result)
-    # for res in result:
-    #     if losers.find_one({'rank':res['rank']}):
-    #         losers.update_one({'rank': res['rank']}, res)
-    #     else:
-    #         losers.insert(res)
+    # client = pymongo.MongoClient(DATABASE_URL)
+    # db = client["cryptoviz"]
+    # losers = db['top_losers_hourly']
+    # losers.delete_many({})
+    # losers.insert_many(result)
+    return result
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
     result = sc.scrape('https://bitscreener.com/screener/?o=per_24h&desc=true&f=e_Binance')
-    client = pymongo.MongoClient(DATABASE_URL)
-    db = client["cryptoviz"]
-    gainers = db['top_gainers_daily']
-    gainers.delete_many({})
-    gainers.insert_many(result)
-    # for res in result:
-    #     if gainers.find_one({'rank':res['rank']}):
-    #         gainers.update_one({'rank': res['rank']}, res)
-    #     else:
-    #         gainers.insert(res)
+    # client = pymongo.MongoClient(DATABASE_URL)
+    # db = client["cryptoviz"]
+    # gainers = db['top_gainers_daily']
+    # gainers.delete_many({})
+    # gainers.insert_many(result)
+    return result
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
     result = sc.scrape('https://bitscreener.com/screener/?o=per_24h&desc=false&f=e_Binance')
-    client = pymongo.MongoClient(DATABASE_URL)
-    db = client["cryptoviz"]
-    losers = db['top_losers_daily']
-    losers.delete_many({})
-    losers.insert_many(result)
-    # for res in result:
-    #     if losers.find_one({'rank':res['rank']}):
-    #         losers.update_one({'rank': res['rank']}, res)
-    #     else:
-    #         losers.insert(res)
+    # client = pymongo.MongoClient(DATABASE_URL)
+    # db = client["cryptoviz"]
+    # losers = db['top_losers_daily']
+    # losers.delete_many({})
+    # losers.insert_many(result)
+    return result
 
 if __name__ == "__main__":
     BinanceWrapper().retrieveCryptoData("BTCUSDT","1m")
