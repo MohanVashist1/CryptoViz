@@ -7,6 +7,7 @@ function Home() {
   const [gainersTimeInterval, setGainersTimeInterval] = useState("1");
   const [losers, setLosers] = useState({});
   const [gainers, setGainers] = useState({});
+  const [errorMessage, setErrorMessage] = useState({});
 
   useInterval(() => {
     fetchGainers();
@@ -22,19 +23,37 @@ function Home() {
   }, [losersTimeInterval]);
 
   const fetchLosers = async () => {
-    const func = await fetch(
+    fetch(
       `http://127.0.0.1:8000/api/losers/?time=${losersTimeInterval}`
-    );
-    const losers = await func.json();
-    setLosers(losers.losers);
+    ).then(async response => {
+      const data = await response.json();
+      if (!response.ok) {
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+      }
+      setLosers(data.losers);
+    })
+    .catch(error => {
+      setErrorMessage(error);
+      console.error('There was an error!', error);
+    });
   };
 
   const fetchGainers = async () => {
-    const func = await fetch(
+    fetch(
       `http://127.0.0.1:8000/api/gainers/?time=${gainersTimeInterval}`
-    );
-    const gainers = await func.json();
-    setGainers(gainers.gainers);
+    ).then(async response => {
+      const data = await response.json();
+      if (!response.ok) {
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+      }
+      setGainers(data.gainers);
+    })
+    .catch(error => {
+      setErrorMessage(error);
+      console.error('There was an error!', error);
+    });
   };
 
   const timeMapping = {
@@ -54,7 +73,7 @@ function Home() {
       cells.push(<td key={count + 3}><Link to={`/crypto/${data[i].symbol}USDT/`}>${data[i].price}</Link></td>);
       cells.push(<td key={count + 4}><Link to={`/crypto/${data[i].symbol}USDT/`}>${data[i].volume}</Link></td>);
       rows.push(<tr key={count + 5} className={rowClass}>{cells}</tr>);
-      rowClass = (rowClass == "table-primary") ? "table-secondary" : "table-primary";
+      rowClass = (rowClass === "table-primary") ? "table-secondary" : "table-primary";
       count += 6
       cells = [];
     }

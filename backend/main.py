@@ -8,7 +8,7 @@ from pydantic import BaseModel
 import motor.motor_asyncio
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers, models
-from fastapi_users.authentication import JWTAuthentication
+from fastapi_users.authentication import JWTAuthentication, CookieAuthentication
 from fastapi_users.db import MongoDBUserDatabase
 from starlette.requests import Request
 from fastapi import BackgroundTasks
@@ -54,12 +54,13 @@ user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
     JWTAuthentication(secret=SECRET, lifetime_seconds=3600),
+    CookieAuthentication(secret=SECRET, lifetime_seconds=3600, cookie_secure=True, cookie_httponly=True)
 ]
 
 fastapi_users = FastAPIUsers(
     user_db, auth_backends, User, UserCreate, UserUpdate, UserDB, SECRET,
 )
-app.include_router(fastapi_users.router, prefix="/users", tags=["users"])
+app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
 origins = ['*']
 
@@ -154,7 +155,6 @@ async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
         res = DataHandler.retrieve_top_gainers_hourly()
     else:
         res = DataHandler.retrieve_top_gainers_daily()
-    # print({"gainers": res})
     return {"gainers": res}
 
 @app.get("/api/losers/")
