@@ -135,9 +135,6 @@ class BinanceWrapper:
         if not filename.exists(): return None
         return pd.read_csv(filename)
 
-        
-
-
 class _Scraper:
     def scrape(self, url):
         top_10 = []
@@ -149,25 +146,24 @@ class _Scraper:
             info = ele.find_all('td')
             tmp['rank'] = count
             tmp['symbol'] = info[1].find('div', class_='screener-symbol').text
-            tmp['market_cap'] = self.__normalize_val(info[2].find('a').text)
-            tmp['price'] = self.__normalize_val(info[3].find('a').text)
-            tmp['volume'] = self.__normalize_val(info[4].find('a').text)
+            tmp['market_cap'] = info[2].find('a').text
+            tmp['price'] = info[3].find('a').text
+            tmp['volume'] = info[4].find('a').text
             top_10.append(tmp)
             count += 1
-        # print(top_10)
         return top_10
 
-    def __normalize_val(self, val):
-        val = val[1:].replace(',','')
-        if val[-1] == "K":
-                val = float(val[:-1]) * 1000
-        elif val[-1] == "M":
-            val = float(val[:-1]) * 1000000
-        elif val[-1] == "B":
-            val = float(val[:-1]) * 1000000000
-        else:
-            val = float(val)
-        return val
+    # def __normalize_val(self, val):
+    #     val = val[1:].replace(',','')
+    #     if val[-1] == "K":
+    #             val = float(val[:-1]) * 1000
+    #     elif val[-1] == "M":
+    #         val = float(val[:-1]) * 1000000
+    #     elif val[-1] == "B":
+    #         val = float(val[:-1]) * 1000000000
+    #     else:
+    #         val = float(val)
+    #     return val
 
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
