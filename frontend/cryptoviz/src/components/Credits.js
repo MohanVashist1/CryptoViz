@@ -10,7 +10,7 @@ function Credits() {
         <li>
           <a href="https://github.com/mrigankmg" title="Mrigank Mehta">
             Mrigank Mehta
-          </a>{" "}
+          </a>
         </li>
         <li>
           <a href="https://github.com/MohanVashist1" title="Mohan Vashisht">
@@ -34,7 +34,7 @@ function Credits() {
       </ul>
     </div>
     <div className="container-fluid">
-    <h3>What would we do without:{" "}</h3>
+    <h3>What would we do without:</h3>
     <ul>
       <li>
         <a href="https://www.stackoverflow.com" title="Stack Overflow">
