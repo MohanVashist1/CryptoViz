@@ -18,6 +18,7 @@ from flask import escape
 from lib import DataHandler 
 from lib import CryptoData
 from lib import Scheduler as sc
+from threading import Thread
 
 
 background_tasks_running = False
@@ -45,6 +46,7 @@ class CryptoRequest(BaseModel):
 app = FastAPI()
 # app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
+dataHandler.retrieveCryptoData("BTCUSDT","1w")
 cryptoList = dataHandler.getcryptoSymbols()
 cryptoData = CryptoData.CryptoDataReader()
 client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URL)
@@ -79,14 +81,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+background_thread = Thread(target=sc.schedule_tasks)
+background_thread.start()
+
 @app.get("/api/crypto/{ticker}")
-async def getCryptoInfo(ticker: str = Path(..., title="The Ticker of the Crypto to get")):
+async def getCryptoInfo(background_tasks: BackgroundTasks, ticker: str = Path(..., title="The Ticker of the Crypto to get")):
     ticker = escape(ticker)
     if(len(ticker)>5 and len(ticker) < 10 and ticker in cryptoList):
         for tether in dataHandler.tethers:
             tickerTemp = ticker.replace(tether,"")
             fullName = cryptoData.extract_name(tickerTemp)
             if(fullName):
+                # initiate_background(background_tasks)
                 return {"fullName":fullName}
     raise HTTPException(status_code=404, detail="Ticker not found")
 
@@ -141,7 +147,7 @@ def on_after_forgot_password(user: User, token: str, request: Request):
 async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    initiate_background(background_tasks)
+    # initiate_background(background_tasks)
     # collection = None
     # if time == 1:
     #     collection = db["top_gainers_hourly"]
@@ -161,7 +167,7 @@ async def getTopGainers(background_tasks: BackgroundTasks, time: int = 1):
 async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    initiate_background(background_tasks)
+    # initiate_background(background_tasks)
     # collection = None
     # if time == 1:
     #     collection = db["top_losers_hourly"]
@@ -177,13 +183,14 @@ async def getTopLosers(background_tasks: BackgroundTasks, time: int = 1):
         res = DataHandler.retrieve_top_losers_daily()
     return {"losers": res}
 
-def initiate_background(background_tasks):
-    global background_tasks_running
-    if not background_tasks_running:
-        background_tasks_running = True
-        background_tasks.add_task(sc.schedule_tasks)
-        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
-        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
-        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
-        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
-        background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)
+# def initiate_background(background_tasks):
+#     global background_tasks_running
+#     if not background_tasks_running:
+#         background_tasks_running = True
+#         background_tasks.add_task(sc.schedule_tasks)
+#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
+#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
+#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
+#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
+#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1w", True)
+#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)

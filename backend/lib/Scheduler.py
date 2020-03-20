@@ -31,6 +31,11 @@ def crypto_data_day():
         bw.getAllCryptoDataBinance("1d", True)
         time.sleep(86400)
 
+def crypto_data_week():
+    while True:
+        bw.getAllCryptoDataBinance("1w", True)
+        time.sleep(3600)
+
 def crypto_data_month():
     while True:
         bw.getAllCryptoDataBinance("1M", True)
@@ -54,11 +59,13 @@ def run(f_name):
         crypto_data_hour()
     elif f_name == 'data_day':
         crypto_data_day()
+    elif f_name == 'data_week':
+        crypto_data_week()
     elif f_name == 'data_month':
         crypto_data_month()
 
 def schedule_tasks():
-    funcs = ['data_minute', 'data_five_minutes', 'data_hour', 'data_day', 'data_month']
+    funcs = ['data_minute', 'data_five_minutes', 'data_hour', 'data_day', 'data_week', 'data_month']
     with mp.Pool(processes=len(funcs), initializer=global_binance_wrapper) as pool:
         pool.map(run, funcs)
         pool.close()
