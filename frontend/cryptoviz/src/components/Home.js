@@ -1,6 +1,26 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { trackPromise } from 'react-promise-tracker';
+import { usePromiseTracker } from "react-promise-tracker";
+import Loader from 'react-loader-spinner';
+
+// const LoadingIndicator = props => {
+//   const { promiseInProgress } = usePromiseTracker();
+//   return (
+//       promiseInProgress && 
+//       <div
+//       style={{
+//         width: "100%",
+//         height: "100",
+//         display: "flex",
+//         justifyContent: "center",
+//         alignItems: "center"
+//       }}>
+//       <Loader type="ThreeDots" color="#2BAD60" height="100" width="100" />
+//     </div>
+//   );
+// }
 
 function Home() {
   const [losersTimeInterval, setLosersTimeInterval] = useState("1");
@@ -22,7 +42,8 @@ function Home() {
     fetchLosers();
   }, [losersTimeInterval]);
 
-  const fetchLosers = async () => {
+  const fetchLosers = () => {
+    // trackPromise(
     fetch(
       `http://127.0.0.1:8000/api/losers/?time=${losersTimeInterval}`
     ).then(async response => {
@@ -32,14 +53,15 @@ function Home() {
           return Promise.reject(error);
       }
       setLosers(data.losers);
-    })
-    .catch(error => {
+    }).catch(error => {
       setErrorMessage(error);
       console.error('There was an error!', error);
     });
+    // );
   };
 
-  const fetchGainers = async () => {
+  const fetchGainers = () => {
+    // trackPromise(
     fetch(
       `http://127.0.0.1:8000/api/gainers/?time=${gainersTimeInterval}`
     ).then(async response => {
@@ -49,11 +71,11 @@ function Home() {
           return Promise.reject(error);
       }
       setGainers(data.gainers);
-    })
-    .catch(error => {
+    }).catch(error => {
       setErrorMessage(error);
       console.error('There was an error!', error);
     });
+    // );
   };
 
   const timeMapping = {
@@ -69,9 +91,9 @@ function Home() {
     for (let i = 0; i < data.length; i++) {
       cells.push(<td key={count}><Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].rank}</Link></td>);
       cells.push(<td key={count + 1}><Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].symbol}</Link></td>);
-      cells.push(<td key={count + 2}><Link to={`/crypto/${data[i].symbol}USDT/`}>${data[i].market_cap}</Link></td>);
-      cells.push(<td key={count + 3}><Link to={`/crypto/${data[i].symbol}USDT/`}>${data[i].price}</Link></td>);
-      cells.push(<td key={count + 4}><Link to={`/crypto/${data[i].symbol}USDT/`}>${data[i].volume}</Link></td>);
+      cells.push(<td key={count + 2}><Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].market_cap}</Link></td>);
+      cells.push(<td key={count + 3}><Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].price}</Link></td>);
+      cells.push(<td key={count + 4}><Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].volume}</Link></td>);
       rows.push(<tr key={count + 5} className={rowClass}>{cells}</tr>);
       rowClass = (rowClass === "table-primary") ? "table-secondary" : "table-primary";
       count += 6
@@ -90,8 +112,14 @@ function Home() {
             <div className="btn-group" role="group">
               <button id="btnGroupDrop1" type="button" className="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
               <div className="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a className="dropdown-item" onClick={() => {setGainersTimeInterval("1");}}>{timeMapping["1"]}</a>
-                <a className="dropdown-item" onClick={() => {setGainersTimeInterval("24");}}>{timeMapping["24"]}</a>
+                <a className="dropdown-item" onClick={() => {
+                  // if (gainersTimeInterval == "24") setGainers([]);
+                  setGainersTimeInterval("1");
+                  }}>{timeMapping["1"]}</a>
+                <a className="dropdown-item" onClick={() => {
+                  // if (gainersTimeInterval == "1") setGainers([]);
+                  setGainersTimeInterval("24");
+                  }}>{timeMapping["24"]}</a>
               </div>
             </div>
           </div>
@@ -109,6 +137,7 @@ function Home() {
             </thead>
             <tbody>{createTable(gainers)}</tbody>
           </table> 
+          {/* <LoadingIndicator /> */}
         </div>
       </div>
       <div style={{ textAlign: "center"}}>
@@ -119,8 +148,14 @@ function Home() {
             <div className="btn-group" role="group">
               <button id="btnGroupDrop1" type="button" className="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
               <div className="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a className="dropdown-item" onClick={() => {setLosersTimeInterval("1");}}>{timeMapping["1"]}</a>
-                <a className="dropdown-item" onClick={() => {setLosersTimeInterval("24");}}>{timeMapping["24"]}</a>
+                <a className="dropdown-item" onClick={() => {
+                  // if (losersTimeInterval == "24") setLosers([]);
+                  setLosersTimeInterval("1");
+                  }}>{timeMapping["1"]}</a>
+                <a className="dropdown-item" onClick={() => {
+                  // if (losersTimeInterval == "1") setLosers([]);
+                  setLosersTimeInterval("24");
+                  }}>{timeMapping["24"]}</a>
               </div>
             </div>
           </div>
@@ -137,7 +172,8 @@ function Home() {
               </tr>
             </thead>
             <tbody>{createTable(losers)}</tbody>
-          </table> 
+          </table>
+          {/* <LoadingIndicator /> */}
         </div>
       </div>
     </div>

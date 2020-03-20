@@ -18,7 +18,7 @@ function App() {
           <Route path="/credits" component={Credits}></Route>
           <Route path="/crypto/:ticker" component={CryptoLanding}></Route>
         </Switch>
-        <Footer />
+        {/* <Footer /> */}
       </BrowserRouter>
     </div>
   );
