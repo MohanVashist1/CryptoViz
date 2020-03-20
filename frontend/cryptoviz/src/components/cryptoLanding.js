@@ -54,7 +54,7 @@ function CryptoLanding({ match }) {
     // if (conn.readyState === 1) {
     //   conn.send(JSON.stringify(request));
     // }
-  }, [timeInterval, maxDate]);
+  }, [timeInterval, minDate, maxDate]);
 
   const fetchItem = async () => {
     const fetchCryptoName = await fetch(
