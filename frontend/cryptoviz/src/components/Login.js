@@ -7,22 +7,28 @@ function Login() {
     const [password, setPassword] = useState('');
 
     const signUp = () => {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 'email': email, 'password': password, 'watchlist': []})
-        };
-        fetchCommon('http://127.0.0.1:8000/api/users/register', requestOptions);
+        let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!re.test(email) ) {
+            setErrorMessage("INVALID_EMAIL");
+        }
+        else {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 'email': email, 'password': password, 'watchlist': []})
+            };
+            fetchCommon('http://127.0.0.1:8000/api/users/register', requestOptions);
+        }
     };
 
     const login = () => {
-        let formData = new FormData();
-        formData.append("username", email);
-        formData.append("password", password);
         const requestOptions = {
             method: 'POST',
-            headers: { 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: JSON.stringify("username="+email+"&password="+password)
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: "username=" + email + "&password=" + password
         };
         fetchCommon('http://127.0.0.1:8000/api/users/login/cookie', requestOptions);
     };
@@ -35,7 +41,7 @@ function Login() {
                 const error = (data && data.detail) ? (data && data.detail) : response.status;
                 return Promise.reject(error);
             }
-            console.log("done!")
+            setErrorMessage('');
           })
           .catch(error => {
             setErrorMessage(error);
@@ -45,18 +51,18 @@ function Login() {
 
     return (
         <div>
-            {errorMessage && <div style={{margin: "auto", textAlign: "center"}} class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <div class="mr-auto" style={{color: "red"}}>Error</div>
-                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={() => {setErrorMessage('')}}>
+            {errorMessage && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div className="toast-header">
+                    <div className="mr-auto">Error</div>
+                    <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={() => {setErrorMessage('')}}>
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="toast-body">
+                <div className="toast-body">
                     {errorMessage}
                 </div>
             </div>}
-            <form style={{ width: "50%", margin: "auto", marginTop: "15vh", textAlign: "center" }}>
+            <form style={{ width: "45%", margin: "auto", marginTop: "15vh", textAlign: "center" }}>
                 <fieldset>
                     <legend><h2>Login / Sign Up</h2></legend>
                     <div className="form-group">
