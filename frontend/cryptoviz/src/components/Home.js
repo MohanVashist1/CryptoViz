@@ -27,9 +27,9 @@ function Home() {
   const history = useHistory();
   const [losersTimeInterval, setLosersTimeInterval] = useState("1");
   const [gainersTimeInterval, setGainersTimeInterval] = useState("1");
-  const [losers, setLosers] = useState({});
-  const [gainers, setGainers] = useState({});
-  const [errorMessage, setErrorMessage] = useState({});
+  const [losers, setLosers] = useState([]);
+  const [gainers, setGainers] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useInterval(() => {
     fetchGainers();
@@ -50,7 +50,7 @@ function Home() {
       .then(async response => {
         const data = await response.json();
         if (!response.ok) {
-          const error = (data && data.message) || response.status;
+          const error = (data && data.detail) ? (data && data.detail) : response.status;
           return Promise.reject(error);
         }
         setLosers(data.losers);
@@ -68,7 +68,7 @@ function Home() {
       .then(async response => {
         const data = await response.json();
         if (!response.ok) {
-          const error = (data && data.message) || response.status;
+          const error = (data && data.detail) ? (data && data.detail) : response.status;
           return Promise.reject(error);
         }
         setGainers(data.gainers);
