@@ -56,7 +56,7 @@ user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
     JWTAuthentication(secret=SECRET, lifetime_seconds=3600),
-    CookieAuthentication(secret=SECRET, lifetime_seconds=3600, cookie_secure=True, cookie_httponly=True)
+    CookieAuthentication(secret=SECRET, lifetime_seconds=3600, cookie_name="user_auth", cookie_secure=False, cookie_httponly=False)
 ]
 
 fastapi_users = FastAPIUsers(
@@ -80,6 +80,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+#********************************************************************************************
+ #    Title: Setting SameSite flag manually when using response.set_cookie()
+ #    Author: zero-shubham
+ #    Date: March 8, 2020
+ #    Availability: https://github.com/tiangolo/fastapi/issues/1099
+ #*******************************************************************************************/
+@app.middleware("http")
+async def cookie_set(request: Request, call_next):
+    response = await call_next(request)
+    # just adding samesite flag to set-cookie headers
+    for idx, header in enumerate(response.raw_headers):
+        if header[0].decode("utf-8") == "set-cookie":
+            cookie = header[1].decode("utf-8")
+            if "SameSite=None" not in cookie:
+                cookie = cookie + "; SameSite=None"
+                response.raw_headers[idx] = (header[0], cookie.encode())
+    return response
 
 background_thread = Thread(target=sc.schedule_tasks)
 background_thread.start()
