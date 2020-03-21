@@ -45,16 +45,9 @@ function Login() {
 
     return (
         <div>
-            {errorMessage && <div style={{margin: "auto", textAlign: "center"}} class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <strong class="mr-auto">Error</strong>
-                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={() => {setErrorMessage('')}}>
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="toast-body">
-                    {errorMessage}
-                </div>
+            {errorMessage && <div class="alert alert-dismissible alert-danger">
+                <button type="button" class="close" data-dismiss="alert" onClick={() => {setErrorMessage('');}}>&times;</button>
+                <strong>Error: </strong>{errorMessage}
             </div>}
             <form style={{ width: "50%", margin: "auto", marginTop: "15vh", textAlign: "center" }}>
                 <fieldset>
