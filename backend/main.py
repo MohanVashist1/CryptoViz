@@ -1,6 +1,6 @@
 import time
 import pymongo
-import itertools
+import pydantic
 
 from fastapi import FastAPI, HTTPException, Path, Query, WebSocket
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
@@ -20,7 +20,7 @@ from lib import DataHandler
 from lib import CryptoData
 from lib import Scheduler as sc
 from threading import Thread
-
+from pydantic import EmailStr
 
 background_tasks_running = False
 DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
@@ -30,13 +30,15 @@ class User(models.BaseUser):
     watchlist: Optional[list] = []
 
 class UserCreate(User, models.BaseUserCreate):
-    watchlist: list
+    email: EmailStr
+    watchlist: Optional[list] = []
 
 class UserUpdate(User, models.BaseUserUpdate):
     watchlist: Optional[list]
 
 class UserDB(User, models.BaseUserDB):
-    watchlist: list
+    pass
+    # watchlist: list
 
 class CryptoRequest(BaseModel):
     ticker: str
@@ -57,7 +59,7 @@ user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
     JWTAuthentication(secret=SECRET, lifetime_seconds=3600),
-    CookieAuthentication(secret=SECRET, lifetime_seconds=3600, cookie_name="user_auth", cookie_secure=True, cookie_httponly=True)
+    CookieAuthentication(secret=SECRET, lifetime_seconds=3600, cookie_name="user_auth", cookie_secure=False, cookie_httponly=False)
 ]
 
 fastapi_users = FastAPIUsers(
@@ -88,16 +90,16 @@ app.add_middleware(
  #    Date: March 8, 2020
  #    Availability: https://github.com/tiangolo/fastapi/issues/1099
  #*******************************************************************************************/
-@app.middleware("http")
-async def cookie_set(request: Request, call_next):
-    response = await call_next(request)
-    for idx, header in enumerate(response.raw_headers):
-        if header[0].decode("utf-8") == "set-cookie":
-            cookie = header[1].decode("utf-8")
-            if "SameSite=None" not in cookie:
-                cookie = cookie + "; SameSite=Strict"
-                response.raw_headers[idx] = (header[0], cookie.encode())
-    return response
+# @app.middleware("http")
+# async def cookie_set(request: Request, call_next):
+#     response = await call_next(request)
+#     for idx, header in enumerate(response.raw_headers):
+#         if header[0].decode("utf-8") == "set-cookie":
+#             cookie = header[1].decode("utf-8")
+#             if "SameSite=Strict" not in cookie:
+#                 cookie = cookie + "; SameSite=Strict"
+#                 response.raw_headers[idx] = (header[0], cookie.encode())
+#     return response
 
 # @app.middleware("http")
 # async def set_cors_header(request: Request, call_next):
@@ -106,7 +108,7 @@ async def cookie_set(request: Request, call_next):
 #     return response
 
 @app.get("/api/crypto/{ticker}")
-async def getCryptoInfo(ticker: str = Path(..., title="The Ticker of the Crypto to get")):
+async def get_crypto_info(ticker: str = Path(..., title="The Ticker of the Crypto to get")):
     ticker = escape(ticker)
     if(len(ticker)>5 and len(ticker) < 10 and ticker in cryptoList):
         for tether in dataHandler.tethers:
@@ -143,7 +145,7 @@ async def getCryptoInfo(ticker: str = Path(..., title="The Ticker of the Crypto 
 #                 await websocket.close(code=1000)
 
 @app.post("/api/crypto/{ticker}")
-async def postCryptoData(request: CryptoRequest):
+async def post_crypto_data(request: CryptoRequest):
 #TODO: Security
     cryptoData = dataHandler.retrieveCryptoData(escape(request.ticker),escape(request.timeInterval))
     cryptoData = cryptoData[(cryptoData['timestamp']>escape(request.minDate)) & (cryptoData['timestamp']<escape(request.maxDate))]
@@ -164,7 +166,7 @@ def on_after_forgot_password(user: User, token: str, request: Request):
 #     return {"message": "Hello World"}
 
 @app.get("/api/gainers/")
-async def getTopGainers(time: int = 1):
+async def get_top_gainers(time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     # collection = None
@@ -183,7 +185,7 @@ async def getTopGainers(time: int = 1):
     return {"gainers": res}
 
 @app.get("/api/losers/")
-async def getTopLosers(time: int = 1):
+async def get_top_losers(time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
     # collection = None

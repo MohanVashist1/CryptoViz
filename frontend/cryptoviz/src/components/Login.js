@@ -13,23 +13,24 @@ function Login() {
             setErrorMessage("INVALID_EMAIL");
         }
         else {
-            const requestOptions = {
+            let requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 'email': email, 'password': password, 'watchlist': []})
+                body: JSON.stringify({ 'email': email, 'password': password})
             };
             fetchCommon('http://localhost:8000/api/users/register', requestOptions);
         }
     };
 
     const login = () => {
-        const requestOptions = {
+        let requestOptions = {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: "username=" + email + "&password=" + password
+            body: "username=" + email + "&password=" + password,
+            credentials: 'include'
         };
         fetchCommon('http://localhost:8000/api/users/login/cookie', requestOptions);
     };
@@ -42,7 +43,7 @@ function Login() {
                 const error = (data && data.detail) ? data.detail : response.status;
                 return Promise.reject(error);
             }
-            // console.log(Cookies.get());
+            console.log(Cookies.get());
             // test();
             setErrorMessage('');
           })
@@ -62,7 +63,7 @@ function Login() {
     //       .then(async response => {
     //         const data = await response.json();
     //         if (!response.ok) {
-    //             const error = (data && data.detail) ? data.detail : response.status;
+    //             const error = data.detail ? data.detail : response.status;
     //             return Promise.reject(error);
     //         }
     //         console.log("DONE!");
