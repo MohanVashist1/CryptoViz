@@ -58,14 +58,14 @@ function CryptoLanding({ match }) {
 
   const fetchItem = async () => {
     const fetchCryptoName = await fetch(
-      `http://127.0.0.1:8000/api/crypto/${match.params.ticker}`
+      `http://localhost:8000/api/crypto/${match.params.ticker}`
     );
     const fullTickerName = await fetchCryptoName.json();
     setTicker(fullTickerName);
   };
 
   const fetchData = async () => {
-    await fetch(`http://127.0.0.1:8000/api/crypto/${match.params.ticker}`, {
+    await fetch(`http://localhost:8000/api/crypto/${match.params.ticker}`, {
       method: "post",
       body: JSON.stringify(request)
     })

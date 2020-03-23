@@ -46,11 +46,11 @@ function Home() {
 
   const fetchLosers = () => {
     // trackPromise(
-    fetch(`http://127.0.0.1:8000/api/losers/?time=${losersTimeInterval}`)
+    fetch(`http://localhost:8000/api/losers/?time=${losersTimeInterval}`)
       .then(async response => {
         const data = await response.json();
         if (!response.ok) {
-          const error = (data && data.detail) ? (data && data.detail) : response.status;
+          const error = (data && data.detail) ? data.detail : response.status;
           return Promise.reject(error);
         }
         setLosers(data.losers);
@@ -64,11 +64,11 @@ function Home() {
 
   const fetchGainers = () => {
     // trackPromise(
-    fetch(`http://127.0.0.1:8000/api/gainers/?time=${gainersTimeInterval}`)
+    fetch(`http://localhost:8000/api/gainers/?time=${gainersTimeInterval}`)
       .then(async response => {
         const data = await response.json();
         if (!response.ok) {
-          const error = (data && data.detail) ? (data && data.detail) : response.status;
+          const error = (data && data.detail) ? data.detail : response.status;
           return Promise.reject(error);
         }
         setGainers(data.gainers);

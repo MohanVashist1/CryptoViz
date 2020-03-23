@@ -1,5 +1,6 @@
 import time
 import pymongo
+import itertools
 
 from fastapi import FastAPI, HTTPException, Path, Query, WebSocket
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
@@ -56,7 +57,7 @@ user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
     JWTAuthentication(secret=SECRET, lifetime_seconds=3600),
-    CookieAuthentication(secret=SECRET, lifetime_seconds=3600, cookie_name="user_auth", cookie_secure=False, cookie_httponly=False)
+    CookieAuthentication(secret=SECRET, lifetime_seconds=3600, cookie_name="user_auth", cookie_secure=True, cookie_httponly=True)
 ]
 
 fastapi_users = FastAPIUsers(
@@ -64,14 +65,11 @@ fastapi_users = FastAPIUsers(
 )
 app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
-origins = ['*']
+# origins = ['*']
 
-# origins = [
-#     "http://localhost:3000/*",
-#     "ws://localhost:8000/api/crypto/",
-#     # "http://localhost:8000/api/losers/",
-#     # "http://localhost:8000/api/gainers/"
-# ]
+origins = [
+    "http://localhost:3000"
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -80,6 +78,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# background_thread = Thread(target=sc.schedule_tasks)
+# background_thread.start()
 
 #********************************************************************************************
  #    Title: Setting SameSite flag manually when using response.set_cookie()
@@ -90,17 +91,19 @@ app.add_middleware(
 @app.middleware("http")
 async def cookie_set(request: Request, call_next):
     response = await call_next(request)
-    # just adding samesite flag to set-cookie headers
     for idx, header in enumerate(response.raw_headers):
         if header[0].decode("utf-8") == "set-cookie":
             cookie = header[1].decode("utf-8")
             if "SameSite=None" not in cookie:
-                cookie = cookie + "; SameSite=None"
+                cookie = cookie + "; SameSite=Strict"
                 response.raw_headers[idx] = (header[0], cookie.encode())
     return response
 
-background_thread = Thread(target=sc.schedule_tasks)
-background_thread.start()
+# @app.middleware("http")
+# async def set_cors_header(request: Request, call_next):
+#     response = await call_next(request)
+#     response.raw_headers.append((b'access-control-allow-origin', b'http://localhost:3000'))
+#     return response
 
 @app.get("/api/crypto/{ticker}")
 async def getCryptoInfo(ticker: str = Path(..., title="The Ticker of the Crypto to get")):
@@ -110,8 +113,7 @@ async def getCryptoInfo(ticker: str = Path(..., title="The Ticker of the Crypto 
             tickerTemp = ticker.replace(tether,"")
             fullName = cryptoData.extract_name(tickerTemp)
             if(fullName):
-                # initiate_background(background_tasks)
-                return {"fullName":fullName}
+                return {"fullName": fullName}
     raise HTTPException(status_code=404, detail="Ticker not found")
 
 # @app.websocket("/api/crypto/")
@@ -150,11 +152,11 @@ async def postCryptoData(request: CryptoRequest):
 
 @fastapi_users.on_after_register()
 def on_after_register(user: User, request: Request):
-    print(f"User {user.id} has registered.")
+    print(f"User with email '{user.email}' has registered.")
 
 @fastapi_users.on_after_forgot_password()
 def on_after_forgot_password(user: User, token: str, request: Request):
-    print(f"User {user.id} has forgot their password. Reset token: {token}")
+    print(f"User with email '{user.email}' has forgot their password. Reset token: {token}")
 
 # @app.get("/")
 # async def root(background_tasks: BackgroundTasks):
@@ -165,7 +167,6 @@ def on_after_forgot_password(user: User, token: str, request: Request):
 async def getTopGainers(time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    # initiate_background(background_tasks)
     # collection = None
     # if time == 1:
     #     collection = db["top_gainers_hourly"]
@@ -185,7 +186,6 @@ async def getTopGainers(time: int = 1):
 async def getTopLosers(time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    # initiate_background(background_tasks)
     # collection = None
     # if time == 1:
     #     collection = db["top_losers_hourly"]

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Cookies from 'js-cookie';
 
 function Login() {
 
@@ -17,7 +18,7 @@ function Login() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 'email': email, 'password': password, 'watchlist': []})
             };
-            fetchCommon('http://127.0.0.1:8000/api/users/register', requestOptions);
+            fetchCommon('http://localhost:8000/api/users/register', requestOptions);
         }
     };
 
@@ -30,7 +31,7 @@ function Login() {
             },
             body: "username=" + email + "&password=" + password
         };
-        fetchCommon('http://127.0.0.1:8000/api/users/login/cookie', requestOptions);
+        fetchCommon('http://localhost:8000/api/users/login/cookie', requestOptions);
     };
 
     const fetchCommon = (url, requestOptions) => {
@@ -38,9 +39,11 @@ function Login() {
           .then(async response => {
             const data = await response.json();
             if (!response.ok) {
-                const error = (data && data.detail) ? (data && data.detail) : response.status;
+                const error = (data && data.detail) ? data.detail : response.status;
                 return Promise.reject(error);
             }
+            // console.log(Cookies.get());
+            // test();
             setErrorMessage('');
           })
           .catch(error => {
@@ -48,6 +51,28 @@ function Login() {
             console.error("There was an error!", error);
         });
     }
+
+    // const test = () => {
+    //     // const requestOptions = {
+    //     //     method: 'GET',
+    //     //     headers: { 'Accept': 'application/json' },
+    //     //     body: null
+    //     // };
+    //     fetch('http://127.0.0.1:8000/api/users/me')
+    //       .then(async response => {
+    //         const data = await response.json();
+    //         if (!response.ok) {
+    //             const error = (data && data.detail) ? data.detail : response.status;
+    //             return Promise.reject(error);
+    //         }
+    //         console.log("DONE!");
+    //         setErrorMessage('');
+    //       })
+    //       .catch(error => {
+    //         setErrorMessage(error);
+    //         console.error("There was an error!", error);
+    //     });
+    // }
 
     return (
         <div>
