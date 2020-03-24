@@ -132,8 +132,12 @@ function Home() {
 
   return (
     <div>
-      <button style={{ marginTop: "2em", marginLeft: "2em" }} type="button" class="btn btn-outline-primary"
-      onClick = {() => {history.push('/login');}} >Sign In / Sign Up</button>
+      <div style={{ marginTop: "2em", display: "flex", alignItems: "center", justifyContent: "space-around"}}>
+        <button type="button" class="btn btn-outline-primary"
+        onClick = {() => {history.push('/signin');}} >Sign In</button>
+        <button type="button" class="btn btn-outline-primary"
+        onClick = {() => {history.push('/signup');}} >Sign Up</button>
+      </div>
       <div style={{ textAlign: "center", marginTop: "4em" }}>
         <h1>Top 10 Gainers ({timeMapping[gainersTimeInterval]})</h1>
         <div style={{ marginTop: "2em" }}>
