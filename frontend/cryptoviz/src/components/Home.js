@@ -1,6 +1,7 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, Link } from 'react-router-dom';
+import { useInterval } from './Api';
 // import { trackPromise } from 'react-promise-tracker';
 // import { usePromiseTracker } from "react-promise-tracker";
 // import Loader from 'react-loader-spinner';
@@ -258,30 +259,6 @@ function Home() {
       </div>
     </div>
   );
-}
-
-/********************************************************************************************
- *    Title: Making setInterval Declarative with React Hooks
- *    Author: Abramov, Dan
- *    Date: February 4, 2019
- *    Availability: https://overreacted.io/making-setinterval-declarative-with-react-hooks/
- ********************************************************************************************/
-function useInterval(callback, delay) {
-  const savedCallback = useRef();
-
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-    if (delay !== null) {
-      let id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
 }
 
 export default Home;

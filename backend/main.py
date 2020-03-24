@@ -14,6 +14,7 @@ from fastapi_users.db import MongoDBUserDatabase
 from starlette.requests import Request
 from fastapi import BackgroundTasks
 from typing import Optional
+from fastapi.staticfiles import StaticFiles
 
 from flask import escape
 from lib import DataHandler 
@@ -47,6 +48,7 @@ class CryptoRequest(BaseModel):
     maxDate: str
 
 app = FastAPI()
+# app.mount("/static", StaticFiles(directory="./../frontend/cryptoviz/public"), name="static")
 # app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
 dataHandler.retrieveCryptoData("BTCUSDT","1w")
@@ -81,8 +83,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# background_thread = Thread(target=sc.schedule_tasks)
-# background_thread.start()
+background_thread = Thread(target=sc.schedule_tasks)
+background_thread.start()
 
 #********************************************************************************************
  #    Title: Setting SameSite flag manually when using response.set_cookie()

@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import "bootswatch/dist/lux/bootstrap.min.css";
+import React, { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { useHistory, Link } from 'react-router-dom';
+import { useInterval } from './Api';
 
 function SignUp() {
 
@@ -8,6 +10,20 @@ function SignUp() {
     const [errorMessage, setErrorMessage] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    useEffect(() => {
+        checkSignedIn();
+    }, []);
+
+    useInterval(() => {
+        checkSignedIn();
+    }, 2000);
+
+    const checkSignedIn = () => {
+        if(Cookies.get('user_auth')) {
+            history.push('/');
+        }
+    };
 
     const signUp = () => {
         let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -27,7 +43,6 @@ function SignUp() {
                         const error = (data && data.detail) ? data.detail : response.status;
                         return Promise.reject(error);
                     }
-                    // console.log(Cookies.get());
                     setErrorMessage('');
                     requestOptions = {
                         method: 'POST',
@@ -45,7 +60,6 @@ function SignUp() {
                                 const error = (data && data.detail) ? data.detail : response.status;
                                 return Promise.reject(error);
                             }
-                            // console.log(Cookies.get());
                             setErrorMessage('');
                             history.push('/');
                         })

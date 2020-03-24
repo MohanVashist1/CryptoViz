@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import "bootswatch/dist/lux/bootstrap.min.css";
+import React, { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { useHistory, Link } from 'react-router-dom';
+import { useInterval } from './Api';
 
 function SignIn() {
 
@@ -8,6 +10,20 @@ function SignIn() {
     const [errorMessage, setErrorMessage] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    useEffect(() => {
+        checkSignedIn();
+    }, []);
+
+    useInterval(() => {
+        checkSignedIn();
+    }, 2000);
+
+    const checkSignedIn = () => {
+        if(Cookies.get('user_auth')) {
+            history.push('/');
+        }
+    };
 
     const signIn = () => {
         let requestOptions = {
