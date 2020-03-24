@@ -4,7 +4,8 @@ import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 import Credits from "./Credits";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import Login from "./Login";
+import SignIn from "./SignIn";
+import SignUp from "./SignUp";
 import Home from "./Home";
 import CryptoLanding from "./cryptoLanding";
 import "../style/App.css";
@@ -17,7 +18,8 @@ function App() {
         <Switch>
           <Route path="/" exact component={Home}></Route>
           <Route path="/credits" component={Credits}></Route>
-          <Route path="/login" component={Login}></Route>
+          <Route path="/signin" component={SignIn}></Route>
+          <Route path="/signup" component={SignUp}></Route>
           <Route path="/crypto/:ticker" component={CryptoLanding}></Route>
         </Switch>
         {/* <Footer /> */}

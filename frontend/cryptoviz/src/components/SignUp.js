@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import Cookies from 'js-cookie';
+import { useHistory, Link } from 'react-router-dom';
 
-function Login() {
+function SignUp() {
 
+    const history = useHistory();
     const [errorMessage, setErrorMessage] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -18,55 +20,41 @@ function Login() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 'email': email, 'password': password})
             };
-            fetchCommon('http://localhost:8000/api/users/register', requestOptions);
+            fetch('http://localhost:8000/api/users/register', requestOptions)
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        const error = (data && data.detail) ? data.detail : response.status;
+                        return Promise.reject(error);
+                    }
+                    // console.log(Cookies.get());
+                    setErrorMessage('');
+                    // history.push('/');
+                })
+                .catch(error => {
+                    setErrorMessage(error);
+                    console.error("There was an error!", error);
+                });
         }
     };
 
-    const login = () => {
-        let requestOptions = {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: "username=" + email + "&password=" + password,
-            credentials: 'include'
-        };
-        fetchCommon('http://localhost:8000/api/users/login/cookie', requestOptions);
-    };
-
-    const fetchCommon = (url, requestOptions) => {
-        fetch(url, requestOptions)
-          .then(async response => {
-            const data = await response.json();
-            if (!response.ok) {
-                const error = (data && data.detail) ? data.detail : response.status;
-                return Promise.reject(error);
-            }
-            console.log(Cookies.get());
-            // test();
-            setErrorMessage('');
-          })
-          .catch(error => {
-            setErrorMessage(error);
-            console.error("There was an error!", error);
-        });
-    }
-
     // const test = () => {
-    //     // const requestOptions = {
-    //     //     method: 'GET',
-    //     //     headers: { 'Accept': 'application/json' },
-    //     //     body: null
-    //     // };
-    //     fetch('http://127.0.0.1:8000/api/users/me')
+    //     const requestOptions = {
+    //         method: 'POST',
+    //         headers: {
+    //             'Authorization': 'Bearer ' + Cookies.get('user_auth')
+    //         },
+    //         body: null,
+    //         credentials: 'include'
+    //     };
+    //     fetch('http://localhost:8000/api/users/logout/cookie', requestOptions)
     //       .then(async response => {
     //         const data = await response.json();
     //         if (!response.ok) {
-    //             const error = data.detail ? data.detail : response.status;
+    //             const error = (data && data.detail) ? data.detail : response.status;
     //             return Promise.reject(error);
     //         }
-    //         console.log("DONE!");
+    //         console.log(Cookies.get());
     //         setErrorMessage('');
     //       })
     //       .catch(error => {
@@ -88,19 +76,21 @@ function Login() {
                     {errorMessage}
                 </div>
             </div>}
-            <form style={{ width: "45%", margin: "auto", marginTop: "15vh", textAlign: "center" }}>
+            <form style={{ width: "45%", margin: "auto", marginTop: "15vh" }}>
                 <fieldset>
-                    <legend><h2>Login / Sign Up</h2></legend>
+                    <legend style={{textAlign: "center"}}><h2>Sign Up</h2></legend>
                     <div className="form-group">
                         <label htmlFor="InputEmail">Email address</label>
-                        <input type="email" className="form-control" id="InputEmail" aria-describedby="emailHelp" placeholder="Enter email" onChange={e => setEmail(e.target.value)}/>
+                        <input type="email" className="form-control" id="InputEmail" aria-describedby="emailHelp" placeholder="Enter email" onChange={e => setEmail(e.target.value)} required/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="InputPassword">Password</label>
-                        <input type="password" className="form-control" id="InputPassword" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
+                        <input type="password" className="form-control" id="InputPassword" placeholder="Password" onChange={e => setPassword(e.target.value)} required/>
+                    </div>
+                    <div className="form-group">
+                        <label>Already have an account? <Link to="/signin">Sign In</Link></label>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around"}}>
-                        <button type="button" className="btn btn-primary" onClick={login}>Log In</button>
                         <button type="button" className="btn btn-primary" onClick={signUp}>Sign Up</button>
                     </div>
                 </fieldset>
@@ -109,4 +99,4 @@ function Login() {
     )
 }
 
-export default Login
+export default SignUp

@@ -2,7 +2,7 @@ import time
 import pymongo
 import pydantic
 
-from fastapi import FastAPI, HTTPException, Path, Query, WebSocket
+from fastapi import FastAPI, HTTPException, Path, Query, WebSocket, Depends
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -90,16 +90,16 @@ app.add_middleware(
  #    Date: March 8, 2020
  #    Availability: https://github.com/tiangolo/fastapi/issues/1099
  #*******************************************************************************************/
-# @app.middleware("http")
-# async def cookie_set(request: Request, call_next):
-#     response = await call_next(request)
-#     for idx, header in enumerate(response.raw_headers):
-#         if header[0].decode("utf-8") == "set-cookie":
-#             cookie = header[1].decode("utf-8")
-#             if "SameSite=Strict" not in cookie:
-#                 cookie = cookie + "; SameSite=Strict"
-#                 response.raw_headers[idx] = (header[0], cookie.encode())
-#     return response
+@app.middleware("http")
+async def cookie_set(request: Request, call_next):
+    response = await call_next(request)
+    for idx, header in enumerate(response.raw_headers):
+        if header[0].decode("utf-8") == "set-cookie":
+            cookie = header[1].decode("utf-8")
+            if "SameSite=None" not in cookie:
+                cookie = cookie + "; SameSite=None"
+                response.raw_headers[idx] = (header[0], cookie.encode())
+    return response
 
 # @app.middleware("http")
 # async def set_cors_header(request: Request, call_next):
@@ -214,3 +214,7 @@ async def get_top_losers(time: int = 1):
 #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
 #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1w", True)
 #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)
+
+# @app.get('/protected-route')
+# def protected_route(user: User = Depends(fastapi_users.get_current_user)):
+#     return f'Hello, {user.email}'
