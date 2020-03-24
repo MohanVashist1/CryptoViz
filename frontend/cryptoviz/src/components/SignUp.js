@@ -29,7 +29,30 @@ function SignUp() {
                     }
                     // console.log(Cookies.get());
                     setErrorMessage('');
-                    // history.push('/');
+                    requestOptions = {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: "username=" + email + "&password=" + password,
+                        credentials: 'include'
+                    };
+                    fetch('http://localhost:8000/api/users/login/cookie', requestOptions)
+                        .then(async response => {
+                            const data = await response.json();
+                            if (!response.ok) {
+                                const error = (data && data.detail) ? data.detail : response.status;
+                                return Promise.reject(error);
+                            }
+                            // console.log(Cookies.get());
+                            setErrorMessage('');
+                            history.push('/');
+                        })
+                        .catch(error => {
+                            setErrorMessage(error);
+                            console.error("There was an error!", error);
+                        });
                 })
                 .catch(error => {
                     setErrorMessage(error);
