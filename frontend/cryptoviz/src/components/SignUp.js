@@ -9,6 +9,8 @@ function SignUp() {
     const history = useHistory();
     const [errorMessage, setErrorMessage] = useState('');
     const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
 
     useEffect(() => {
@@ -34,7 +36,7 @@ function SignUp() {
             let requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 'email': email, 'password': password})
+                body: JSON.stringify({ 'email': email, 'password': password, 'first_name': firstName, 'last_name': lastName})
             };
             fetch('http://localhost:8000/api/users/register', requestOptions)
                 .then(async response => {
@@ -75,6 +77,11 @@ function SignUp() {
         }
     };
 
+    const handleSubmit = e => {
+        e.preventDefault();
+        signUp();
+    }
+
     // const test = () => {
     //     const requestOptions = {
     //         method: 'POST',
@@ -113,12 +120,20 @@ function SignUp() {
                     {errorMessage}
                 </div>
             </div>}
-            <form style={{ width: "45%", margin: "auto", marginTop: "15vh" }}>
+            <form style={{ width: "45%", margin: "auto", marginTop: "5vh" }} onSubmit={handleSubmit}>
                 <fieldset>
                     <legend style={{textAlign: "center"}}><h2>Sign Up</h2></legend>
                     <div className="form-group">
-                        <label htmlFor="InputEmail">Email address</label>
-                        <input type="email" className="form-control" id="InputEmail" aria-describedby="emailHelp" placeholder="Enter email" onChange={e => setEmail(e.target.value)} required/>
+                        <label htmlFor="InputFirstName">First Name</label>
+                        <input type="text" className="form-control" id="InputFirstName" placeholder="Enter first name" onChange={e => setFirstName(e.target.value)} required/>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="InputLastName">Last Name</label>
+                        <input type="text" className="form-control" id="InputLastName" placeholder="Enter last name" onChange={e => setLastName(e.target.value)} required/>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="InputEmail">Email Address</label>
+                        <input type="email" className="form-control" id="InputEmail" placeholder="Enter email" onChange={e => setEmail(e.target.value)} required/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="InputPassword">Password</label>
@@ -128,7 +143,7 @@ function SignUp() {
                         <label>Already have an account? <Link to="/signin">Sign In</Link></label>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around"}}>
-                        <button type="button" className="btn btn-primary" onClick={signUp}>Sign Up</button>
+                        <button type="submit" className="btn btn-primary">Sign Up</button>
                     </div>
                 </fieldset>
             </form>

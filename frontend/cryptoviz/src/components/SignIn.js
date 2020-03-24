@@ -42,7 +42,6 @@ function SignIn() {
                 const error = (data && data.detail) ? data.detail : response.status;
                 return Promise.reject(error);
             }
-            // console.log(Cookies.get());
             setErrorMessage('');
             history.push('/');
           })
@@ -51,6 +50,11 @@ function SignIn() {
             console.error("There was an error!", error);
         });
     };
+
+    const handleSubmit = e => {
+        e.preventDefault();
+        signIn();
+    }
 
     return (
         <div>
@@ -65,7 +69,7 @@ function SignIn() {
                     {errorMessage}
                 </div>
             </div>}
-            <form style={{ width: "45%", margin: "auto", marginTop: "15vh" }}>
+            <form style={{ width: "45%", margin: "auto", marginTop: "15vh" }} onSubmit={handleSubmit}>
                 <fieldset>
                     <legend style={{textAlign: "center"}}><h2>Sign In</h2></legend>
                     <div className="form-group">
@@ -80,7 +84,7 @@ function SignIn() {
                         <label>Don't have an account? <Link to="/signup">Sign Up</Link></label>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around"}}>
-                        <button type="button" className="btn btn-primary" onClick={signIn}>Sign In</button>
+                        <button type="submit" className="btn btn-primary">Sign In</button>
                     </div>
                 </fieldset>
             </form>
