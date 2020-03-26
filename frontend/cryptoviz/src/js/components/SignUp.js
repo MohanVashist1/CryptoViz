@@ -27,53 +27,45 @@ function SignUp() {
         }
     };
 
-    const signUp = () => {
+    const signUp = async () => {
         let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!re.test(email) ) {
             setErrorMessage("INVALID_EMAIL");
-        }
-        else {
+        } else {
             let requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 'email': email, 'password': password, 'first_name': firstName, 'last_name': lastName})
             };
-            fetch('http://localhost:8000/api/users/register', requestOptions)
-                .then(async response => {
-                    const data = await response.json();
-                    if (!response.ok) {
-                        const error = (data && data.detail) ? data.detail : response.status;
-                        return Promise.reject(error);
-                    }
-                    setErrorMessage('');
-                    requestOptions = {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: "username=" + email + "&password=" + password,
-                        credentials: 'include'
-                    };
-                    fetch('http://localhost:8000/api/users/login/cookie', requestOptions)
-                        .then(async response => {
-                            const data = await response.json();
-                            if (!response.ok) {
-                                const error = (data && data.detail) ? data.detail : response.status;
-                                return Promise.reject(error);
-                            }
-                            setErrorMessage('');
-                            history.push('/');
-                        })
-                        .catch(error => {
-                            setErrorMessage(error);
-                            console.error("There was an error!", error);
-                        });
-                })
-                .catch(error => {
-                    setErrorMessage(error);
-                    console.error("There was an error!", error);
-                });
+            try {
+                let response = await fetch('http://localhost:8000/api/users/register', requestOptions);
+                let data = await response.json();
+                if (!response.ok) {
+                    const error = (data && data.detail) ? data.detail : response.status;
+                    return Promise.reject(error);
+                }
+                // setErrorMessage('');
+                requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: "username=" + email + "&password=" + password,
+                    credentials: 'include'
+                };
+                response = await fetch('http://localhost:8000/api/users/login/cookie', requestOptions);
+                data = await response.json();
+                if (!response.ok) {
+                    const error = (data && data.detail) ? data.detail : response.status;
+                    return Promise.reject(error);
+                }
+                setErrorMessage('');
+                history.push('/');
+            } catch(error) {
+                setErrorMessage(error);
+                console.error("There was an error!", error);
+            }
         }
     };
 

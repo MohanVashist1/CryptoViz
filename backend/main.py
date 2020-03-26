@@ -29,13 +29,19 @@ SECRET = "|X|Th!5iS@S3CR3t|X|"
 
 class User(models.BaseUser):
     watchlist: Optional[list] = []
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
 
 class UserCreate(User, models.BaseUserCreate):
     email: EmailStr
+    first_name: str
+    last_name: str
     watchlist: Optional[list] = []
 
 class UserUpdate(User, models.BaseUserUpdate):
     watchlist: Optional[list]
+    first_name: Optional[str]
+    last_name: Optional[str]
 
 class UserDB(User, models.BaseUserDB):
     pass
@@ -98,8 +104,8 @@ async def cookie_set(request: Request, call_next):
     for idx, header in enumerate(response.raw_headers):
         if header[0].decode("utf-8") == "set-cookie":
             cookie = header[1].decode("utf-8")
-            if "SameSite=None" not in cookie:
-                cookie = cookie + "; SameSite=None"
+            if "SameSite=Strict" not in cookie:
+                cookie = cookie + "; SameSite=Strict"
                 response.raw_headers[idx] = (header[0], cookie.encode())
     return response
 

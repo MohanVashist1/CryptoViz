@@ -25,7 +25,7 @@ function SignIn() {
         }
     };
 
-    const signIn = () => {
+    const signIn = async () => {
         let requestOptions = {
             method: 'POST',
             headers: {
@@ -35,20 +35,19 @@ function SignIn() {
             body: "username=" + email + "&password=" + password,
             credentials: 'include'
         };
-        fetch('http://localhost:8000/api/users/login/cookie', requestOptions)
-          .then(async response => {
-            const data = await response.json();
+        try {
+            let response = await fetch('http://localhost:8000/api/users/login/cookie', requestOptions)
+            let data = await response.json();
             if (!response.ok) {
                 const error = (data && data.detail) ? data.detail : response.status;
                 return Promise.reject(error);
             }
             setErrorMessage('');
             history.push('/');
-          })
-          .catch(error => {
+        } catch(error) {
             setErrorMessage(error);
             console.error("There was an error!", error);
-        });
+        }
     };
 
     const handleSubmit = e => {

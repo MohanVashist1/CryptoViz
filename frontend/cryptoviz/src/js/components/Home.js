@@ -18,7 +18,7 @@ function Home() {
     getCurrUser();
   }, 1000);
 
-  const getCurrUser = () => {
+  const getCurrUser = async () => {
     if (Cookies.get('user_auth')) {
       const requestOptions = {
         method: 'GET',
@@ -27,25 +27,24 @@ function Home() {
         },
         body: null
       };
-      fetch('http://localhost:8000/api/users/me', requestOptions)
-        .then(async response => {
-          const data = await response.json();
-          if (!response.ok) {
-            const error = (data && data.detail) ? data.detail : response.status;
-            return Promise.reject(error);
-          }
-          setCurrUser(data.first_name);
-        })
-        .catch(error => {
-          setCurrUser("");
-          console.error("There was an error!", error);
-        });
+      try {
+        let response = await fetch('http://localhost:8000/api/users/me', requestOptions);
+        let data = await response.json();
+        if (!response.ok) {
+          const error = (data && data.detail) ? data.detail : response.status;
+          return Promise.reject(error);
+        }
+        setCurrUser(data.first_name);
+      } catch(error) {
+        setCurrUser("");
+        console.error("There was an error!", error);
+      }
     } else {
       setCurrUser("");
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -54,18 +53,17 @@ function Home() {
       body: null,
       credentials: 'include'
     };
-    fetch('http://localhost:8000/api/users/logout/cookie', requestOptions)
-      .then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-          const error = (data && data.detail) ? data.detail : response.status;
-          return Promise.reject(error);
-        }
-        setCurrUser("");
-      })
-      .catch(error => {
-        console.error("There was an error!", error);
-      });
+    try {
+      let response = await fetch('http://localhost:8000/api/users/logout/cookie', requestOptions);
+      let data = await response.json();
+      if (!response.ok) {
+        const error = (data && data.detail) ? data.detail : response.status;
+        return Promise.reject(error);
+      }
+      setCurrUser('');
+    } catch(error) {
+      console.error("There was an error!", error);
+    }
   };
 
   return (
