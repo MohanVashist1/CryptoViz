@@ -19,7 +19,7 @@ function SignUp() {
 
     useInterval(() => {
         checkSignedIn();
-    }, 2000);
+    }, 1000);
 
     const checkSignedIn = () => {
         if(Cookies.get('user_auth')) {

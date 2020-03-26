@@ -43,7 +43,7 @@ function Home() {
 
   useInterval(() => {
     getCurrUser();
-  }, 2000);
+  }, 1000);
 
   useEffect(() => {
     getGainers();
@@ -278,14 +278,14 @@ function Home() {
             </button>
             <div className="btn-group" role="group">
               <button
-                id="btnGroupDrop1"
+                id="btnGroupDrop2"
                 type="button"
                 className="btn btn-primary dropdown-toggle"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
               ></button>
-              <div className="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <div className="dropdown-menu" aria-labelledby="btnGroupDrop2">
                 <a
                   className="dropdown-item"
                   onClick={() => {
