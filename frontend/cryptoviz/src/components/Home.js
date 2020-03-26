@@ -193,19 +193,19 @@ function Home() {
       <div style={{ textAlign: "center", marginTop: "4em" }}>
         <div style={{ display: "flex", margin: "0", alignItems: "center", justifyContent: "space-around" }}>
           {!currUser &&
-            <button type="button" class="btn btn-outline-primary" onClick = {() => {history.push('/signin');}}>Sign In</button>}
+            <button type="button" className="btn btn-outline-primary" onClick = {() => {history.push('/signin');}}>Sign In</button>}
           {currUser &&
             <div style={{visibility: "hidden"}}>
               <h6>Hi, {currUser}!</h6>
-              <button type="button" class="btn btn-outline-primary">Logout</button>
+              <button type="button" className="btn btn-outline-primary">Logout</button>
             </div>}
           <h1>Top 10 Gainers ({timeMapping[gainersTimeInterval]})</h1>
           {!currUser &&
-            <button type="button" class="btn btn-outline-primary" onClick = {() => {history.push('/signup');}}>Sign Up</button>}
+            <button type="button" className="btn btn-outline-primary" onClick = {() => {history.push('/signup');}}>Sign Up</button>}
           {currUser &&
             <div>
               <h6>Hi, {currUser}!</h6>
-              <button type="button" class="btn btn-outline-primary" onClick = {logout}>Logout</button>
+              <button type="button" className="btn btn-outline-primary" onClick = {logout}>Logout</button>
             </div>}
         </div>
         <div style={{ marginTop: "2em" }}>
