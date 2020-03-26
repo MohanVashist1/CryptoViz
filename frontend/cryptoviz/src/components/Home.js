@@ -2,6 +2,7 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from './Api';
+import Cookies from 'js-cookie';
 // import { trackPromise } from 'react-promise-tracker';
 // import { usePromiseTracker } from "react-promise-tracker";
 // import Loader from 'react-loader-spinner';
@@ -27,24 +28,32 @@ function Home() {
   const history = useHistory();
   const [losersTimeInterval, setLosersTimeInterval] = useState("1");
   const [gainersTimeInterval, setGainersTimeInterval] = useState("1");
+  const [currUser, setCurrUser] = useState("");
   const [losers, setLosers] = useState([]);
   const [gainers, setGainers] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  useInterval(() => {
-    fetchGainers();
-    fetchLosers();
-  }, 30000);
 
   useEffect(() => {
-    fetchGainers();
+    getCurrUser();
+  }, []);
+
+  useInterval(() => {
+    getGainers();
+    getLosers();
+  }, 30000);
+
+  useInterval(() => {
+    getCurrUser();
+  }, 2000);
+
+  useEffect(() => {
+    getGainers();
   }, [gainersTimeInterval]);
 
   useEffect(() => {
-    fetchLosers();
+    getLosers();
   }, [losersTimeInterval]);
 
-  const fetchLosers = () => {
+  const getLosers = () => {
     // trackPromise(
     fetch(`http://localhost:8000/api/losers/?time=${losersTimeInterval}`)
       .then(async response => {
@@ -56,13 +65,12 @@ function Home() {
         setLosers(data.losers);
       })
       .catch(error => {
-        setErrorMessage(error);
         console.error("There was an error!", error);
       });
     // );
   };
 
-  const fetchGainers = () => {
+  const getGainers = () => {
     // trackPromise(
     fetch(`http://localhost:8000/api/gainers/?time=${gainersTimeInterval}`)
       .then(async response => {
@@ -74,10 +82,59 @@ function Home() {
         setGainers(data.gainers);
       })
       .catch(error => {
-        setErrorMessage(error);
         console.error("There was an error!", error);
       });
     // );
+  };
+
+  const getCurrUser = () => {
+    if (Cookies.get('user_auth')) {
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + Cookies.get('user_auth')
+        },
+        body: null
+      };
+      fetch('http://localhost:8000/api/users/me', requestOptions)
+        .then(async response => {
+          const data = await response.json();
+          if (!response.ok) {
+            const error = (data && data.detail) ? data.detail : response.status;
+            return Promise.reject(error);
+          }
+          setCurrUser(data.first_name);
+        })
+        .catch(error => {
+          setCurrUser("");
+          console.error("There was an error!", error);
+        });
+    } else {
+      setCurrUser("");
+    }
+  };
+
+  const logout = () => {
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + Cookies.get('user_auth')
+      },
+      body: null,
+      credentials: 'include'
+    };
+    fetch('http://localhost:8000/api/users/logout/cookie', requestOptions)
+      .then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+          const error = (data && data.detail) ? data.detail : response.status;
+          return Promise.reject(error);
+        }
+        setCurrUser("");
+      })
+      .catch(error => {
+        console.error("There was an error!", error);
+      });
   };
 
   const timeMapping = {
@@ -133,14 +190,24 @@ function Home() {
 
   return (
     <div>
-      <div style={{ marginTop: "2em", display: "flex", alignItems: "center", justifyContent: "space-around"}}>
-        <button type="button" class="btn btn-outline-primary"
-        onClick = {() => {history.push('/signin');}} >Sign In</button>
-        <button type="button" class="btn btn-outline-primary"
-        onClick = {() => {history.push('/signup');}} >Sign Up</button>
-      </div>
       <div style={{ textAlign: "center", marginTop: "4em" }}>
-        <h1>Top 10 Gainers ({timeMapping[gainersTimeInterval]})</h1>
+        <div style={{ display: "flex", margin: "0", alignItems: "center", justifyContent: "space-around" }}>
+          {!currUser &&
+            <button type="button" class="btn btn-outline-primary" onClick = {() => {history.push('/signin');}}>Sign In</button>}
+          {currUser &&
+            <div style={{visibility: "hidden"}}>
+              <h6>Hi, {currUser}!</h6>
+              <button type="button" class="btn btn-outline-primary">Logout</button>
+            </div>}
+          <h1>Top 10 Gainers ({timeMapping[gainersTimeInterval]})</h1>
+          {!currUser &&
+            <button type="button" class="btn btn-outline-primary" onClick = {() => {history.push('/signup');}}>Sign Up</button>}
+          {currUser &&
+            <div>
+              <h6>Hi, {currUser}!</h6>
+              <button type="button" class="btn btn-outline-primary" onClick = {logout}>Logout</button>
+            </div>}
+        </div>
         <div style={{ marginTop: "2em" }}>
           <div
             className="btn-group"

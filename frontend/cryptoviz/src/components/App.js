@@ -1,9 +1,8 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React from "react";
-import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Credits from "./Credits";
 import Navbar from "./Navbar";
-import Footer from "./Footer";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Home from "./Home";
@@ -22,7 +21,6 @@ function App() {
           <Route path="/signup" component={SignUp}></Route>
           <Route path="/crypto/:ticker" component={CryptoLanding}></Route>
         </Switch>
-        {/* <Footer /> */}
       </BrowserRouter>
     </div>
   );

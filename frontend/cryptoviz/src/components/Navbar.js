@@ -1,6 +1,6 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React from "react";
-import { BrowserRouter, Link, Router } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "../style/navbar.css";
 
 function Navbar() {
@@ -28,19 +28,14 @@ function Navbar() {
         <div className="collapse navbar-collapse" id="navbarColor02">
           <ul className="navbar-nav mr-auto">
             <li className="nav-item">
-              <Link to="/" className="nav-link">
+              <NavLink to="/" className="nav-link" activeClassName="active">
                 Home <span className="sr-only">(current)</span>
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">
-                Features
-              </a>
-            </li>
-            <li className="nav-item">
-              <Link to="/credits" className="nav-link">
+              <NavLink to="/credits" className="nav-link" activeClassName="active">
                 Credits
-              </Link>
+              </NavLink>
             </li>
           </ul>
           <form className="form-inline my-2 my-lg-0">
