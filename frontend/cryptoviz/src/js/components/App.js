@@ -7,7 +7,7 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Home from "./Home";
 import CryptoLanding from "./cryptoLanding";
-import "../style/App.css";
+import "../../style/App.css";
 
 function App() {
   return (

@@ -82,31 +82,6 @@ function SignUp() {
         signUp();
     }
 
-    // const test = () => {
-    //     const requestOptions = {
-    //         method: 'POST',
-    //         headers: {
-    //             'Authorization': 'Bearer ' + Cookies.get('user_auth')
-    //         },
-    //         body: null,
-    //         credentials: 'include'
-    //     };
-    //     fetch('http://localhost:8000/api/users/logout/cookie', requestOptions)
-    //       .then(async response => {
-    //         const data = await response.json();
-    //         if (!response.ok) {
-    //             const error = (data && data.detail) ? data.detail : response.status;
-    //             return Promise.reject(error);
-    //         }
-    //         console.log(Cookies.get());
-    //         setErrorMessage('');
-    //       })
-    //       .catch(error => {
-    //         setErrorMessage(error);
-    //         console.error("There was an error!", error);
-    //     });
-    // }
-
     return (
         <div>
             {errorMessage && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">

@@ -1,7 +1,7 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import "../style/navbar.css";
+import "../../style/navbar.css";
 
 function Navbar() {
   return (
