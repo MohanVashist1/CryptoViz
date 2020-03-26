@@ -42,7 +42,9 @@ function SignUp() {
                 let data = await response.json();
                 if (!response.ok) {
                     const error = (data && data.detail) ? data.detail : response.status;
-                    return Promise.reject(error);
+                    setErrorMessage(error);
+                    console.error("There was an error!", error);
+                    return;
                 }
                 // setErrorMessage('');
                 requestOptions = {
@@ -58,7 +60,9 @@ function SignUp() {
                 data = await response.json();
                 if (!response.ok) {
                     const error = (data && data.detail) ? data.detail : response.status;
-                    return Promise.reject(error);
+                    setErrorMessage(error);
+                    console.error("There was an error!", error);
+                    return;
                 }
                 setErrorMessage('');
                 history.push('/');

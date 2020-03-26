@@ -32,7 +32,9 @@ function Home() {
         let data = await response.json();
         if (!response.ok) {
           const error = (data && data.detail) ? data.detail : response.status;
-          return Promise.reject(error);
+          setCurrUser("");
+          console.error("There was an error!", error);
+          return;
         }
         setCurrUser(data.first_name);
       } catch(error) {
@@ -58,7 +60,8 @@ function Home() {
       let data = await response.json();
       if (!response.ok) {
         const error = (data && data.detail) ? data.detail : response.status;
-        return Promise.reject(error);
+        console.error("There was an error!", error);
+        return;
       }
       setCurrUser('');
     } catch(error) {
