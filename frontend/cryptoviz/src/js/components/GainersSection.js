@@ -16,23 +16,22 @@ function GainersSection() {
 
   useEffect(() => {
     setGainers([]);
-    getGainers();
+    trackPromise(getGainers(), areas.gainers);
   }, [gainersTimeInterval]);
 
-  const getGainers = () => {
-    trackPromise(
-    fetch(`http://localhost:8000/api/gainers/?time=${gainersTimeInterval}`)
-      .then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-          const error = (data && data.detail) ? data.detail : response.status;
-          return Promise.reject(error);
-        }
-        setGainers(data.gainers);
-      })
-      .catch(error => {
+  const getGainers = async () => {
+    try {
+      let response = await fetch(`http://localhost:8000/api/gainers/?time=${gainersTimeInterval}`);
+      let data = await response.json();
+      if (!response.ok) {
+        const error = (data && data.detail) ? data.detail : response.status;
         console.error("There was an error!", error);
-      }), areas.gainers);
+        return Promise.reject(error);
+      }
+      setGainers(data.gainers);
+    } catch(error) {
+      console.error("There was an error!", error);
+    }
   };
 
   const timeMapping = {
