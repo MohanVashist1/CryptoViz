@@ -71,12 +71,11 @@ function Home() {
 
   return (
     <div>
-      {!currUser &&
+      {!currUser ?
       <div style={{ marginTop: "4em", display: "flex", alignItems: "center", justifyContent: "space-around" }}>
         <button type="button" className="btn btn-outline-primary" onClick = {() => {history.push('/signin');}}>Sign In</button>
         <button type="button" className="btn btn-outline-primary" onClick = {() => {history.push('/signup');}}>Sign Up</button>
-      </div>}
-      {currUser &&
+      </div> :
       <div style={{ marginTop: "4em", display: "flex", alignItems: "center", justifyContent: "flex-end", marginRight: "2em" }}>
           <div style={{textAlign:"center"}}>
             <h6>Hi, {currUser}!</h6>

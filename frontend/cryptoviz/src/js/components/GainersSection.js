@@ -26,7 +26,7 @@ function GainersSection() {
       if (!response.ok) {
         const error = (data && data.detail) ? data.detail : response.status;
         console.error("There was an error!", error);
-        return Promise.reject(error);
+        return;
       }
       setGainers(data.gainers);
     } catch(error) {
