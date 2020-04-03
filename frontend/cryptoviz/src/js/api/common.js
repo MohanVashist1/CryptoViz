@@ -32,31 +32,19 @@ export const createTable = data => {
   let count = 0;
   for (let i = 0; i < data.length; i++) {
     cells.push(
-      <td key={count}>
-        <Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].rank}</Link>
-      </td>
+      <td key={count}>{data[i].rank}</td>
     );
     cells.push(
-      <td key={count + 1}>
-        <Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].symbol}</Link>
-      </td>
+      <td key={count + 1}>{data[i].symbol}</td>
     );
     cells.push(
-      <td key={count + 2}>
-        <Link to={`/crypto/${data[i].symbol}USDT/`}>
-          {data[i].market_cap}
-        </Link>
-      </td>
+      <td key={count + 2}>{data[i].market_cap}</td>
     );
     cells.push(
-      <td key={count + 3}>
-        <Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].price}</Link>
-      </td>
+      <td key={count + 3}>{data[i].price}</td>
     );
     cells.push(
-      <td key={count + 4}>
-        <Link to={`/crypto/${data[i].symbol}USDT/`}>{data[i].volume}</Link>
-      </td>
+      <td key={count + 4}>{data[i].volume}</td>
     );
     rows.push(
       <tr key={count + 5} className={rowClass}>
