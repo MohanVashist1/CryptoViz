@@ -2,12 +2,14 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
 import { useInterval } from '../api/common';
 import Cookies from 'js-cookie';
-import { Link, NavLink } from "react-router-dom";
+import { useHistory, Link, NavLink } from "react-router-dom";
 import "../../style/navbar.css";
 
 function Navbar() {
 
+  const history = useHistory();
   const [currUser, setCurrUser] = useState("");
+  const [crypto, setCrypto] = useState("");
 
   useEffect(() => {
     getCurrUser();
@@ -68,6 +70,10 @@ function Navbar() {
     }
   };
 
+  const handleSubmit = e => {
+    history.push(`/crypto/${crypto}`);
+  }
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -121,11 +127,12 @@ function Navbar() {
               <a href="#" className="nav-link" onClick={logout}>Logout</a>
             </li>
           </ul>}
-          <form className="form-inline my-2 my-lg-0">
+          <form className="form-inline my-2 my-lg-0" onSubmit={handleSubmit}>
             <input
               className="form-control mr-sm-2"
               type="text"
               placeholder="Search"
+              onChange={e => setCrypto(e.target.value)}
             ></input>
             <button className="btn btn-secondary my-2 my-sm-0" type="submit">
               Search
