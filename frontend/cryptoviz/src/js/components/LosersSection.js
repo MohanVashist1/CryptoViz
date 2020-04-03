@@ -39,7 +39,7 @@ function LosersSection() {
   };
 
   return (
-      <div style={{ textAlign: "center" }}>
+      <div>
         <h1>Top 10 Losers ({timeMapping[losersTimeInterval]})</h1>
         <div style={{ marginTop: "2em" }}>
           <div

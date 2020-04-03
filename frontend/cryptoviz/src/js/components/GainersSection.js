@@ -39,7 +39,7 @@ function GainersSection() {
   };
 
   return (
-      <div style={{ textAlign: "center", marginTop: "4em" }}>
+      <div>
         <h1>Top 10 Gainers ({timeMapping[gainersTimeInterval]})</h1>
         <div style={{ marginTop: "2em" }}>
           <div
