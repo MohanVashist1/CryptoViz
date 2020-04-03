@@ -6,7 +6,7 @@ import Navbar from "./Navbar";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Home from "./Home";
-import CryptoLanding from "./cryptoLanding";
+import CryptoLanding from "./CryptoLanding";
 import "../../style/App.css";
 
 function App() {

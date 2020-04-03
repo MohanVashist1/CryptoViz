@@ -1,7 +1,6 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
-import { useInterval, createTable } from './Api';
+import { useInterval, createTable } from '../api/common';
 import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
 import { areas } from '../constants/areas';
@@ -40,7 +39,7 @@ function GainersSection() {
   };
 
   return (
-      <div style={{ textAlign: "center", marginTop: "2em" }}>
+      <div style={{ textAlign: "center", marginTop: "4em" }}>
         <h1>Top 10 Gainers ({timeMapping[gainersTimeInterval]})</h1>
         <div style={{ marginTop: "2em" }}>
           <div

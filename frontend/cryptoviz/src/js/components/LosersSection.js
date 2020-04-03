@@ -1,7 +1,6 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
-import { useInterval, createTable } from './Api';
+import { useInterval, createTable } from '../api/common';
 import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
 import { areas } from '../constants/areas';

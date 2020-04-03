@@ -2,7 +2,7 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { useHistory, Link } from 'react-router-dom';
-import { useInterval } from './Api';
+import { useInterval } from '../api/common';
 
 function SignUp() {
 
