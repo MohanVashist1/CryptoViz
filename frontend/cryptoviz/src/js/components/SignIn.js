@@ -38,7 +38,6 @@ function SignIn() {
         try {
             let response = await fetch('http://localhost:8000/api/users/login/cookie', requestOptions);
             let data = await response.json();
-            console.log(response);
             if (!response.ok) {
                 const error = (data && data.detail) ? data.detail : response.status;
                 setErrorMessage(error);

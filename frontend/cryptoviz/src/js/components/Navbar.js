@@ -47,7 +47,7 @@ function Navbar() {
     }
   };
 
-  const logout = async () => {
+  const signout = async () => {
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -124,7 +124,7 @@ function Navbar() {
           <ul className="navbar-nav">
             <li className="nav-item" style={{display: "flex", flexFlow: "column", alignItems: "center", justifyContent: "center"}}>
               <h6 style={{color: "rgba(255,255,255,0.5)"}}>Hi, {currUser}!</h6>
-              <a href="#" className="nav-link" onClick={logout}>Logout</a>
+              <a href="#" className="nav-link" onClick={signout}>Sign Out</a>
             </li>
           </ul>}
           <form className="form-inline my-2 my-lg-0" onSubmit={handleSubmit}>
