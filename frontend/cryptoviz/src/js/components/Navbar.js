@@ -78,9 +78,9 @@ function Navbar() {
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
         <div className="navbar-brand" style={{ display: "flex", alignItems: "center", flexFlow: "column", justifyContent: "center" }}>
-          <Link to="/" className="logo" />
-          <NavLink to="/" className="nav-link" style={{ marginTop: "0.5em" }}>
-            <h6 style={{color: "rgba(255,255,255,0.5)"}}>CryptoViz</h6>
+          <Link to="/" className="logo" style={{ marginBottom: "0.25em"}}/>
+          <NavLink to="/" className="nav-link" style={{ marginTop: "0.25em", color: "white" }}>
+            CryptoViz
           </NavLink>
         </div>
         <button
@@ -123,7 +123,7 @@ function Navbar() {
           </ul> :
           <ul className="navbar-nav">
             <li className="nav-item" style={{display: "flex", flexFlow: "column", alignItems: "center", justifyContent: "center"}}>
-              <h6 style={{color: "rgba(255,255,255,0.5)"}}>Hi, {currUser}!</h6>
+              <p style={{color: "rgba(255,255,255,0.5)"}}>Hi, {currUser}!</p>
               <a href="#" className="nav-link" onClick={signout}>Sign Out</a>
             </li>
           </ul>}
