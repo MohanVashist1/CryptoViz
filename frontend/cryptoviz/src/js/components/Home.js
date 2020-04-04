@@ -6,19 +6,19 @@ import GainersSection from './GainersSection';
 function Home() {
   return (
     <div>
-      <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href="#gainers">Top Gainers</a>
+      <ul className="nav nav-tabs">
+        <li className="nav-item">
+          <a className="nav-link active" data-toggle="tab" href="#gainers">Top Gainers</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link active" data-toggle="tab" href="#losers">Top Losers</a>
+        <li className="nav-item">
+          <a className="nav-link" data-toggle="tab" href="#losers">Top Losers</a>
         </li>
       </ul>
-      <div id="myTabContent" class="tab-content">
-        <div class="tab-pane fade" id="gainers" style={{ textAlign: "center", marginTop: "4em" }}>
+      <div id="myTabContent" className="tab-content">
+        <div className="tab-pane fade active show" id="gainers" style={{ textAlign: "center", marginTop: "4em" }}>
           <GainersSection />
         </div>
-        <div class="tab-pane fade" id="losers" style={{ textAlign: "center", marginTop: "4em" }}>
+        <div className="tab-pane fade" id="losers" style={{ textAlign: "center", marginTop: "4em" }}>
           <LosersSection />
         </div>
       </div>
