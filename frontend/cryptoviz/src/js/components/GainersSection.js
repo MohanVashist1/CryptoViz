@@ -80,7 +80,7 @@ function GainersSection() {
             </div>
           </div>
         </div>
-        <div style={{ margin: "auto", padding: "30px", width: "80%" }}>
+        <div style={{marginTop: "4em"}}>
           <table className="table table-hover">
             <thead>
               <tr>
