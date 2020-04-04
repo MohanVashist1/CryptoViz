@@ -8,7 +8,7 @@ import "../../style/navbar.css";
 function Navbar() {
 
   const history = useHistory();
-  const [currUser, setCurrUser] = useState({});
+  const [currUser, setCurrUser] = useState(null);
   const [crypto, setCrypto] = useState("");
 
   useEffect(() => {
@@ -33,17 +33,17 @@ function Navbar() {
         let data = await response.json();
         if (!response.ok) {
           const error = (data && data.detail) ? data.detail : response.status;
-          setCurrUser({});
+          setCurrUser(null);
           console.error("There was an error!", error);
           return;
         }
         setCurrUser(data);
       } catch(error) {
-        setCurrUser({});
+        setCurrUser(null);
         console.error("There was an error!", error);
       }
     } else {
-      setCurrUser({});
+      setCurrUser(null);
     }
   };
 
@@ -64,7 +64,7 @@ function Navbar() {
         console.error("There was an error!", error);
         return;
       }
-      setCurrUser({});
+      setCurrUser(null);
     } catch(error) {
       console.error("There was an error!", error);
     }
