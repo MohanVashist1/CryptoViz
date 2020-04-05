@@ -45,7 +45,6 @@ class UserUpdate(User, models.BaseUserUpdate):
 
 class UserDB(User, models.BaseUserDB):
     pass
-    # watchlist: list
 
 class CryptoRequest(BaseModel):
     ticker: str
@@ -75,8 +74,6 @@ fastapi_users = FastAPIUsers(
 )
 app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
-# origins = ['*']
-
 origins = [
     "http://localhost:3000"
 ]
@@ -89,8 +86,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-background_thread = Thread(target=sc.schedule_tasks)
-background_thread.start()
+# background_thread = Thread(target=sc.schedule_tasks)
+# background_thread.start()
 
 #********************************************************************************************
  #    Title: Setting SameSite flag manually when using response.set_cookie()
@@ -168,11 +165,6 @@ def on_after_register(user: User, request: Request):
 def on_after_forgot_password(user: User, token: str, request: Request):
     print(f"User with email '{user.email}' has forgot their password. Reset token: {token}")
 
-# @app.get("/")
-# async def root(background_tasks: BackgroundTasks):
-#     initiate_background(background_tasks)
-#     return {"message": "Hello World"}
-
 @app.get("/api/gainers/")
 async def get_top_gainers(time: int = 1):
     if time != 1 and time != 24:
@@ -210,18 +202,6 @@ async def get_top_losers(time: int = 1):
     else:
         res = DataHandler.retrieve_top_losers_daily()
     return {"losers": res}
-
-# def initiate_background(background_tasks):
-#     global background_tasks_running
-#     if not background_tasks_running:
-#         background_tasks_running = True
-#         background_tasks.add_task(sc.schedule_tasks)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1w", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)
 
 # @app.get('/protected-route')
 # def protected_route(user: User = Depends(fastapi_users.get_current_user)):

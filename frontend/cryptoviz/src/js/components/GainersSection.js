@@ -1,18 +1,27 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useContext } from "react";
+import { Link } from 'react-router-dom';
 import { useInterval } from '../api/common';
 import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
 import { areas } from '../constants/areas';
 import { AuthContext } from "./App";
-import "../../style/main.css";
 import Cookies from 'js-cookie';
 
 function GainersSection() {
+
+  let mounted = true;
   const { state: authState, dispatch } = useContext(AuthContext);
   const [gainersTimeInterval, setGainersTimeInterval] = useState("1");
   const [errorMessage, setErrorMessage] = useState("");
   const [gainers, setGainers] = useState([]);
+
+  useEffect(() => {
+    mounted = true;
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useInterval(() => {
     getGainers();
@@ -32,7 +41,9 @@ function GainersSection() {
         console.error("There was an error!", error);
         return;
       }
-      setGainers(data.gainers);
+      if (mounted) {
+        setGainers(data.gainers);
+      }
     } catch(error) {
       console.error("There was an error!", error);
     }
@@ -52,11 +63,15 @@ function GainersSection() {
       let data = await response.json();
       if (!response.ok) {
         const error = (data && data.detail) ? data.detail : response.status;
-        setErrorMessage(error);
+        if (mounted) {
+          setErrorMessage(error);
+        }
         console.error("There was an error!", error);
         return;
       }
-      setErrorMessage('');
+      if (mounted) {
+        setErrorMessage('');
+      }
       dispatch({
         type: "LOGIN",
         payload: {
@@ -64,7 +79,9 @@ function GainersSection() {
         }
       });
     } catch(error) {
-      setErrorMessage(error);
+      if (mounted) {
+        setErrorMessage(error);
+      }
       console.error("There was an error!", error);
     }
   }
@@ -77,7 +94,6 @@ function GainersSection() {
   }
 
   const addToWatchlist = ele => {
-    console.log(authState.user);
     let tmp = JSON.parse(JSON.stringify(authState.user));
     tmp.watchlist.push(ele);
     updateUser(tmp);
@@ -98,7 +114,7 @@ function GainersSection() {
         <td key={count}>{data[i].rank}</td>
       );
       cells.push(
-        <td key={count + 1}>{data[i].symbol}</td>
+        <td key={count + 1}><Link to={`/crypto/${data[i].symbol}USDT`}>{data[i].symbol}</Link></td>
       );
       cells.push(
         <td key={count + 2}>{data[i].market_cap}</td>
@@ -113,11 +129,11 @@ function GainersSection() {
       if (Object.keys(authState.user).length > 0) {
         if (authState.user.watchlist.includes(data[i].symbol)) {
           cells.push(
-            <td key={count}><div className="delete-icon" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from watchlist" onClick={() => deleteFromWatchlist(data[i].symbol)}/></td>
+            <td key={count}><i style={{color: "red", cursor:"pointer"}} className="fa fa-times-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from watchlist" onClick={() => deleteFromWatchlist(data[i].symbol)}></i></td>
           );
         } else {
           cells.push(
-            <td key={count}><div className="add-icon" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add to watchlist" onClick={() => addToWatchlist(data[i].symbol)}/></td>
+            <td key={count}><i style={{color: "green", cursor:"pointer"}} className="fa fa-plus-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add to watchlist" onClick={() => addToWatchlist(data[i].symbol)}></i></td>
           );
         }
         count += 1;

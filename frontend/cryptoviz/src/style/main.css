@@ -6,15 +6,3 @@
 .uppercase {
     text-transform: uppercase;
 }
-
-.delete-icon {
-    content: url("../media/delete.png");
-    margin: auto;
-    cursor: pointer;
-}
-
-.add-icon {
-    content: url("../media/add.png");
-    margin: auto;
-    cursor: pointer;
-}

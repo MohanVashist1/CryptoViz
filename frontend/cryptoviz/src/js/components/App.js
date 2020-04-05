@@ -6,6 +6,7 @@ import Credits from "./Credits";
 import Navbar from "./Navbar";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
+import Watchlist from "./Watchlist";
 import Home from "./Home";
 import CryptoLanding from "./CryptoLanding";
 import { useInterval } from '../api/common';
@@ -44,7 +45,7 @@ function App() {
 
   useInterval(() => {
     getCurrUser();
-  }, 1000);
+  }, 500);
 
   const getCurrUser = async () => {
     if (Cookies.get('user_auth')) {
@@ -100,6 +101,7 @@ function App() {
             <Route path="/credits" component={Credits}></Route>
             <Route path="/signin" component={SignIn}></Route>
             <Route path="/signup" component={SignUp}></Route>
+            <Route path="/watchlist" component={Watchlist}></Route>
             <Route path="/crypto/:ticker" component={CryptoLanding}></Route>
           </Switch>
         </BrowserRouter>

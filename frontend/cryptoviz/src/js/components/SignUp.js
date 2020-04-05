@@ -1,12 +1,11 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from '../api/common';
-import { AuthContext } from "./App";
+import Cookies from 'js-cookie';
 
 function SignUp() {
 
-    const { state: authState } = useContext(AuthContext);
     const history = useHistory();
     const [errorMessage, setErrorMessage] = useState('');
     const [email, setEmail] = useState('');
@@ -20,10 +19,10 @@ function SignUp() {
 
     useInterval(() => {
         checkSignedIn();
-    }, 1000);
+    }, 500);
 
     const checkSignedIn = () => {
-        if(Object.keys(authState.user).length > 0) {
+        if(Cookies.get('user_auth')) {
             history.push('/');
         }
     };
@@ -80,7 +79,7 @@ function SignUp() {
 
     return (
         <div>
-            {Object.keys(authState.user).length === 0 &&
+            {!Cookies.get('user_auth') &&
             <div>
                 {errorMessage && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
                     <div className="toast-header">

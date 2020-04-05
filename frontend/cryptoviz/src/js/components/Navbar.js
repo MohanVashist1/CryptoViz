@@ -68,13 +68,19 @@ function Navbar() {
                 Home
               </NavLink>
             </li>
+            {Cookies.get('user_auth') &&
+              <li className="nav-item">
+              <NavLink to="/watchlist" className="nav-link" activeClassName="active">
+                My Watchlist
+              </NavLink>
+            </li>}
             <li className="nav-item">
               <NavLink to="/credits" className="nav-link" activeClassName="active">
                 Credits
               </NavLink>
             </li>
           </ul>
-          {Object.keys(authState.user).length === 0 ?
+          {!Cookies.get('user_auth') ?
           <ul className="navbar-nav">
             <li className="nav-item">
               <NavLink to="/signin" className="nav-link" activeClassName="active">

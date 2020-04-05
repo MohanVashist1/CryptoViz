@@ -136,21 +136,30 @@ class BinanceWrapper:
         return pd.read_csv(filename)
 
 class _Scraper:
+
+    def __init__(self):
+        self.bw = BinanceWrapper()
+
     def scrape(self, url):
+        cryptoList = self.bw.getcryptoSymbols('USDT')
         top_10 = []
-        res = requests.get(url)
-        soup = BeautifulSoup(res.content, 'html.parser')
         count = 1
-        for ele in soup.find(id='react-listview').find('tbody').find_all('tr')[:10]:
-            tmp = {}
-            info = ele.find_all('td')
-            tmp['rank'] = count
-            tmp['symbol'] = info[1].find('div', class_='screener-symbol').text
-            tmp['market_cap'] = info[2].find('a').text
-            tmp['price'] = info[3].find('a').text
-            tmp['volume'] = info[4].find('a').text
-            top_10.append(tmp)
-            count += 1
+        while(count < 11):
+            res = requests.get(url+'&p='+str(count))
+            soup = BeautifulSoup(res.content, 'html.parser')
+            for ele in soup.find(id='react-listview').find('tbody').find_all('tr'):
+                tmp = {}
+                info = ele.find_all('td')
+                tmp['symbol'] = info[1].find('div', class_='screener-symbol').text
+                if tmp['symbol']+'USDT' in cryptoList:
+                    tmp['rank'] = count
+                    tmp['market_cap'] = info[2].find('a').text
+                    tmp['price'] = info[3].find('a').text
+                    tmp['volume'] = info[4].find('a').text
+                    top_10.append(tmp)
+                    count += 1
+                if count == 11:
+                    break
         return top_10
 
     # def __normalize_val(self, val):
