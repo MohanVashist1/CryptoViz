@@ -168,6 +168,7 @@ function LosersSection() {
               ></button>
               <div className="dropdown-menu" aria-labelledby="btnGroupDrop2">
                 <a
+                  href="#"
                   className="dropdown-item"
                   onClick={() => {
                     setLosersTimeInterval("1");
@@ -176,6 +177,7 @@ function LosersSection() {
                   {timeMapping["1"]}
                 </a>
                 <a
+                  href="#"
                   className="dropdown-item"
                   onClick={() => {
                     setLosersTimeInterval("24");

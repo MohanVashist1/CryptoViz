@@ -80,7 +80,7 @@ function SignUp() {
 
     return (
         <div>
-            {Object.keys(authState.user).length == 0 &&
+            {Object.keys(authState.user).length === 0 &&
             <div>
                 {errorMessage && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
                     <div className="toast-header">

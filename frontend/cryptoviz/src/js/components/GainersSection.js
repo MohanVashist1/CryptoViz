@@ -168,6 +168,7 @@ function GainersSection() {
               ></button>
               <div className="dropdown-menu" aria-labelledby="btnGroupDrop1">
                 <a
+                  href="#"
                   className="dropdown-item"
                   onClick={() => {
                     setGainersTimeInterval("1");
@@ -176,6 +177,7 @@ function GainersSection() {
                   {timeMapping["1"]}
                 </a>
                 <a
+                  href="#"
                   className="dropdown-item"
                   onClick={() => {
                     setGainersTimeInterval("24");
