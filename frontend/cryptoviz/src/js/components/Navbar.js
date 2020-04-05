@@ -1,51 +1,15 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
-import React, { useEffect, useState } from "react";
-import { useInterval } from '../api/common';
+import React, { useState, useContext } from "react";
 import Cookies from 'js-cookie';
 import { useHistory, Link, NavLink } from "react-router-dom";
 import "../../style/navbar.css";
+import { AuthContext } from "./App";
 
 function Navbar() {
 
+  const { state: authState, dispatch } = useContext(AuthContext);
   const history = useHistory();
-  const [currUser, setCurrUser] = useState(null);
   const [crypto, setCrypto] = useState("");
-
-  useEffect(() => {
-    getCurrUser();
-  }, []);
-
-  useInterval(() => {
-    getCurrUser();
-  }, 1000);
-
-  const getCurrUser = async () => {
-    if (Cookies.get('user_auth')) {
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + Cookies.get('user_auth')
-        },
-        body: null
-      };
-      try {
-        let response = await fetch('http://localhost:8000/api/users/me', requestOptions);
-        let data = await response.json();
-        if (!response.ok) {
-          const error = (data && data.detail) ? data.detail : response.status;
-          setCurrUser(null);
-          console.error("There was an error!", error);
-          return;
-        }
-        setCurrUser(data);
-      } catch(error) {
-        setCurrUser(null);
-        console.error("There was an error!", error);
-      }
-    } else {
-      setCurrUser(null);
-    }
-  };
 
   const signout = async () => {
     const requestOptions = {
@@ -64,7 +28,9 @@ function Navbar() {
         console.error("There was an error!", error);
         return;
       }
-      setCurrUser(null);
+      dispatch({
+        type: "LOGOUT"
+      });
     } catch(error) {
       console.error("There was an error!", error);
     }
@@ -108,7 +74,7 @@ function Navbar() {
               </NavLink>
             </li>
           </ul>
-          {!currUser ?
+          {Object.keys(authState.user).length === 0 ?
           <ul className="navbar-nav">
             <li className="nav-item">
               <NavLink to="/signin" className="nav-link" activeClassName="active">
@@ -123,7 +89,7 @@ function Navbar() {
           </ul> :
           <ul className="navbar-nav">
             <li className="nav-item" style={{display: "flex", flexFlow: "column", alignItems: "center", justifyContent: "center"}}>
-              <p style={{color: "rgba(255,255,255,0.5)"}}>Hi, {currUser.first_name}!</p>
+              <p style={{color: "rgba(255,255,255,0.5)"}}>Hi, {authState.user.first_name}!</p>
               <a href="#" className="nav-link" onClick={signout}>Sign Out</a>
             </li>
           </ul>}

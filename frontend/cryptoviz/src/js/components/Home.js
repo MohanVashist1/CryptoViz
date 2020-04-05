@@ -15,10 +15,10 @@ function Home() {
         </li>
       </ul>
       <div id="myTabContent" className="tab-content">
-        <div className="tab-pane fade active show" id="gainers" style={{ textAlign: "center", marginTop: "4em" }}>
+        <div className="tab-pane fade active show" id="gainers">
           <GainersSection />
         </div>
-        <div className="tab-pane fade" id="losers" style={{ textAlign: "center", marginTop: "4em" }}>
+        <div className="tab-pane fade" id="losers">
           <LosersSection />
         </div>
       </div>
