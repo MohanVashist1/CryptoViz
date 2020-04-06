@@ -99,7 +99,7 @@ function Watchlist() {
         let end = Math.min(authState.user.watchlist.length, start + 10);
         for(let i = start; i < end; i++) {
             buttons.push(
-                <i 
+                <i key={i}
                 style={{color: "red", cursor:"pointer", margin: "0.85em 0"}}
                 className="fa fa-times-circle fa-lg"
                 data-toggle="tooltip" data-placement="top" title=""
@@ -111,7 +111,7 @@ function Watchlist() {
 
     const handleRightClick = () => {
         let lastPageNum = Math.floor((authState.user.watchlist.length - 1)/10);
-        if(page == lastPageNum) {
+        if(page === lastPageNum) {
             setPage(0);
         } else {
             setPage(page + 1);
@@ -119,7 +119,7 @@ function Watchlist() {
     }
 
     const handleLeftClick = () => {
-        if(page == 0) {
+        if(page === 0) {
             let lastPageNum = Math.floor((authState.user.watchlist.length - 1)/10);
             setPage(lastPageNum);
         } else {
@@ -165,10 +165,10 @@ function Watchlist() {
                     </div>
                 </div>
             }
-            {Object.keys(authState.user).length > 0 && authState.user.watchlist.length == 0 &&
+            {Object.keys(authState.user).length > 0 && authState.user.watchlist.length === 0 &&
                 <h1 style={{ marginTop: "7em" }}>There's nothing on your watchlist...</h1>
             }
-            {Object.keys(authState.user).length == 0 && 
+            {Object.keys(authState.user).length === 0 && 
             <div style={{ marginTop: "14em" }}>
                 <Loader type="ThreeDots" color="#2BAD60" />
             </div>}

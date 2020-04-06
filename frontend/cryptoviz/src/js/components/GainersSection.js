@@ -126,9 +126,9 @@ function GainersSection() {
         <td key={count + 4}>{data[i].volume}</td>
       );
       let color = "black";
-      if(data[i].percent.substring(0, 1) == "-") {
+      if(data[i].percent.substring(0, 1) === "-") {
         color = "red";
-      } else if(data[i].percent.substring(0, 1) == "+") {
+      } else if(data[i].percent.substring(0, 1) === "+") {
         color = "green";
       }
       cells.push(
