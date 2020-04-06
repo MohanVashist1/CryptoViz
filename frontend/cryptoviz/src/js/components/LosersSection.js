@@ -125,7 +125,16 @@ function LosersSection() {
       cells.push(
         <td key={count + 4}>{data[i].volume}</td>
       );
-      count += 5;
+      let color = "black";
+      if(data[i].percent.substring(0, 1) == "-") {
+        color = "red";
+      } else if(data[i].percent.substring(0, 1) == "+") {
+        color = "green";
+      }
+      cells.push(
+        <td style={{color: color}} key={count + 5}>{data[i].percent}</td>
+      );
+      count += 6;
       if (Object.keys(authState.user).length > 0) {
         if (authState.user.watchlist.includes(data[i].symbol)) {
           cells.push(
@@ -214,6 +223,7 @@ function LosersSection() {
                 <th scope="col">Market Cap</th>
                 <th scope="col">Price</th>
                 <th scope="col">Volume</th>
+                <th scope="col">%</th>
                 {Object.keys(authState.user).length > 0 && <th scope="col">Action</th>}
               </tr>
             </thead>

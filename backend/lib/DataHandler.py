@@ -140,10 +140,11 @@ class _Scraper:
     def __init__(self):
         self.bw = BinanceWrapper()
 
-    def scrape(self, url):
+    def scrape(self, time, isDesc):
         cryptoList = self.bw.getcryptoSymbols('USDT')
         top_10 = []
         count = 1
+        url = 'https://bitscreener.com/screener/?o=per_'+str(time)+'h&desc='+str(isDesc)+'&f=e_Binance'
         while(count < 11):
             res = requests.get(url+'&p='+str(count))
             soup = BeautifulSoup(res.content, 'html.parser')
@@ -156,6 +157,10 @@ class _Scraper:
                     tmp['market_cap'] = info[2].find('a').text
                     tmp['price'] = info[3].find('a').text
                     tmp['volume'] = info[4].find('a').text
+                    if time == 1:
+                        tmp['percent'] = info[5].find('a').text
+                    elif time == 24:
+                        tmp['percent'] = info[6].find('a').text
                     top_10.append(tmp)
                     count += 1
                 if count == 11:
@@ -176,7 +181,7 @@ class _Scraper:
 
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/?o=per_1h&desc=true&f=e_Binance')
+    result = sc.scrape(1, True)
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client["cryptoviz"]
     # gainers = db['top_gainers_hourly']
@@ -186,7 +191,7 @@ def retrieve_top_gainers_hourly():
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/?o=per_1h&desc=false&f=e_Binance')
+    result = sc.scrape(1, False)
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client["cryptoviz"]
     # losers = db['top_losers_hourly']
@@ -196,7 +201,7 @@ def retrieve_top_losers_hourly():
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/?o=per_24h&desc=true&f=e_Binance')
+    result = sc.scrape(24, True)
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client["cryptoviz"]
     # gainers = db['top_gainers_daily']
@@ -206,7 +211,7 @@ def retrieve_top_gainers_daily():
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/?o=per_24h&desc=false&f=e_Binance')
+    result = sc.scrape(24, False)
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client["cryptoviz"]
     # losers = db['top_losers_daily']
