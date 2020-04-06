@@ -50,14 +50,12 @@ function SignIn() {
                       error: error
                     }
                 });
-                // setErrorMessage(error);
                 console.error("There was an error!", error);
                 return;
             }
             dispatch({
                 type: LOGIN_SUCCESS
             });
-            // setErrorMessage('');
             history.push('/');
         } catch(error) {
             dispatch({
@@ -66,7 +64,6 @@ function SignIn() {
                   error: error
                 }
             });
-            // setErrorMessage(error);
             console.error("There was an error!", error);
         }
     };

@@ -57,7 +57,6 @@ function SignUp() {
                           error: error
                         }
                     });
-                    // setErrorMessage(error);
                     console.error("There was an error!", error);
                     return;
                 }
@@ -74,7 +73,6 @@ function SignUp() {
                 data = await response.json();
                 if (!response.ok) {
                     const error = (data && data.detail) ? data.detail : response.status;
-                    // setErrorMessage(error);
                     dispatch({
                         type: REGISTER_FAILURE,
                         payload: {
@@ -95,7 +93,6 @@ function SignUp() {
                       error: error
                     }
                 });
-                // setErrorMessage(error);
                 console.error("There was an error!", error);
             }
         }

@@ -28,7 +28,9 @@ function LosersSection() {
   }, 30000);
   
   useEffect(() => {
-    setLosers([]);
+    if(mounted) {
+      setLosers([]);
+    }
     trackPromise(getLosers(), LOSERS_AREA);
   }, [losersTimeInterval]);
 
@@ -70,26 +72,18 @@ function LosersSection() {
               error: error
             }
           });
-          // setErrorMessage(error);
         // }
         console.error("There was an error!", error);
         return;
       }
       // if(mounted) {
-      //   dispatch({
-      //     type: UPDATE_USER_FAILURE,
-      //     payload: {
-      //       error: error
-      //     }
-      //   });
-      //   // setErrorMessage('');
+        dispatch({
+          type: UPDATE_USER_SUCCESS,
+          payload: {
+            user: updatedUser
+          }
+        });
       // }
-      dispatch({
-        type: UPDATE_USER_SUCCESS,
-        payload: {
-          user: updatedUser
-        }
-      });
     } catch(error) {
       // if(mounted) {
         dispatch({
@@ -98,7 +92,6 @@ function LosersSection() {
             error: error
           }
         });
-        // setErrorMessage(error);
       // }
       console.error("There was an error!", error);
     }
@@ -177,6 +170,12 @@ function LosersSection() {
     });
   }
 
+  const handleIntervalSwitch = time => {
+    if(mounted) {
+      setLosersTimeInterval(time);
+    }
+  }
+
   return (
       <div style={{ textAlign: "center"}}>
         {authState.error && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
@@ -213,18 +212,14 @@ function LosersSection() {
                 <a
                   href="#"
                   className="dropdown-item"
-                  onClick={() => {
-                    setLosersTimeInterval("1");
-                  }}
+                  onClick={() => handleIntervalSwitch("1")}
                 >
                   {timeMapping["1"]}
                 </a>
                 <a
                   href="#"
                   className="dropdown-item"
-                  onClick={() => {
-                    setLosersTimeInterval("24");
-                  }}
+                  onClick={() => handleIntervalSwitch("24")}
                 >
                   {timeMapping["24"]}
                 </a>
