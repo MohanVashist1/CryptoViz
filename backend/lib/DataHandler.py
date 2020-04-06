@@ -167,56 +167,24 @@ class _Scraper:
                     break
         return top_10
 
-    # def __normalize_val(self, val):
-    #     val = val[1:].replace(',','')
-    #     if val[-1] == "K":
-    #             val = float(val[:-1]) * 1000
-    #     elif val[-1] == "M":
-    #         val = float(val[:-1]) * 1000000
-    #     elif val[-1] == "B":
-    #         val = float(val[:-1]) * 1000000000
-    #     else:
-    #         val = float(val)
-    #     return val
-
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
     result = sc.scrape(1, True)
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client["cryptoviz"]
-    # gainers = db['top_gainers_hourly']
-    # gainers.delete_many({})
-    # gainers.insert_many(result)
     return result
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
     result = sc.scrape(1, False)
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client["cryptoviz"]
-    # losers = db['top_losers_hourly']
-    # losers.delete_many({})
-    # losers.insert_many(result)
     return result
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
     result = sc.scrape(24, True)
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client["cryptoviz"]
-    # gainers = db['top_gainers_daily']
-    # gainers.delete_many({})
-    # gainers.insert_many(result)
     return result
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
     result = sc.scrape(24, False)
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client["cryptoviz"]
-    # losers = db['top_losers_daily']
-    # losers.delete_many({})
-    # losers.insert_many(result)
     return result
 
 if __name__ == "__main__":
