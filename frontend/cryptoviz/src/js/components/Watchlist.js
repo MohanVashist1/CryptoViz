@@ -2,7 +2,9 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useContext, useState } from "react";
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from '../api/common';
+import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import { AuthContext } from "./App";
+import Navbar from "./Navbar";
 import Cookies from 'js-cookie';
 import Loader from "react-loader-spinner";
 
@@ -11,7 +13,6 @@ function Watchlist() {
     let mounted = true;
     const { state: authState, dispatch } = useContext(AuthContext);
     const [page, setPage] = useState(0);
-    const [errorMessage, setErrorMessage] = useState("");
     const history = useHistory();
 
     useEffect(() => {
@@ -46,29 +47,47 @@ function Watchlist() {
             let data = await response.json();
             if (!response.ok) {
                 const error = (data && data.detail) ? data.detail : response.status;
-                if (mounted) {
-                    setErrorMessage(error);
-                }
+                // if (mounted) {
+                    dispatch({
+                        type: UPDATE_USER_FAILURE,
+                        payload: {
+                          error: error
+                        }
+                    });
+                    // setErrorMessage(error);
+                // }
                 console.error("There was an error!", error);
                 return;
             }
-            if (mounted) {
-                setErrorMessage('');
-            }
-            dispatch({
-                type: "LOGIN",
-                payload: {
-                    user: updatedUser
-                }
-            });
+            // if (mounted) {
+                dispatch({
+                    type: UPDATE_USER_SUCCESS,
+                    payload: {
+                      user: updatedUser
+                    }
+                });
+                // setErrorMessage('');
+            // }
+            // dispatch({
+            //     type: "LOGIN",
+            //     payload: {
+            //         user: updatedUser
+            //     }
+            // });
             let lastPageNum = Math.floor((updatedUser.watchlist.length - 1)/10);
             if(mounted && page > lastPageNum) {
                 setPage(lastPageNum);
             }
         } catch(error) {
-            if (mounted) {
-                setErrorMessage(error);
-            }
+            // if (mounted) {
+                dispatch({
+                    type: UPDATE_USER_FAILURE,
+                    payload: {
+                      error: error
+                    }
+                });
+                // setErrorMessage(error);
+            // }
             console.error("There was an error!", error);
         }
     }
@@ -127,49 +146,60 @@ function Watchlist() {
         }
     }
 
+    const handleCloseError = () => {
+        dispatch({
+          type: ERROR_CLOSE
+        });
+      }
+
     return (
-        <div style={{ textAlign: "center" }}>
-            {errorMessage && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div className="toast-header">
-                    <div className="mr-auto">Error</div>
-                    <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={() => {setErrorMessage('')}}>
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div className="toast-body">
-                    {errorMessage}
-                </div>
-            </div>}
-            {Object.keys(authState.user).length > 0 && authState.user.watchlist.length > 0 &&
-                <div>
-                    <h1 style={{ marginTop: "2em" }}>Watchlist</h1>
-                    <div style={{ width: "60%", margin: "4em auto", display: "flex", alignItems: "center", justifyContent: "space-around" }}>
-                        <ul className="pagination pagination-lg">
-                            <li className="page-item">
-                                <a className="page-link" href="#" onClick={handleLeftClick}>&laquo;</a>
-                            </li>
-                        </ul>
-                        <div style={{display: "flex", width: "60%", alignItems: "center", justifyContent: "space-around"}}>
-                            <div style={{ width: "80%" }} className="list-group">
-                                {createList()}
-                            </div>
-                            <div style={{display: "flex", alignItems: "center", justifyContent: "center", flexFlow: "column"}}>
-                                {createDeleteButtons()}
+        <div>
+            {Cookies.get('user_auth') && authState.isAuthenticated ?
+            <div>
+                <Navbar />
+                <div style={{ textAlign: "center" }}>
+                    {authState.error && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div className="toast-header">
+                            <div className="mr-auto">Error</div>
+                            <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={handleCloseError}>
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="toast-body">
+                            {authState.error}
+                        </div>
+                    </div>}
+                    {authState.user.watchlist.length > 0 &&
+                        <div>
+                            <h1 style={{ marginTop: "2em" }}>Watchlist</h1>
+                            <div style={{ width: "60%", margin: "4em auto", display: "flex", alignItems: "center", justifyContent: "space-around" }}>
+                                <ul className="pagination pagination-lg">
+                                    <li className="page-item">
+                                        <a className="page-link" href="#" onClick={handleLeftClick}>&laquo;</a>
+                                    </li>
+                                </ul>
+                                <div style={{display: "flex", width: "60%", alignItems: "center", justifyContent: "space-around"}}>
+                                    <div style={{ width: "80%" }} className="list-group">
+                                        {createList()}
+                                    </div>
+                                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", flexFlow: "column"}}>
+                                        {createDeleteButtons()}
+                                    </div>
+                                </div>
+                                <ul className="pagination pagination-lg">
+                                    <li className="page-item">
+                                        <a className="page-link" href="#" onClick={handleRightClick}>&raquo;</a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                        <ul className="pagination pagination-lg">
-                            <li className="page-item">
-                                <a className="page-link" href="#" onClick={handleRightClick}>&raquo;</a>
-                            </li>
-                        </ul>
-                    </div>
+                    }
+                    {authState.user.watchlist.length === 0 &&
+                        <h1 style={{ marginTop: "7em" }}>There's nothing on your watchlist...</h1>
+                    }
                 </div>
-            }
-            {Object.keys(authState.user).length > 0 && authState.user.watchlist.length === 0 &&
-                <h1 style={{ marginTop: "7em" }}>There's nothing on your watchlist...</h1>
-            }
-            {Object.keys(authState.user).length === 0 && 
-            <div style={{ marginTop: "14em" }}>
+            </div> :
+            <div style={{ textAlign: "center", marginTop: "20em" }}>
                 <Loader type="ThreeDots" color="#2BAD60" />
             </div>}
         </div>

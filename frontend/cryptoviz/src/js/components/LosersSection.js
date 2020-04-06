@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { useInterval } from '../api/common';
 import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
-import { areas } from '../constants/areas';
+import { LOSERS_AREA } from '../constants/areas';
+import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import { AuthContext } from "./App";
 import Cookies from 'js-cookie';
 
@@ -13,7 +14,6 @@ function LosersSection() {
   let mounted = true;
   const { state: authState, dispatch } = useContext(AuthContext);
   const [losersTimeInterval, setLosersTimeInterval] = useState("1");
-  const [errorMessage, setErrorMessage] = useState("");
   const [losers, setLosers] = useState([]);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ function LosersSection() {
   
   useEffect(() => {
     setLosers([]);
-    trackPromise(getLosers(), areas.losers);
+    trackPromise(getLosers(), LOSERS_AREA);
   }, [losersTimeInterval]);
 
   const getLosers = async () => {
@@ -63,25 +63,43 @@ function LosersSection() {
       let data = await response.json();
       if (!response.ok) {
         const error = (data && data.detail) ? data.detail : response.status;
-        if(mounted) {
-          setErrorMessage(error);
-        }
+        // if(mounted) {
+          dispatch({
+            type: UPDATE_USER_FAILURE,
+            payload: {
+              error: error
+            }
+          });
+          // setErrorMessage(error);
+        // }
         console.error("There was an error!", error);
         return;
       }
-      if(mounted) {
-        setErrorMessage('');
-      }
+      // if(mounted) {
+      //   dispatch({
+      //     type: UPDATE_USER_FAILURE,
+      //     payload: {
+      //       error: error
+      //     }
+      //   });
+      //   // setErrorMessage('');
+      // }
       dispatch({
-        type: "LOGIN",
+        type: UPDATE_USER_SUCCESS,
         payload: {
           user: updatedUser
         }
       });
     } catch(error) {
-      if(mounted) {
-        setErrorMessage(error);
-      }
+      // if(mounted) {
+        dispatch({
+          type: UPDATE_USER_FAILURE,
+          payload: {
+            error: error
+          }
+        });
+        // setErrorMessage(error);
+      // }
       console.error("There was an error!", error);
     }
   }
@@ -125,17 +143,11 @@ function LosersSection() {
       cells.push(
         <td key={count + 4}>{data[i].volume}</td>
       );
-      let color = "black";
-      if(data[i].percent.substring(0, 1) === "-") {
-        color = "red";
-      } else if(data[i].percent.substring(0, 1) === "+") {
-        color = "green";
-      }
       cells.push(
-        <td style={{color: color}} key={count + 5}>{data[i].percent}</td>
+        <td style={{color: "red"}} key={count + 5}>{data[i].percent}</td>
       );
       count += 6;
-      if (Object.keys(authState.user).length > 0) {
+      if (authState.isAuthenticated) {
         if (authState.user.watchlist.includes(data[i].symbol)) {
           cells.push(
             <td key={count}><i style={{color: "red", cursor:"pointer"}} className="fa fa-times-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from watchlist" onClick={() => deleteFromWatchlist(data[i].symbol)}></i></td>
@@ -159,20 +171,26 @@ function LosersSection() {
     return rows;
   };
 
+  const handleCloseError = () => {
+    dispatch({
+      type: ERROR_CLOSE
+    });
+  }
+
   return (
       <div style={{ textAlign: "center"}}>
-        {errorMessage && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        {authState.error && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
           <div className="toast-header">
             <div className="mr-auto">Error</div>
-              <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={() => {setErrorMessage('')}}>
+              <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={handleCloseError}>
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div className="toast-body">
-            {errorMessage}
+            {authState.error}
           </div>
         </div>}
-        <h1 style={{ marginTop: "2em" }}>Top 10 Losers ({timeMapping[losersTimeInterval]})</h1>
+        <h1 style={{ marginTop: "2em" }}>Top Losers [{timeMapping[losersTimeInterval]}]</h1>
         <div style={{ marginTop: "2em" }}>
           <div
             className="btn-group"
@@ -224,12 +242,12 @@ function LosersSection() {
                 <th scope="col"><h5>Price</h5></th>
                 <th scope="col"><h5>Volume</h5></th>
                 <th scope="col"><h5>%</h5></th>
-                {Object.keys(authState.user).length > 0 && <th scope="col"><h5>Action</h5></th>}
+                {authState.isAuthenticated && <th scope="col"><h5>Action</h5></th>}
               </tr>
             </thead>
             <tbody>{createTable(losers)}</tbody>
           </table>
-          <Spinner area={areas.losers}/>
+          <Spinner area={LOSERS_AREA}/>
         </div>
       </div>
   );

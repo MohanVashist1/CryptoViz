@@ -3,6 +3,7 @@ import React, { useState, useContext } from "react";
 import Cookies from 'js-cookie';
 import { useHistory, Link, NavLink } from "react-router-dom";
 import "../../style/navbar.css";
+import { LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../constants/auth';
 import { AuthContext } from "./App";
 
 function Navbar() {
@@ -25,13 +26,26 @@ function Navbar() {
       let data = await response.json();
       if (!response.ok) {
         const error = (data && data.detail) ? data.detail : response.status;
+        dispatch({
+          type: LOGOUT_FAILURE,
+          payload: {
+            error: error
+          }
+        });
         console.error("There was an error!", error);
         return;
       }
       dispatch({
-        type: "LOGOUT"
+        type: LOGOUT_SUCCESS
       });
+      history.push('/');
     } catch(error) {
+      dispatch({
+        type: LOGOUT_FAILURE,
+        payload: {
+          error: error
+        }
+      });
       console.error("There was an error!", error);
     }
   };
@@ -80,7 +94,7 @@ function Navbar() {
               </NavLink>
             </li>
           </ul>
-          {!Cookies.get('user_auth') ?
+          {!authState.isAuthenticated ?
           <ul className="navbar-nav">
             <li className="nav-item">
               <NavLink to="/signin" className="nav-link" activeClassName="active">

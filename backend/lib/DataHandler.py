@@ -161,7 +161,10 @@ class _Scraper:
                         tmp['percent'] = info[5].find('a').text
                     elif time == 24:
                         tmp['percent'] = info[6].find('a').text
-                    top_10.append(tmp)
+                    if (tmp['percent'][0] == '+' and isDesc) or (len(tmp['percent']) > 1 and tmp['percent'][0] == '-' and not isDesc):
+                        top_10.append(tmp)
+                    else:
+                        return top_10
                     count += 1
                 if count == 11:
                     break
