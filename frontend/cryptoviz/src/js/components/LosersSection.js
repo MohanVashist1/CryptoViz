@@ -218,13 +218,13 @@ function LosersSection() {
           <table className="table table-hover">
             <thead>
               <tr>
-                <th scope="col">Rank</th>
-                <th scope="col">Symbol</th>
-                <th scope="col">Market Cap</th>
-                <th scope="col">Price</th>
-                <th scope="col">Volume</th>
-                <th scope="col">%</th>
-                {Object.keys(authState.user).length > 0 && <th scope="col">Action</th>}
+                <th scope="col"><h5>Rank</h5></th>
+                <th scope="col"><h5>Symbol</h5></th>
+                <th scope="col"><h5>Market Cap</h5></th>
+                <th scope="col"><h5>Price</h5></th>
+                <th scope="col"><h5>Volume</h5></th>
+                <th scope="col"><h5>%</h5></th>
+                {Object.keys(authState.user).length > 0 && <th scope="col"><h5>Action</h5></th>}
               </tr>
             </thead>
             <tbody>{createTable(losers)}</tbody>
