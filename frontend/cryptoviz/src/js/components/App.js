@@ -13,7 +13,7 @@ import { useInterval } from "../common/common";
 import { getCurrUser } from "../api/api";
 import "../../style/App.css";
 import * as authConstants from "../constants/auth";
-import { TVChartContainer } from "../../components/TVChartContainer/index";
+// import { TVChartContainer } from "../../components/TVChartContainer/index";
 
 export const AuthContext = createContext();
 
@@ -126,10 +126,10 @@ function App() {
               exact
               component={CryptoLanding}
             ></Route>
-            <Route
+            {/* <Route
               path="/crypto/advanced/:ticker"
               component={TVChartContainer}
-            ></Route>
+            ></Route> */}
             <Route path="/watchlist" component={Watchlist}></Route>
           </Switch>
         </BrowserRouter>

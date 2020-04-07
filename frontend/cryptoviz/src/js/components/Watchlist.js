@@ -1,5 +1,7 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useContext, useState } from "react";
+import OverlayTrigger  from 'react-bootstrap/OverlayTrigger';
+import Tooltip  from 'react-bootstrap/Tooltip';
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from '../common/common';
 import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
@@ -83,12 +85,22 @@ function Watchlist() {
         let end = Math.min(authState.user.watchlist.length, start + 10);
         for(let i = start; i < end; i++) {
             buttons.push(
-                <i key={i}
-                style={{color: "red", cursor:"pointer", margin: "0.85em 0"}}
-                className="fa fa-times-circle fa-lg"
-                data-toggle="tooltip" data-placement="top" title=""
-                data-original-title="Remove from watchlist"
-                onClick={() => deleteFromWatchlist(authState.user.watchlist[i])}></i>);
+                <OverlayTrigger
+                key="top"
+                placement="top"
+                overlay={
+                    <Tooltip id='tooltip-top'>
+                        Remove from watchlist
+                    </Tooltip>
+                }
+                >
+                    <i key={i}
+                    style={{color: "red", cursor:"pointer", margin: "0.85em 0"}}
+                    className="fa fa-times-circle fa-lg"
+                    data-toggle="tooltip" data-placement="top" title=""
+                    data-original-title="Remove from watchlist"
+                    onClick={() => deleteFromWatchlist(authState.user.watchlist[i])}></i>
+                </OverlayTrigger>);
         }
         return buttons
     }

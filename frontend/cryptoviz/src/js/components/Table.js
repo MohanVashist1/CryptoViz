@@ -1,4 +1,6 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
+import OverlayTrigger  from 'react-bootstrap/OverlayTrigger';
+import Tooltip  from 'react-bootstrap/Tooltip';
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from 'react-router-dom';
 import { useInterval } from '../common/common';
@@ -130,11 +132,35 @@ function Table({ isGainer }) {
       if (authState.isAuthenticated) {
         if (authState.user.watchlist.includes(data[i].symbol)) {
           cells.push(
-            <td key={count}><i style={{color: "red", cursor:"pointer"}} className="fa fa-times-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from watchlist" onClick={() => deleteFromWatchlist(data[i].symbol)}></i></td>
+            <td key={count}>
+                <OverlayTrigger
+                key="top"
+                placement="top"
+                overlay={
+                    <Tooltip id='tooltip-top'>
+                        Remove from watchlist
+                    </Tooltip>
+                }
+                >
+                    <i style={{color: "red", cursor:"pointer"}} className="fa fa-times-circle fa-lg" onClick={() => deleteFromWatchlist(data[i].symbol)}></i>
+                </OverlayTrigger>
+            </td>
           );
         } else {
           cells.push(
-            <td key={count}><i style={{color: "green", cursor:"pointer"}} className="fa fa-plus-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add to watchlist" onClick={() => addToWatchlist(data[i].symbol)}></i></td>
+            <td key={count}>
+                <OverlayTrigger
+                key="top"
+                placement="top"
+                overlay={
+                    <Tooltip id='tooltip-top'>
+                        Add to watchlist
+                    </Tooltip>
+                }
+                >
+                    <i style={{color: "green", cursor:"pointer"}} className="fa fa-plus-circle fa-lg" onClick={() => addToWatchlist(data[i].symbol)}></i>
+                </OverlayTrigger>
+            </td>
           );
         }
         count += 1;
