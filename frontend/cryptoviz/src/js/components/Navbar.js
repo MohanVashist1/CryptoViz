@@ -30,7 +30,7 @@ function Navbar() {
     });
   };
 
-  const handleSubmit = e => {
+  const handleSearch = e => {
     history.push(`/crypto/${crypto}`);
   }
 
@@ -93,7 +93,7 @@ function Navbar() {
               <a href="#" className="nav-link" onClick={signOut}>Sign Out</a>
             </li>
           </ul>}
-          <form className="form-inline my-2 my-lg-0" onSubmit={handleSubmit}>
+          <form className="form-inline my-2 my-lg-0" onSubmit={handleSearch}>
             <input
               className="form-control mr-sm-2"
               type="text"
