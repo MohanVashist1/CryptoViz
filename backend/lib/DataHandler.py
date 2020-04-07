@@ -1,3 +1,10 @@
+from dotenv import load_dotenv
+from binance.client import Client
+import pandas as pd
+from dateutil import parser
+from bs4 import BeautifulSoup
+import requests
+import pymongo
 import hmac
 import json
 import math
@@ -7,23 +14,22 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import urljoin
-# import cryptocalculator
-# import channelfinder
+import json
+if __name__ == "__main__":
+    import cryptocalculator
+    import channelfinder
+    os.chdir(Path(".."))
+else:
+    from . import channelfinder, cryptocalculator
+
 # from channelfinder import ChannelFinder
-import pymongo
 
-import requests
-from bs4 import BeautifulSoup
-from dateutil import parser
 
-import pandas as pd
-from binance.client import Client
-from dotenv import load_dotenv
+# from . import channelfinder, cryptocalculator
 
-from . import channelfinder, cryptocalculator
-
-# os.chdir(Path("..")) 
+# os.chdir(Path(".."))
 DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
+
 
 class BinanceWrapper:
     def __init__(self):
@@ -35,13 +41,21 @@ class BinanceWrapper:
         self.__apiKey = os.getenv('API_KEY')
         self.__secretKey = os.getenv('SECRET_KEY')
         self._intervals = {"1m": 1, "5m": 5,
-                           "1h": 60, "1d": 1440, "1M": 2592000}
+                           "1h": 60, "1d": 1440, "1w": 10080, "1M": 2592000}
         self.binance_client = Client(
             api_key=self.__apiKey, api_secret=self.__secretKey)
         self.klines = ["1m", "5m", "1h", "1d", "1w", "1M"]
         self._startTimes = {"1m": "1 Feb 2020", "5m": "1 Feb 2020", "1h": "1 Feb 2020",
                             "1d": "1 Jan 2019", "1w": "1 Jan 2019", "1M": "1 Jan 2018"}
         self._indicator_calculator = cryptocalculator.CryptoCalculator()
+        self._supportedResolutions = [
+            "1",
+            "5",
+            "60",
+            "1D",
+            "1W",
+            "1M",
+        ]
         # self._chanel_calculator = channelfinder.ChannelFinder()
         self.tethers = ["USDT"]
 
@@ -75,10 +89,10 @@ class BinanceWrapper:
         return old, new
 
     def getCryptoDataBinance(self, symbol, kline_size, save=False):
-        Path("lib","cryptoData").mkdir(parents=True, exist_ok=True)
-        filename = Path(Path().absolute(),"lib","cryptoData", '%s-%s-data.gz' %
+        Path("lib", "cryptoData").mkdir(parents=True, exist_ok=True)
+        filename = Path(Path().absolute(), "lib", "cryptoData", '%s-%s-data.gz' %
                         (symbol, kline_size))
-        
+
         if filename.exists():
             data_df = pd.read_csv(filename)
         else:
@@ -104,7 +118,7 @@ class BinanceWrapper:
         else:
             data_df = data
         data_df.set_index('timestamp', inplace=True)
-        closing_data = [float(price) for price in data_df['close'].tolist()   ]
+        closing_data = [float(price) for price in data_df['close'].tolist()]
         data_df['rsi'] = self._indicator_calculator.rsi(closing_data)
         data_df['ema'] = self._indicator_calculator.ema(closing_data)
         data_df['sma'] = self._indicator_calculator.sma(closing_data)
@@ -117,7 +131,7 @@ class BinanceWrapper:
         #     closing_price.columns = ["price"]
         #     self._chanel_calculator.find_resistance(closing_price)
         #     closing_price = pd.DataFrame(closing_price)
-        #     closing_price.plot()       
+        #     closing_price.plot()
         if save:
             data_df.to_csv(filename, compression='gzip')
         print('All caught up..!')
@@ -130,10 +144,99 @@ class BinanceWrapper:
                 crypto, kline_size, save)
 
     def retrieveCryptoData(self, symbol, kline_size):
-        filename = Path(Path().absolute(),"lib", "cryptoData", '%s-%s-data.gz' %
+        filename = Path(Path().absolute(), "lib", "cryptoData", '%s-%s-data.gz' %
                         (symbol, kline_size))
-        if not filename.exists(): return None
+        if not filename.exists():
+            return None
         return pd.read_csv(filename)
+
+    def retrieve_subset_data(self, symbol, kline_size, to, fromdate):
+        df = self.retrieveCryptoData(symbol, kline_size)
+        df = df[(df["timestamp"] >= fromdate) &
+                (df["timestamp"] <= to)]
+        df = df[["close", "high", "low", "volume", "open", "timestamp"]]
+        return df
+
+    def config(self):
+        return ({"exchanges": [
+            {
+                "value": "BINANCE",
+                "name": "Binance",
+                "desc": "Binance Exchange"
+            }
+        ], "symbols_types": [
+            {
+                "value": "crypto",
+                "name": "Cryptocurrency"
+            }
+        ], "supported_resolutions": self._supportedResolutions, "supports_search": True,
+            "supports_group_request": False,
+            "supports_marks": False,
+            "supports_timescale_marks": False,
+            "supports_time": True})
+
+    def symbolsInfo(self, symbol, symbolName=None):
+        symbolTether = ""
+        for tether in self.tethers:
+            if tether in symbol:
+                symbolTether = tether
+                break
+        symbolNoTether = symbol.replace(symbolTether, "")
+        currValuePing = (self.binance_client.get_klines(
+            symbol=symbol, interval="1m", limit=1))
+        if(len(currValuePing) == 0):
+            return None
+        currValuePing = float(currValuePing[0][4])
+        pricescale = 100
+        # TODO: add more pricescale
+        if(currValuePing > 1 and currValuePing < 9):
+            pricescale = 1000
+        elif(currValuePing > 9 and currValuePing < 100):
+            pricescale = 10000
+        elif(currValuePing < 1):
+            pricescale = 1000000
+        return ({"symbol": symbol, "ticker": symbol, "name": symbol, "full_name": symbolName if symbolName else symbol,
+                 "description": symbolNoTether + " / " + symbolTether, "exchange": "BINANCE", "listed_exchange": "BINANCE",
+                 "type": "crypto", "currency_code": symbolName if symbolName else "USDT", "session": "24x7",
+                 "timezone": "UTC",
+                 "minmovement": 1,
+                 "minmov": 1,
+                 "minmovement2": 0,
+                 "minmov2": 0, "pricescale": pricescale, "supported_resolutions": self._supportedResolutions,
+                 "has_intraday": True,
+                 "has_daily": True,
+                 "has_weekly_and_monthly": True,
+                 "data_status": "streaming"})
+
+    def history(self, to, fromDate, symbol, resolution):
+        RESOLUTIONS_INTERVALS_MAP = {
+            "1": "1m",
+            "3": "3m",
+            "5": "5m",
+            "15": "15m",
+            "30": "30m",
+            "60": "1h",
+            "120": "2h",
+            "240": "4h",
+            "360": "6h",
+            "480": "8h",
+            "720": "12h",
+            "D": "1d",
+            "1D": "1d",
+            "3D": "3d",
+            "W": "1w",
+            "1W": "1w",
+            "M": "1M",
+            "1M": "1M",
+        }
+        if(resolution not in RESOLUTIONS_INTERVALS_MAP or to < fromDate):
+            return None
+        interval = RESOLUTIONS_INTERVALS_MAP[resolution]
+        to = datetime.utcfromtimestamp(int(to)).strftime('%Y-%m-%d %H:%M:%S')
+        fromDate = datetime.utcfromtimestamp(
+            int(fromDate)).strftime('%Y-%m-%d %H:%M:%S')
+        return self.retrieve_subset_data(symbol, interval, to, fromDate)
+
 
 class _Scraper:
     def scrape(self, url):
@@ -165,9 +268,11 @@ class _Scraper:
     #         val = float(val)
     #     return val
 
+
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/?o=per_1h&desc=true&f=e_Binance')
+    result = sc.scrape(
+        'https://bitscreener.com/screener/?o=per_1h&desc=true&f=e_Binance')
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client["cryptoviz"]
     # gainers = db['top_gainers_hourly']
@@ -175,9 +280,11 @@ def retrieve_top_gainers_hourly():
     # gainers.insert_many(result)
     return result
 
+
 def retrieve_top_losers_hourly():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/?o=per_1h&desc=false&f=e_Binance')
+    result = sc.scrape(
+        'https://bitscreener.com/screener/?o=per_1h&desc=false&f=e_Binance')
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client["cryptoviz"]
     # losers = db['top_losers_hourly']
@@ -185,9 +292,11 @@ def retrieve_top_losers_hourly():
     # losers.insert_many(result)
     return result
 
+
 def retrieve_top_gainers_daily():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/?o=per_24h&desc=true&f=e_Binance')
+    result = sc.scrape(
+        'https://bitscreener.com/screener/?o=per_24h&desc=true&f=e_Binance')
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client["cryptoviz"]
     # gainers = db['top_gainers_daily']
@@ -195,9 +304,11 @@ def retrieve_top_gainers_daily():
     # gainers.insert_many(result)
     return result
 
+
 def retrieve_top_losers_daily():
     sc = _Scraper()
-    result = sc.scrape('https://bitscreener.com/screener/?o=per_24h&desc=false&f=e_Binance')
+    result = sc.scrape(
+        'https://bitscreener.com/screener/?o=per_24h&desc=false&f=e_Binance')
     # client = pymongo.MongoClient(DATABASE_URL)
     # db = client["cryptoviz"]
     # losers = db['top_losers_daily']
@@ -205,8 +316,11 @@ def retrieve_top_losers_daily():
     # losers.insert_many(result)
     return result
 
+
 if __name__ == "__main__":
-    BinanceWrapper().retrieveCryptoData("BTCUSDT","1m")
+    # BinanceWrapper().getCryptoDataBinance("KEYUSDT", "1d")
+    print(BinanceWrapper().getCryptoDataBinance(
+        "BTCUSDT", "1w", save=True).tail())
     # # dynamoTable.put_item(
     # #     item={
     # #         'Ticker': "BTCUSDT",

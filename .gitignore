@@ -9,3 +9,8 @@ backend/lib/cryptoData/*.gz
 backend/lib/cryptoData/*.csv
 backend/lib/__pycache__/*
 .DS_Store
+frontend/cryptoviz/src/js/charting_library/*
+backend/lib/lib/cryptoData/*
+frontend/cryptoviz/public/charting_library/*
+frontend/cryptoviz/public/datafeeds/*
+frontend/cryptoviz/src/charting_library/*

@@ -1,20 +1,21 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, createContext } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import Credits from "./Credits";
 import Navbar from "./Navbar";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Home from "./Home";
 import CryptoLanding from "./CryptoLanding";
-import { useInterval } from '../api/common';
+import { useInterval } from "../api/common";
 import "../../style/App.css";
+import { TVChartContainer } from "../../components/TVChartContainer/index";
 
 export const AuthContext = createContext();
 
 const initialState = {
-  user: {}
+  user: {},
 };
 
 const reducer = (state, action) => {
@@ -22,12 +23,12 @@ const reducer = (state, action) => {
     case "LOGIN":
       return {
         ...state,
-        user: action.payload.user
+        user: action.payload.user,
       };
     case "LOGOUT":
       return {
         ...state,
-        user: {}
+        user: {},
       };
     default:
       return state;
@@ -35,7 +36,6 @@ const reducer = (state, action) => {
 };
 
 function App() {
-
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -47,21 +47,24 @@ function App() {
   }, 1000);
 
   const getCurrUser = async () => {
-    if (Cookies.get('user_auth')) {
+    if (Cookies.get("user_auth")) {
       const requestOptions = {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': 'Bearer ' + Cookies.get('user_auth')
+          Authorization: "Bearer " + Cookies.get("user_auth"),
         },
-        body: null
+        body: null,
       };
       try {
-        let response = await fetch('http://localhost:8000/api/users/me', requestOptions);
+        let response = await fetch(
+          "http://localhost:8000/api/users/me",
+          requestOptions
+        );
         let data = await response.json();
         if (!response.ok) {
-          const error = (data && data.detail) ? data.detail : response.status;
+          const error = data && data.detail ? data.detail : response.status;
           dispatch({
-            type: "LOGOUT"
+            type: "LOGOUT",
           });
           console.error("There was an error!", error);
           return;
@@ -69,18 +72,18 @@ function App() {
         dispatch({
           type: "LOGIN",
           payload: {
-            user: data
-          }
+            user: data,
+          },
         });
-      } catch(error) {
+      } catch (error) {
         dispatch({
-          type: "LOGOUT"
+          type: "LOGOUT",
         });
         console.error("There was an error!", error);
       }
     } else {
       dispatch({
-        type: "LOGOUT"
+        type: "LOGOUT",
       });
     }
   };
@@ -89,7 +92,7 @@ function App() {
     <AuthContext.Provider
       value={{
         state,
-        dispatch
+        dispatch,
       }}
     >
       <div className="App">
@@ -100,7 +103,15 @@ function App() {
             <Route path="/credits" component={Credits}></Route>
             <Route path="/signin" component={SignIn}></Route>
             <Route path="/signup" component={SignUp}></Route>
-            <Route path="/crypto/:ticker" component={CryptoLanding}></Route>
+            <Route
+              path="/crypto/:ticker"
+              exact
+              component={CryptoLanding}
+            ></Route>
+            <Route
+              path="/crypto/advanced/:ticker"
+              component={TVChartContainer}
+            ></Route>
           </Switch>
         </BrowserRouter>
       </div>

@@ -1,8 +1,9 @@
 import time
 import pymongo
 import pydantic
+import math
 
-from fastapi import FastAPI, HTTPException, Path, Query, WebSocket, Depends
+from fastapi import FastAPI, HTTPException, Path, Query, WebSocket, Depends, Response, Request
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -15,9 +16,10 @@ from starlette.requests import Request
 from fastapi import BackgroundTasks
 from typing import Optional
 from fastapi.staticfiles import StaticFiles
+from calendar import timegm
 
 from flask import escape
-from lib import DataHandler 
+from lib import DataHandler
 from lib import CryptoData
 from lib import Scheduler as sc
 from threading import Thread
@@ -27,10 +29,12 @@ background_tasks_running = False
 DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
 SECRET = "|X|Th!5iS@S3CR3t|X|"
 
+
 class User(models.BaseUser):
     watchlist: Optional[list] = []
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+
 
 class UserCreate(User, models.BaseUserCreate):
     email: EmailStr
@@ -38,14 +42,17 @@ class UserCreate(User, models.BaseUserCreate):
     last_name: str
     watchlist: Optional[list] = []
 
+
 class UserUpdate(User, models.BaseUserUpdate):
     watchlist: Optional[list]
     first_name: Optional[str]
     last_name: Optional[str]
 
+
 class UserDB(User, models.BaseUserDB):
     pass
     # watchlist: list
+
 
 class CryptoRequest(BaseModel):
     ticker: str
@@ -53,12 +60,17 @@ class CryptoRequest(BaseModel):
     minDate: str
     maxDate: str
 
+
 app = FastAPI()
 # app.mount("/static", StaticFiles(directory="./../frontend/cryptoviz/public"), name="static")
 # app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
-dataHandler.retrieveCryptoData("BTCUSDT","1w")
-cryptoList = dataHandler.getcryptoSymbols()
+tempCryptoList = dataHandler.getcryptoSymbols()
+cryptoList = []
+for symbol in tempCryptoList:
+    for tether in dataHandler.tethers:
+        if(tether in symbol and symbol not in cryptoList):
+            cryptoList.append(symbol)
 cryptoData = CryptoData.CryptoDataReader()
 client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URL)
 db = client["cryptoviz"]
@@ -67,7 +79,8 @@ user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
     JWTAuthentication(secret=SECRET, lifetime_seconds=3600),
-    CookieAuthentication(secret=SECRET, lifetime_seconds=3600, cookie_name="user_auth", cookie_secure=False, cookie_httponly=False)
+    CookieAuthentication(secret=SECRET, lifetime_seconds=3600,
+                         cookie_name="user_auth", cookie_secure=False, cookie_httponly=False)
 ]
 
 fastapi_users = FastAPIUsers(
@@ -78,7 +91,10 @@ app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 # origins = ['*']
 
 origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "localhost:3000",
+    "localhost:3000/crypto/*",
+    "localhost:3000/crypto/advanced/*",
 ]
 
 app.add_middleware(
@@ -89,15 +105,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-background_thread = Thread(target=sc.schedule_tasks)
-background_thread.start()
+# background_thread = Thread(target=sc.schedule_tasks)
+# background_thread.start()
 
-#********************************************************************************************
- #    Title: Setting SameSite flag manually when using response.set_cookie()
- #    Author: zero-shubham
- #    Date: March 8, 2020
- #    Availability: https://github.com/tiangolo/fastapi/issues/1099
- #*******************************************************************************************/
+# ********************************************************************************************
+#    Title: Setting SameSite flag manually when using response.set_cookie()
+#    Author: zero-shubham
+#    Date: March 8, 2020
+#    Availability: https://github.com/tiangolo/fastapi/issues/1099
+# *******************************************************************************************/
+
+
 @app.middleware("http")
 async def cookie_set(request: Request, call_next):
     response = await call_next(request)
@@ -115,12 +133,13 @@ async def cookie_set(request: Request, call_next):
 #     response.raw_headers.append((b'access-control-allow-origin', b'http://localhost:3000'))
 #     return response
 
+
 @app.get("/api/crypto/{ticker}")
 async def get_crypto_info(ticker: str = Path(..., title="The Ticker of the Crypto to get")):
     ticker = escape(ticker)
-    if(len(ticker)>5 and len(ticker) < 10 and ticker in cryptoList):
+    if(len(ticker) > 5 and len(ticker) < 10 and ticker in cryptoList):
         for tether in dataHandler.tethers:
-            tickerTemp = ticker.replace(tether,"")
+            tickerTemp = ticker.replace(tether, "")
             fullName = cryptoData.extract_name(tickerTemp)
             if(fullName):
                 return {"fullName": fullName}
@@ -134,7 +153,7 @@ async def get_crypto_info(ticker: str = Path(..., title="The Ticker of the Crypt
 #     # cryptoData = dataHandler.retrieveCryptoData(ticker,timeInterval)
 #     # cryptoData = cryptoData[(cryptoData['timestamp']>"2020-03-15 02:37:00") & (cryptoData['timestamp']<"2020-03-15 02:41:00")]
 #     # cryptoData = cryptoData[["timestamp", "close", "rsi","ema","sma","lbb","ubb","mbb"]]
-#     while True: 
+#     while True:
 #         # data = data["2020-03-05":"2020-03-14"]
 #         # print(data
 #         data = await websocket.receive_json()
@@ -152,26 +171,34 @@ async def get_crypto_info(ticker: str = Path(..., title="The Ticker of the Crypt
 #             else:
 #                 await websocket.close(code=1000)
 
+
 @app.post("/api/crypto/{ticker}")
 async def post_crypto_data(request: CryptoRequest):
-#TODO: Security
-    cryptoData = dataHandler.retrieveCryptoData(escape(request.ticker),escape(request.timeInterval))
-    cryptoData = cryptoData[(cryptoData['timestamp']>escape(request.minDate)) & (cryptoData['timestamp']<escape(request.maxDate))]
-    cryptoData = cryptoData[["timestamp", "close", "rsi","ema","sma","lbb","ubb","mbb"]]
+    # TODO: Security
+    cryptoData = dataHandler.retrieveCryptoData(
+        escape(request.ticker), escape(request.timeInterval))
+    cryptoData = cryptoData[(cryptoData['timestamp'] > escape(request.minDate)) & (
+        cryptoData['timestamp'] < escape(request.maxDate))]
+    cryptoData = cryptoData[["timestamp", "close",
+                             "rsi", "ema", "sma", "lbb", "ubb", "mbb"]]
     return {"data": cryptoData.to_json(orient='records')}
+
 
 @fastapi_users.on_after_register()
 def on_after_register(user: User, request: Request):
     print(f"User with email '{user.email}' has registered.")
 
+
 @fastapi_users.on_after_forgot_password()
 def on_after_forgot_password(user: User, token: str, request: Request):
-    print(f"User with email '{user.email}' has forgot their password. Reset token: {token}")
+    print(
+        f"User with email '{user.email}' has forgot their password. Reset token: {token}")
 
 # @app.get("/")
 # async def root(background_tasks: BackgroundTasks):
 #     initiate_background(background_tasks)
 #     return {"message": "Hello World"}
+
 
 @app.get("/api/gainers/")
 async def get_top_gainers(time: int = 1):
@@ -192,6 +219,7 @@ async def get_top_gainers(time: int = 1):
         res = DataHandler.retrieve_top_gainers_daily()
     return {"gainers": res}
 
+
 @app.get("/api/losers/")
 async def get_top_losers(time: int = 1):
     if time != 1 and time != 24:
@@ -211,18 +239,100 @@ async def get_top_losers(time: int = 1):
         res = DataHandler.retrieve_top_losers_daily()
     return {"losers": res}
 
-# def initiate_background(background_tasks):
-#     global background_tasks_running
-#     if not background_tasks_running:
-#         background_tasks_running = True
-#         background_tasks.add_task(sc.schedule_tasks)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1w", True)
-#         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)
 
-# @app.get('/protected-route')
-# def protected_route(user: User = Depends(fastapi_users.get_current_user)):
-#     return f'Hello, {user.email}'
+@app.get("/time")
+async def currTime(response: Response):
+    response.headers['Content-Type'] = 'text/plain'
+    return (int(time.time()))
+
+
+@app.get("/config")
+async def getConfig(response: Response):
+    return dataHandler.config()
+
+
+@app.get("/symbol_info")
+async def retriveAllSymbols():
+    return cryptoList
+
+
+@app.get("/symbols")
+async def crypto_info(symbol: str = "BTCUSDT"):
+    symbol = escape(symbol)
+    if(len(symbol) > 10):
+        symbol = symbol[:9]
+    if(symbol not in cryptoList):
+        raise HTTPException(status_code=404, detail="Symbol Not Found")
+        return
+    symbolName = None
+    for tether in dataHandler.tethers:
+        tickerTemp = symbol.replace(tether, "")
+        fullName = cryptoData.extract_name(tickerTemp)
+        if(fullName):
+            symbolName = fullName
+            break
+    return dataHandler.symbolsInfo(symbol, symbolName=symbolName)
+
+
+@app.get("/search")
+async def search_for_symbol(query: str = None, limit: int = 10):
+    if(not query and limit < len(cryptoList)):
+        return cryptoList[:limit]
+    elif(query is not None and len(query) < 15):
+        query = escape(query)
+        query = query.upper()
+        tempQueryList = [s for s in cryptoList if query in s][:limit]
+        queryList = []
+        for symbol in tempQueryList:
+            symbolName = None
+            for tether in dataHandler.tethers:
+                tickerTemp = symbol.replace(tether, "")
+                fullName = cryptoData.extract_name(tickerTemp)
+                if(fullName):
+                    symbolName = fullName
+                    queryList.append(dataHandler.symbolsInfo(
+                        symbol, symbolName=symbolName))
+        return queryList
+    else:
+        raise HTTPException(status_code=400, detail="Invalid request")
+
+
+@app.get("/history")
+async def history(request: Request, symbol: str = " ", to: int = 0, resolution: str = " "):
+    if(symbol not in cryptoList or 'from' not in request.query_params or not to):
+        raise HTTPException(status_code=400, detail="Invalid request")
+    fromDate = int(escape(request.query_params['from']))
+    to = int(escape(to))
+    symbol = escape(symbol)
+    resolution = escape(resolution)
+    returnVal = dataHandler.history(
+        to=to, fromDate=fromDate, symbol=symbol, resolution=resolution)
+    if(not returnVal.empty):
+        tTemp = (returnVal["timestamp"].values)
+        t = []
+        for currTime in tTemp:
+            if ":" in currTime:
+                t.append(timegm(time.strptime(currTime, "%Y-%m-%d %H:%M:%S")))
+            else:
+                t.append(timegm(time.strptime(
+                    currTime.strip(), "%Y-%m-%d")))
+        return {"s": "ok", "t": t, "o": list(returnVal["open"].values),
+                "c": list(returnVal["close"].values), "v": list(returnVal["volume"].values), 'h': list(returnVal["high"].values), 'l': list(returnVal["low"].values)}
+    else:
+        raise HTTPException(status_code=400, detail="Invalid request")
+
+    # def initiate_background(background_tasks):
+    #     global background_tasks_running
+    #     if not background_tasks_running:
+    #         background_tasks_running = True
+    #         background_tasks.add_task(sc.schedule_tasks)
+    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
+    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
+    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
+    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
+    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1w", True)
+    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)
+
+    # @app.get('/protected-route')
+    # def protected_route(user: User = Depends(fastapi_users.get_current_user)):
+    #     return f'Hello, {user.email}'
