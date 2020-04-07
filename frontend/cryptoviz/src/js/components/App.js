@@ -9,7 +9,8 @@ import SignUp from "./SignUp";
 import Watchlist from "./Watchlist";
 import Home from "./Home";
 import CryptoLanding from "./CryptoLanding";
-import { useInterval } from '../api/common';
+import { useInterval } from '../common/common';
+import { getCurrUser } from '../api/api';
 import "../../style/App.css";
 import  * as authConstants from '../constants/auth';
 
@@ -80,57 +81,24 @@ function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   useEffect(() => {
-    getCurrUser();
+    getUserInfo();
   }, []);
 
   useInterval(() => {
-    getCurrUser();
+    getUserInfo();
   }, 500);
 
-  const getCurrUser = async () => {
+  const getUserInfo = () => {
     if (Cookies.get('user_auth')) {
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + Cookies.get('user_auth')
-        },
-        body: null
-      };
-      try {
-        let response = await fetch('http://localhost:8000/api/users/me', requestOptions);
-        let data = await response.json();
-        if (!response.ok) {
-          const error = (data && data.detail) ? data.detail : response.status;
-          dispatch({
-            type: authConstants.GET_USER_FAILURE,
-            // payload: {
-            //   error: error
-            // }
-          });
-          console.error("There was an error!", error);
-          return;
-        }
-        dispatch({
-          type: authConstants.GET_USER_SUCCESS,
-          payload: {
-            user: data
-          }
-        });
-      } catch(error) {
-        dispatch({
-          type: authConstants.GET_USER_FAILURE,
-        //   payload: {
-        //     error: error
-        //   }
-        });
+      getCurrUser(dispatch).catch(error => {
         console.error("There was an error!", error);
-      }
+      });
     } else {
       dispatch({
         type: authConstants.GET_USER_FAILURE
       });
     }
-  };
+  }
 
   return (
     <AuthContext.Provider

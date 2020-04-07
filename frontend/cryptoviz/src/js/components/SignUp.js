@@ -1,10 +1,11 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useContext } from "react";
 import { useHistory, Link } from 'react-router-dom';
-import { useInterval } from '../api/common';
-import { REGISTER_SUCCESS, REGISTER_FAILURE, ERROR_CLOSE } from '../constants/auth';
+import { useInterval } from '../common/common';
+import { REGISTER_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import Navbar from "./Navbar";
 import { AuthContext } from "./App";
+import { register, login } from '../api/api';
 import Cookies from 'js-cookie';
 import Loader from "react-loader-spinner";
 
@@ -31,7 +32,8 @@ function SignUp() {
         }
     };
 
-    const signUp = async () => {
+    const signUp = e => {
+        e.preventDefault();
         let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!re.test(email) ) {
             dispatch({
@@ -41,67 +43,17 @@ function SignUp() {
                 }
             });
         } else {
-            let requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 'email': email, 'password': password, 'first_name': firstName, 'last_name': lastName})
-            };
-            try {
-                let response = await fetch('http://localhost:8000/api/users/register', requestOptions);
-                let data = await response.json();
-                if (!response.ok) {
-                    const error = (data && data.detail) ? data.detail : response.status;
-                    dispatch({
-                        type: REGISTER_FAILURE,
-                        payload: {
-                          error: error
-                        }
-                    });
+            register(email, password, firstName, lastName, dispatch).then(() => {
+                login(email, password, dispatch).then(() => {
+                    history.push('/');
+                }).catch(error => {
                     console.error("There was an error!", error);
-                    return;
-                }
-                requestOptions = {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: "username=" + email + "&password=" + password,
-                    credentials: 'include'
-                };
-                response = await fetch('http://localhost:8000/api/users/login/cookie', requestOptions);
-                data = await response.json();
-                if (!response.ok) {
-                    const error = (data && data.detail) ? data.detail : response.status;
-                    dispatch({
-                        type: REGISTER_FAILURE,
-                        payload: {
-                          error: error
-                        }
-                    });
-                    console.error("There was an error!", error);
-                    return;
-                }
-                dispatch({
-                    type: REGISTER_SUCCESS
                 });
-                history.push('/');
-            } catch(error) {
-                dispatch({
-                    type: REGISTER_FAILURE,
-                    payload: {
-                      error: error
-                    }
-                });
+            }).catch(error => {
                 console.error("There was an error!", error);
-            }
+            });
         }
     };
-
-    const handleSubmit = e => {
-        e.preventDefault();
-        signUp();
-    }
 
     const handleCloseError = () => {
         dispatch({
@@ -126,7 +78,7 @@ function SignUp() {
                             {authState.error}
                         </div>
                     </div>}
-                    <form style={{ width: "45%", margin: "4em auto" }} onSubmit={handleSubmit}>
+                    <form style={{ width: "45%", margin: "4em auto" }} onSubmit={signUp}>
                         <fieldset>
                             <legend style={{textAlign: "center"}}><h2>Sign Up</h2></legend>
                             <div className="form-group">

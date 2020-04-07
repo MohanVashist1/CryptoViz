@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react";
 import Cookies from 'js-cookie';
 import { useHistory, Link, NavLink } from "react-router-dom";
 import "../../style/navbar.css";
-import { LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../constants/auth';
+import { logout } from '../api/api';
 import { AuthContext } from "./App";
 
 function Navbar() {
@@ -12,42 +12,12 @@ function Navbar() {
   const history = useHistory();
   const [crypto, setCrypto] = useState("");
 
-  const signout = async () => {
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + Cookies.get('user_auth')
-      },
-      body: null,
-      credentials: 'include'
-    };
-    try {
-      let response = await fetch('http://localhost:8000/api/users/logout/cookie', requestOptions);
-      let data = await response.json();
-      if (!response.ok) {
-        const error = (data && data.detail) ? data.detail : response.status;
-        dispatch({
-          type: LOGOUT_FAILURE,
-          payload: {
-            error: error
-          }
-        });
-        console.error("There was an error!", error);
-        return;
-      }
-      dispatch({
-        type: LOGOUT_SUCCESS
-      });
+  const signOut = () => {
+    logout(dispatch).then(() => {
       history.push('/');
-    } catch(error) {
-      dispatch({
-        type: LOGOUT_FAILURE,
-        payload: {
-          error: error
-        }
-      });
+    }).catch(error => {
       console.error("There was an error!", error);
-    }
+    });
   };
 
   const handleSubmit = e => {
@@ -110,7 +80,7 @@ function Navbar() {
           <ul className="navbar-nav">
             <li className="nav-item" style={{display: "flex", flexFlow: "column", alignItems: "center", justifyContent: "center"}}>
               <p style={{color: "rgba(255,255,255,0.5)"}}>Hi, {authState.user.first_name}!</p>
-              <a href="#" className="nav-link" onClick={signout}>Sign Out</a>
+              <a href="#" className="nav-link" onClick={signOut}>Sign Out</a>
             </li>
           </ul>}
           <form className="form-inline my-2 my-lg-0" onSubmit={handleSubmit}>

@@ -1,8 +1,9 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useContext, useState } from "react";
 import { useHistory, Link } from 'react-router-dom';
-import { useInterval } from '../api/common';
-import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
+import { useInterval } from '../common/common';
+import { ERROR_CLOSE } from '../constants/auth';
+import { updateUser } from '../api/api';
 import { AuthContext } from "./App";
 import Navbar from "./Navbar";
 import Cookies from 'js-cookie';
@@ -32,71 +33,19 @@ function Watchlist() {
             history.push('/');
         }
     };
-
-    const updateUser = async (updatedUser) => {
-        const requestOptions = {
-            method: 'PATCH',
-            headers: {
-                'Authorization': 'Bearer ' + Cookies.get('user_auth')
-            },
-            body: JSON.stringify(updatedUser),
-            credentials: 'include'
-        };
-        try {
-            let response = await fetch('http://localhost:8000/api/users/me', requestOptions);
-            let data = await response.json();
-            if (!response.ok) {
-                const error = (data && data.detail) ? data.detail : response.status;
-                // if (mounted) {
-                    dispatch({
-                        type: UPDATE_USER_FAILURE,
-                        payload: {
-                          error: error
-                        }
-                    });
-                    // setErrorMessage(error);
-                // }
-                console.error("There was an error!", error);
-                return;
-            }
-            // if (mounted) {
-                dispatch({
-                    type: UPDATE_USER_SUCCESS,
-                    payload: {
-                      user: updatedUser
-                    }
-                });
-                // setErrorMessage('');
-            // }
-            // dispatch({
-            //     type: "LOGIN",
-            //     payload: {
-            //         user: updatedUser
-            //     }
-            // });
-            let lastPageNum = Math.floor((updatedUser.watchlist.length - 1)/10);
-            if(mounted && page > lastPageNum) {
-                setPage(lastPageNum);
-            }
-        } catch(error) {
-            // if (mounted) {
-                dispatch({
-                    type: UPDATE_USER_FAILURE,
-                    payload: {
-                      error: error
-                    }
-                });
-                // setErrorMessage(error);
-            // }
-            console.error("There was an error!", error);
-        }
-    }
     
     const deleteFromWatchlist = ele => {
         let eleIndex = authState.user.watchlist.indexOf(ele);
         let tmp = JSON.parse(JSON.stringify(authState.user));
         tmp.watchlist.splice(eleIndex, 1);
-        updateUser(tmp);
+        updateUser(tmp, dispatch).then(() => {
+            let lastPageNum = Math.floor((tmp.watchlist.length - 1)/10);
+            if(mounted && page > lastPageNum) {
+                setPage(lastPageNum);
+            }
+        }).catch(error => {
+            console.error("There was an error!", error);
+        });
     }
 
     const createList = () => {

@@ -1,9 +1,10 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useContext } from "react";
 import { useHistory, Link } from 'react-router-dom';
-import { useInterval } from '../api/common';
-import { LOGIN_SUCCESS, LOGIN_FAILURE, ERROR_CLOSE } from '../constants/auth';
+import { useInterval } from '../common/common';
+import { ERROR_CLOSE } from '../constants/auth';
 import Navbar from "./Navbar";
+import { login } from '../api/api';
 import { AuthContext } from "./App";
 import Cookies from 'js-cookie';
 import Loader from "react-loader-spinner";
@@ -29,49 +30,14 @@ function SignIn() {
         }
     };
 
-    const signIn = async () => {
-        let requestOptions = {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: "username=" + email + "&password=" + password,
-            credentials: 'include'
-        };
-        try {
-            let response = await fetch('http://localhost:8000/api/users/login/cookie', requestOptions);
-            let data = await response.json();
-            if (!response.ok) {
-                const error = (data && data.detail) ? data.detail : response.status;
-                dispatch({
-                    type: LOGIN_FAILURE,
-                    payload: {
-                      error: error
-                    }
-                });
-                console.error("There was an error!", error);
-                return;
-            }
-            dispatch({
-                type: LOGIN_SUCCESS
-            });
-            history.push('/');
-        } catch(error) {
-            dispatch({
-                type: LOGIN_FAILURE,
-                payload: {
-                  error: error
-                }
-            });
-            console.error("There was an error!", error);
-        }
-    };
-
-    const handleSubmit = e => {
+    const signIn = e => {
         e.preventDefault();
-        signIn();
-    }
+        login(email, password, dispatch).then(() => {
+            history.push('/');
+        }).catch(error => {
+            console.error("There was an error!", error);
+        });
+    };
 
     const handleCloseError = () => {
         dispatch({
@@ -96,7 +62,7 @@ function SignIn() {
                             {authState.error}
                         </div>
                     </div>}
-                    <form style={{ width: "45%", margin: "auto", marginTop: "15vh" }} onSubmit={handleSubmit}>
+                    <form style={{ width: "45%", margin: "auto", marginTop: "15vh" }} onSubmit={signIn}>
                         <fieldset>
                             <legend style={{textAlign: "center"}}><h2>Sign In</h2></legend>
                             <div className="form-group">
