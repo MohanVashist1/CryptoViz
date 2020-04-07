@@ -52,12 +52,6 @@ const reducer = (state, action) => {
         ...state,
         error: ""
       };
-    // case authConstants.GET_USER_FAILURE:
-    //   return {
-    //     ...state,
-    //     user: {},
-    //     error: action.payload.error
-    //   };
     case authConstants.LOGOUT_SUCCESS:
       return {
         ...state,
@@ -90,7 +84,17 @@ function App() {
 
   const getUserInfo = () => {
     if (Cookies.get('user_auth')) {
-      getCurrUser(dispatch).catch(error => {
+      getCurrUser().then(res => {
+        dispatch({
+          type: authConstants.GET_USER_SUCCESS,
+          payload: {
+            user: res
+          }
+        });
+      }).catch(error => {
+        dispatch({
+          type: authConstants.GET_USER_FAILURE
+        });
         console.error("There was an error!", error);
       });
     } else {

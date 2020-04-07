@@ -2,6 +2,7 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useState, useContext } from "react";
 import Cookies from 'js-cookie';
 import { useHistory, Link, NavLink } from "react-router-dom";
+import { LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../constants/auth';
 import "../../style/navbar.css";
 import { logout } from '../api/api';
 import { AuthContext } from "./App";
@@ -13,9 +14,18 @@ function Navbar() {
   const [crypto, setCrypto] = useState("");
 
   const signOut = () => {
-    logout(dispatch).then(() => {
+    logout().then(() => {
+      dispatch({
+        type: LOGOUT_SUCCESS
+      });
       history.push('/');
     }).catch(error => {
+      dispatch({
+        type: LOGOUT_FAILURE,
+        payload: {
+          error: error
+        }
+      });
       console.error("There was an error!", error);
     });
   };

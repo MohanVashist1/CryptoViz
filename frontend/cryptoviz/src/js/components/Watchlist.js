@@ -2,7 +2,7 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useContext, useState } from "react";
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from '../common/common';
-import { ERROR_CLOSE } from '../constants/auth';
+import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import { updateUser } from '../api/api';
 import { AuthContext } from "./App";
 import Navbar from "./Navbar";
@@ -33,19 +33,35 @@ function Watchlist() {
             history.push('/');
         }
     };
+
+    const update = updatedUser => {
+        updateUser(updatedUser).then(() => {
+            dispatch({
+                type: UPDATE_USER_SUCCESS,
+                payload: {
+                    user: updatedUser
+                }
+            });
+            let lastPageNum = Math.floor((updatedUser.watchlist.length - 1)/10);
+            if(mounted && page > lastPageNum) {
+                setPage(lastPageNum);
+            }
+        }).catch(error => {
+            dispatch({
+                type: UPDATE_USER_FAILURE,
+                payload: {
+                    error: error
+                }
+            });
+            console.error("There was an error!", error);
+        });
+      }
     
     const deleteFromWatchlist = ele => {
         let eleIndex = authState.user.watchlist.indexOf(ele);
         let tmp = JSON.parse(JSON.stringify(authState.user));
         tmp.watchlist.splice(eleIndex, 1);
-        updateUser(tmp, dispatch).then(() => {
-            let lastPageNum = Math.floor((tmp.watchlist.length - 1)/10);
-            if(mounted && page > lastPageNum) {
-                setPage(lastPageNum);
-            }
-        }).catch(error => {
-            console.error("There was an error!", error);
-        });
+        update(tmp);
     }
 
     const createList = () => {

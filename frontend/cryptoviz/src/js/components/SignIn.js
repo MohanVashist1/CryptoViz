@@ -2,7 +2,7 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useContext } from "react";
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from '../common/common';
-import { ERROR_CLOSE } from '../constants/auth';
+import {LOGIN_SUCCESS, LOGIN_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import Navbar from "./Navbar";
 import { login } from '../api/api';
 import { AuthContext } from "./App";
@@ -32,9 +32,18 @@ function SignIn() {
 
     const signIn = e => {
         e.preventDefault();
-        login(email, password, dispatch).then(() => {
+        login(email, password).then(() => {
+            dispatch({
+                type: LOGIN_SUCCESS
+            });
             history.push('/');
         }).catch(error => {
+            dispatch({
+                type: LOGIN_FAILURE,
+                payload: {
+                  error: error
+                }
+            });
             console.error("There was an error!", error);
         });
     };

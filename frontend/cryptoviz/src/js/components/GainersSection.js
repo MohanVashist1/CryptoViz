@@ -6,7 +6,7 @@ import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
 import { GAINERS_AREA } from '../constants/areas';
 import { updateUser, fetchGainers } from '../api/api';
-import { ERROR_CLOSE } from '../constants/auth';
+import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import { AuthContext } from "./App";
 
 function GainersSection() {
@@ -44,21 +44,36 @@ function GainersSection() {
     });
   }
 
+  const update = updatedUser => {
+    updateUser(updatedUser).then(() => {
+      dispatch({
+        type: UPDATE_USER_SUCCESS,
+        payload: {
+          user: updatedUser
+        }
+      });
+    }).catch(error => {
+      dispatch({
+        type: UPDATE_USER_FAILURE,
+        payload: {
+          error: error
+        }
+      });
+      console.error("There was an error!", error);
+    });
+  }
+
   const deleteFromWatchlist = ele => {
     let eleIndex = authState.user.watchlist.indexOf(ele);
     let tmp = JSON.parse(JSON.stringify(authState.user));
     tmp.watchlist.splice(eleIndex, 1);
-    updateUser(tmp, dispatch).catch(error => {
-      console.error("There was an error!", error);
-    });
+    update(tmp);
   }
 
   const addToWatchlist = ele => {
     let tmp = JSON.parse(JSON.stringify(authState.user));
     tmp.watchlist.push(ele);
-    updateUser(tmp, dispatch).catch(error => {
-      console.error("There was an error!", error);
-    });
+    update(tmp);
   }
 
   const timeMapping = {

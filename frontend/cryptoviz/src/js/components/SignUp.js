@@ -2,7 +2,7 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useContext } from "react";
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from '../common/common';
-import { REGISTER_FAILURE, ERROR_CLOSE } from '../constants/auth';
+import { REGISTER_FAILURE, REGISTER_SUCCESS, LOGIN_SUCCESS, LOGIN_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import Navbar from "./Navbar";
 import { AuthContext } from "./App";
 import { register, login } from '../api/api';
@@ -34,25 +34,33 @@ function SignUp() {
 
     const signUp = e => {
         e.preventDefault();
-        let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if (!re.test(email) ) {
-            dispatch({
-                type: REGISTER_FAILURE,
-                payload: {
-                  error: "INVALID_EMAIL"
-                }
-            });
-        } else {
-            register(email, password, firstName, lastName, dispatch).then(() => {
-                login(email, password, dispatch).then(() => {
+            register(email, password, firstName, lastName).then(() => {
+                dispatch({
+                    type: REGISTER_SUCCESS
+                });
+                login(email, password).then(() => {
+                    dispatch({
+                        type: LOGIN_SUCCESS
+                    });
                     history.push('/');
                 }).catch(error => {
+                    dispatch({
+                        type: LOGIN_FAILURE,
+                        payload: {
+                          error: error
+                        }
+                    });
                     console.error("There was an error!", error);
                 });
             }).catch(error => {
+                dispatch({
+                    type: REGISTER_FAILURE,
+                    payload: {
+                      error: error
+                    }
+                });
                 console.error("There was an error!", error);
             });
-        }
     };
 
     const handleCloseError = () => {

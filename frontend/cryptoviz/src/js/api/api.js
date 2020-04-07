@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie';
-import * as authConstants from '../constants/auth';
 
 export const fetchLosers = async (time) => {
     try {
@@ -13,7 +12,7 @@ export const fetchLosers = async (time) => {
     } catch(error) {
       return Promise.reject(error);
     }
-  };
+};
 
 export const fetchGainers = async (time) => {
     try {
@@ -29,7 +28,11 @@ export const fetchGainers = async (time) => {
     }
 };
 
-export const register = async (email, password, firstName, lastName, dispatch) => {
+export const register = async (email, password, firstName, lastName) => {
+      let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!re.test(email) ) {
+        return Promise.reject("INVALID_EMAIL");
+      }
       let requestOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -40,26 +43,14 @@ export const register = async (email, password, firstName, lastName, dispatch) =
           let data = await response.json();
           if (!response.ok) {
               const error = (data && data.detail) ? data.detail : response.status;
-              dispatch({
-                  type: authConstants.REGISTER_FAILURE,
-                  payload: {
-                    error: error
-                  }
-              });
               return Promise.reject(error);
           }
       } catch(error) {
-          dispatch({
-              type: authConstants.REGISTER_FAILURE,
-              payload: {
-                error: error
-              }
-          });
           return Promise.reject(error);
       }
 };
 
-export const login = async (email, password, dispatch) => {
+export const login = async (email, password) => {
   let requestOptions = {
       method: 'POST',
       headers: {
@@ -74,29 +65,14 @@ export const login = async (email, password, dispatch) => {
       let data = await response.json();
       if (!response.ok) {
           const error = (data && data.detail) ? data.detail : response.status;
-          dispatch({
-              type: authConstants.LOGIN_FAILURE,
-              payload: {
-                error: error
-              }
-          });
           return Promise.reject(error);
       }
-      dispatch({
-          type: authConstants.LOGIN_SUCCESS
-      });
   } catch(error) {
-      dispatch({
-          type: authConstants.LOGIN_FAILURE,
-          payload: {
-            error: error
-          }
-      });
       return Promise.reject(error);
   }
 };
 
-export const logout = async (dispatch) => {
+export const logout = async () => {
   const requestOptions = {
     method: 'POST',
     headers: {
@@ -110,24 +86,9 @@ export const logout = async (dispatch) => {
     let data = await response.json();
     if (!response.ok) {
       const error = (data && data.detail) ? data.detail : response.status;
-      dispatch({
-        type: authConstants.LOGOUT_FAILURE,
-        payload: {
-          error: error
-        }
-      });
       return Promise.reject(error);
     }
-    dispatch({
-      type: authConstants.LOGOUT_SUCCESS
-    });
   } catch(error) {
-    dispatch({
-      type: authConstants.LOGOUT_FAILURE,
-      payload: {
-        error: error
-      }
-    });
     return Promise.reject(error);
   }
 };
@@ -146,30 +107,12 @@ export const updateUser = async (updatedUser, dispatch) => {
       let data = await response.json();
       if (!response.ok) {
         const error = (data && data.detail) ? data.detail : response.status;
-          dispatch({
-            type: authConstants.UPDATE_USER_FAILURE,
-            payload: {
-              error: error
-            }
-          });
         return Promise.reject(error);
       }
-        dispatch({
-          type: authConstants.UPDATE_USER_SUCCESS,
-          payload: {
-            user: updatedUser
-          }
-        });
     } catch(error) {
-        dispatch({
-          type: authConstants.UPDATE_USER_FAILURE,
-          payload: {
-            error: error
-          }
-        });
       return Promise.reject(error);
     }
-}
+};
 
 export const getCurrUser = async (dispatch) => {
     const requestOptions = {
@@ -184,21 +127,10 @@ export const getCurrUser = async (dispatch) => {
       let data = await response.json();
       if (!response.ok) {
         const error = (data && data.detail) ? data.detail : response.status;
-        dispatch({
-          type: authConstants.GET_USER_FAILURE
-        });
         return Promise.reject(error);
       }
-      dispatch({
-        type: authConstants.GET_USER_SUCCESS,
-        payload: {
-          user: data
-        }
-      });
+      return data;
     } catch(error) {
-      dispatch({
-        type: authConstants.GET_USER_FAILURE
-      });
       return Promise.reject(error);
     }
 };
