@@ -1,10 +1,10 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useContext } from "react";
 import { useHistory, Link } from 'react-router-dom';
-import { useInterval } from '../common/common';
+import { useInterval } from '../common';
 import { LOGIN_SUCCESS, LOGIN_FAILURE } from '../constants/auth';
 import Navbar from "./Navbar";
-import { login } from '../api/api';
+import { login } from '../api';
 import { AuthContext } from "./App";
 import Cookies from 'js-cookie';
 import Loader from "react-loader-spinner";

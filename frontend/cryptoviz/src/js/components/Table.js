@@ -3,11 +3,11 @@ import OverlayTrigger  from 'react-bootstrap/OverlayTrigger';
 import Tooltip  from 'react-bootstrap/Tooltip';
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from 'react-router-dom';
-import { useInterval } from '../common/common';
+import { useInterval } from '../common';
 import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
 import { GAINERS_AREA, LOSERS_AREA } from '../constants/areas';
-import { updateUser, fetchLosers, fetchGainers } from '../api/api';
+import { updateUser, fetchLosers, fetchGainers } from '../api';
 import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE } from '../constants/auth';
 import { AuthContext } from "./App";
 

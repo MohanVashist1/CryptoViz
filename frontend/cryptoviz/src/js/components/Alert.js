@@ -1,6 +1,6 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React from 'react';
-import Modal  from 'react-bootstrap/Modal';
+import Modal from 'react-bootstrap/Modal';
 
 function Alert({ msg, show, onHide }) {
     return (

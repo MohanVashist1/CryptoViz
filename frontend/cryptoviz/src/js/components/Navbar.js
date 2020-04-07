@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import { useHistory, Link, NavLink } from "react-router-dom";
 import { LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../constants/auth';
 import "../../style/navbar.css";
-import { logout } from '../api/api';
+import { logout } from '../api';
 import { AuthContext } from "./App";
 
 function Navbar() {
