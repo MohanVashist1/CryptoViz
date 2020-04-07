@@ -2,7 +2,9 @@ import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useState, useContext } from "react";
 import Cookies from 'js-cookie';
 import { useHistory, Link, NavLink } from "react-router-dom";
+import { LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../constants/auth';
 import "../../style/navbar.css";
+import { logout } from '../api/api';
 import { AuthContext } from "./App";
 
 function Navbar() {
@@ -11,29 +13,21 @@ function Navbar() {
   const history = useHistory();
   const [crypto, setCrypto] = useState("");
 
-  const signout = async () => {
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + Cookies.get('user_auth')
-      },
-      body: null,
-      credentials: 'include'
-    };
-    try {
-      let response = await fetch('http://localhost:8000/api/users/logout/cookie', requestOptions);
-      let data = await response.json();
-      if (!response.ok) {
-        const error = (data && data.detail) ? data.detail : response.status;
-        console.error("There was an error!", error);
-        return;
-      }
+  const signOut = () => {
+    logout().then(() => {
       dispatch({
-        type: "LOGOUT"
+        type: LOGOUT_SUCCESS
       });
-    } catch(error) {
+      history.push('/');
+    }).catch(error => {
+      dispatch({
+        type: LOGOUT_FAILURE,
+        payload: {
+          error: error
+        }
+      });
       console.error("There was an error!", error);
-    }
+    });
   };
 
   const handleSubmit = e => {
@@ -68,13 +62,19 @@ function Navbar() {
                 Home
               </NavLink>
             </li>
+            {Cookies.get('user_auth') &&
+              <li className="nav-item">
+              <NavLink to="/watchlist" className="nav-link" activeClassName="active">
+                My Watchlist
+              </NavLink>
+            </li>}
             <li className="nav-item">
               <NavLink to="/credits" className="nav-link" activeClassName="active">
                 Credits
               </NavLink>
             </li>
           </ul>
-          {Object.keys(authState.user).length === 0 ?
+          {!authState.isAuthenticated ?
           <ul className="navbar-nav">
             <li className="nav-item">
               <NavLink to="/signin" className="nav-link" activeClassName="active">
@@ -90,7 +90,7 @@ function Navbar() {
           <ul className="navbar-nav">
             <li className="nav-item" style={{display: "flex", flexFlow: "column", alignItems: "center", justifyContent: "center"}}>
               <p style={{color: "rgba(255,255,255,0.5)"}}>Hi, {authState.user.first_name}!</p>
-              <a href="#" className="nav-link" onClick={signout}>Sign Out</a>
+              <a href="#" className="nav-link" onClick={signOut}>Sign Out</a>
             </li>
           </ul>}
           <form className="form-inline my-2 my-lg-0" onSubmit={handleSubmit}>

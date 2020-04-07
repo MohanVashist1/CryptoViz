@@ -1,86 +1,79 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useContext } from "react";
-import { useInterval } from '../api/common';
+import { Link } from 'react-router-dom';
+import { useInterval } from '../common/common';
 import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
-import { areas } from '../constants/areas';
+import { LOSERS_AREA } from '../constants/areas';
+import { updateUser, fetchLosers } from '../api/api';
+import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import { AuthContext } from "./App";
-import "../../style/main.css";
-import Cookies from 'js-cookie';
 
 function LosersSection() {
+
+  let mounted = true;
   const { state: authState, dispatch } = useContext(AuthContext);
   const [losersTimeInterval, setLosersTimeInterval] = useState("1");
-  const [errorMessage, setErrorMessage] = useState("");
   const [losers, setLosers] = useState([]);
+
+  useEffect(() => {
+    mounted = true;
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useInterval(() => {
     getLosers();
   }, 30000);
   
   useEffect(() => {
-    setLosers([]);
-    trackPromise(getLosers(), areas.losers);
+    if(mounted) {
+      setLosers([]);
+    }
+    trackPromise(getLosers(), LOSERS_AREA);
   }, [losersTimeInterval]);
 
   const getLosers = async () => {
-    try {
-      let response = await fetch(`http://localhost:8000/api/losers/?time=${losersTimeInterval}`);
-      let data = await response.json();
-      if (!response.ok) {
-        const error = (data && data.detail) ? data.detail : response.status;
-        console.error("There was an error!", error);
-        return;
+    await fetchLosers(losersTimeInterval).then(res => {
+      if(mounted) {
+        setLosers(res);
       }
-      setLosers(data.losers);
-    } catch(error) {
+    }).catch(error => {
       console.error("There was an error!", error);
-    }
-  };
+    });
+  }
 
-  const updateUser = async (updatedUser) => {
-    const requestOptions = {
-      method: 'PATCH',
-      headers: {
-        'Authorization': 'Bearer ' + Cookies.get('user_auth')
-      },
-      body: JSON.stringify(updatedUser),
-      credentials: 'include'
-    };
-    try {
-      let response = await fetch('http://localhost:8000/api/users/me', requestOptions);
-      let data = await response.json();
-      if (!response.ok) {
-        const error = (data && data.detail) ? data.detail : response.status;
-        setErrorMessage(error);
-        console.error("There was an error!", error);
-        return;
-      }
-      setErrorMessage('');
+  const update = updatedUser => {
+    updateUser(updatedUser).then(() => {
       dispatch({
-        type: "LOGIN",
+        type: UPDATE_USER_SUCCESS,
         payload: {
           user: updatedUser
         }
       });
-    } catch(error) {
-      setErrorMessage(error);
+    }).catch(error => {
+      dispatch({
+        type: UPDATE_USER_FAILURE,
+        payload: {
+          error: error
+        }
+      });
       console.error("There was an error!", error);
-    }
+    });
   }
 
   const deleteFromWatchlist = ele => {
     let eleIndex = authState.user.watchlist.indexOf(ele);
     let tmp = JSON.parse(JSON.stringify(authState.user));
     tmp.watchlist.splice(eleIndex, 1);
-    updateUser(tmp);
+    update(tmp);
   }
 
   const addToWatchlist = ele => {
-    console.log(authState.user);
     let tmp = JSON.parse(JSON.stringify(authState.user));
     tmp.watchlist.push(ele);
-    updateUser(tmp);
+    update(tmp);
   }
 
   const timeMapping = {
@@ -98,7 +91,7 @@ function LosersSection() {
         <td key={count}>{data[i].rank}</td>
       );
       cells.push(
-        <td key={count + 1}>{data[i].symbol}</td>
+        <td key={count + 1}><Link to={`/crypto/${data[i].symbol}USDT`}>{data[i].symbol}</Link></td>
       );
       cells.push(
         <td key={count + 2}>{data[i].market_cap}</td>
@@ -109,15 +102,18 @@ function LosersSection() {
       cells.push(
         <td key={count + 4}>{data[i].volume}</td>
       );
-      count += 5;
-      if (Object.keys(authState.user).length > 0) {
+      cells.push(
+        <td style={{color: "red"}} key={count + 5}>{data[i].percent}</td>
+      );
+      count += 6;
+      if (authState.isAuthenticated) {
         if (authState.user.watchlist.includes(data[i].symbol)) {
           cells.push(
-            <td key={count}><div className="delete-icon" data-toggle="tooltip" data-placement="top" data-original-title="Remove from watchlist" onClick={() => deleteFromWatchlist(data[i].symbol)}/></td>
+            <td key={count}><i style={{color: "red", cursor:"pointer"}} className="fa fa-times-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from watchlist" onClick={() => deleteFromWatchlist(data[i].symbol)}></i></td>
           );
         } else {
           cells.push(
-            <td key={count}><div className="add-icon" data-toggle="tooltip" data-placement="top" data-original-title="Add to watchlist" onClick={() => addToWatchlist(data[i].symbol)}/></td>
+            <td key={count}><i style={{color: "green", cursor:"pointer"}} className="fa fa-plus-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add to watchlist" onClick={() => addToWatchlist(data[i].symbol)}></i></td>
           );
         }
         count += 1;
@@ -134,20 +130,32 @@ function LosersSection() {
     return rows;
   };
 
+  const handleCloseError = () => {
+    dispatch({
+      type: ERROR_CLOSE
+    });
+  }
+
+  const handleIntervalSwitch = time => {
+    if(mounted) {
+      setLosersTimeInterval(time);
+    }
+  }
+
   return (
       <div style={{ textAlign: "center"}}>
-        {errorMessage && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        {authState.error && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
           <div className="toast-header">
             <div className="mr-auto">Error</div>
-              <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={() => {setErrorMessage('')}}>
+              <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={handleCloseError}>
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div className="toast-body">
-            {errorMessage}
+            {authState.error}
           </div>
         </div>}
-        <h1 style={{ marginTop: "2em" }}>Top 10 Losers ({timeMapping[losersTimeInterval]})</h1>
+        <h1 style={{ marginTop: "2em" }}>Top Losers [{timeMapping[losersTimeInterval]}]</h1>
         <div style={{ marginTop: "2em" }}>
           <div
             className="btn-group"
@@ -168,18 +176,16 @@ function LosersSection() {
               ></button>
               <div className="dropdown-menu" aria-labelledby="btnGroupDrop2">
                 <a
+                  href="#"
                   className="dropdown-item"
-                  onClick={() => {
-                    setLosersTimeInterval("1");
-                  }}
+                  onClick={() => handleIntervalSwitch("1")}
                 >
                   {timeMapping["1"]}
                 </a>
                 <a
+                  href="#"
                   className="dropdown-item"
-                  onClick={() => {
-                    setLosersTimeInterval("24");
-                  }}
+                  onClick={() => handleIntervalSwitch("24")}
                 >
                   {timeMapping["24"]}
                 </a>
@@ -191,17 +197,18 @@ function LosersSection() {
           <table className="table table-hover">
             <thead>
               <tr>
-                <th scope="col">Rank</th>
-                <th scope="col">Symbol</th>
-                <th scope="col">Market Cap</th>
-                <th scope="col">Price</th>
-                <th scope="col">Volume</th>
-                {Object.keys(authState.user).length > 0 && <th scope="col">Action</th>}
+                <th scope="col"><h5>Rank</h5></th>
+                <th scope="col"><h5>Symbol</h5></th>
+                <th scope="col"><h5>Market Cap</h5></th>
+                <th scope="col"><h5>Price</h5></th>
+                <th scope="col"><h5>Volume</h5></th>
+                <th scope="col"><h5>%</h5></th>
+                {authState.isAuthenticated && <th scope="col"><h5>Action</h5></th>}
               </tr>
             </thead>
             <tbody>{createTable(losers)}</tbody>
           </table>
-          <Spinner area={areas.losers}/>
+          <Spinner area={LOSERS_AREA}/>
         </div>
       </div>
   );

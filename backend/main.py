@@ -51,7 +51,6 @@ class UserUpdate(User, models.BaseUserUpdate):
 
 class UserDB(User, models.BaseUserDB):
     pass
-    # watchlist: list
 
 
 class CryptoRequest(BaseModel):
@@ -88,8 +87,6 @@ fastapi_users = FastAPIUsers(
 )
 app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
-# origins = ['*']
-
 origins = [
     "http://localhost:3000",
     "localhost:3000",
@@ -107,13 +104,6 @@ app.add_middleware(
 
 # background_thread = Thread(target=sc.schedule_tasks)
 # background_thread.start()
-
-# ********************************************************************************************
-#    Title: Setting SameSite flag manually when using response.set_cookie()
-#    Author: zero-shubham
-#    Date: March 8, 2020
-#    Availability: https://github.com/tiangolo/fastapi/issues/1099
-# *******************************************************************************************/
 
 
 @app.middleware("http")
@@ -193,11 +183,6 @@ def on_after_register(user: User, request: Request):
 def on_after_forgot_password(user: User, token: str, request: Request):
     print(
         f"User with email '{user.email}' has forgot their password. Reset token: {token}")
-
-# @app.get("/")
-# async def root(background_tasks: BackgroundTasks):
-#     initiate_background(background_tasks)
-#     return {"message": "Hello World"}
 
 
 @app.get("/api/gainers/")

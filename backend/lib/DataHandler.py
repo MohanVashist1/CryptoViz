@@ -239,81 +239,64 @@ class BinanceWrapper:
 
 
 class _Scraper:
-    def scrape(self, url):
-        top_10 = []
-        res = requests.get(url)
-        soup = BeautifulSoup(res.content, 'html.parser')
-        count = 1
-        for ele in soup.find(id='react-listview').find('tbody').find_all('tr')[:10]:
-            tmp = {}
-            info = ele.find_all('td')
-            tmp['rank'] = count
-            tmp['symbol'] = info[1].find('div', class_='screener-symbol').text
-            tmp['market_cap'] = info[2].find('a').text
-            tmp['price'] = info[3].find('a').text
-            tmp['volume'] = info[4].find('a').text
-            top_10.append(tmp)
-            count += 1
-        return top_10
 
-    # def __normalize_val(self, val):
-    #     val = val[1:].replace(',','')
-    #     if val[-1] == "K":
-    #             val = float(val[:-1]) * 1000
-    #     elif val[-1] == "M":
-    #         val = float(val[:-1]) * 1000000
-    #     elif val[-1] == "B":
-    #         val = float(val[:-1]) * 1000000000
-    #     else:
-    #         val = float(val)
-    #     return val
+    def __init__(self):
+        self.bw = BinanceWrapper()
+
+    def scrape(self, time, isDesc):
+        cryptoList = self.bw.getcryptoSymbols('USDT')
+        top_10 = []
+        count = 1
+        url = 'https://bitscreener.com/screener/?o=per_' + \
+            str(time)+'h&desc='+str(isDesc)+'&f=e_Binance'
+        while(count < 11):
+            res = requests.get(url+'&p='+str(count))
+            soup = BeautifulSoup(res.content, 'html.parser')
+            for ele in soup.find(id='react-listview').find('tbody').find_all('tr'):
+                tmp = {}
+                info = ele.find_all('td')
+                tmp['symbol'] = info[1].find(
+                    'div', class_='screener-symbol').text
+                if tmp['symbol']+'USDT' in cryptoList:
+                    tmp['rank'] = count
+                    tmp['market_cap'] = info[2].find('a').text
+                    tmp['price'] = info[3].find('a').text
+                    tmp['volume'] = info[4].find('a').text
+                    if time == 1:
+                        tmp['percent'] = info[5].find('a').text
+                    elif time == 24:
+                        tmp['percent'] = info[6].find('a').text
+                    if (tmp['percent'][0] == '+' and isDesc) or (len(tmp['percent']) > 1 and tmp['percent'][0] == '-' and not isDesc):
+                        top_10.append(tmp)
+                    else:
+                        return top_10
+                    count += 1
+                if count == 11:
+                    break
+        return top_10
 
 
 def retrieve_top_gainers_hourly():
     sc = _Scraper()
-    result = sc.scrape(
-        'https://bitscreener.com/screener/?o=per_1h&desc=true&f=e_Binance')
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client["cryptoviz"]
-    # gainers = db['top_gainers_hourly']
-    # gainers.delete_many({})
-    # gainers.insert_many(result)
+    result = sc.scrape(1, True)
     return result
 
 
 def retrieve_top_losers_hourly():
     sc = _Scraper()
-    result = sc.scrape(
-        'https://bitscreener.com/screener/?o=per_1h&desc=false&f=e_Binance')
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client["cryptoviz"]
-    # losers = db['top_losers_hourly']
-    # losers.delete_many({})
-    # losers.insert_many(result)
+    result = sc.scrape(1, False)
     return result
 
 
 def retrieve_top_gainers_daily():
     sc = _Scraper()
-    result = sc.scrape(
-        'https://bitscreener.com/screener/?o=per_24h&desc=true&f=e_Binance')
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client["cryptoviz"]
-    # gainers = db['top_gainers_daily']
-    # gainers.delete_many({})
-    # gainers.insert_many(result)
+    result = sc.scrape(24, True)
     return result
 
 
 def retrieve_top_losers_daily():
     sc = _Scraper()
-    result = sc.scrape(
-        'https://bitscreener.com/screener/?o=per_24h&desc=false&f=e_Binance')
-    # client = pymongo.MongoClient(DATABASE_URL)
-    # db = client["cryptoviz"]
-    # losers = db['top_losers_daily']
-    # losers.delete_many({})
-    # losers.insert_many(result)
+    result = sc.scrape(24, False)
     return result
 
 

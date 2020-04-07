@@ -1,4 +1,2 @@
-export const areas = {
-    gainers: 'gainers-area',
-    losers: 'losers-area',
-};
+export const GAINERS_AREA = 'GAINERS_AREA';
+export const LOSERS_AREA = 'LOSERS_AREA';

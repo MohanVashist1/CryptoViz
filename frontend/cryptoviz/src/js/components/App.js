@@ -6,28 +6,64 @@ import Credits from "./Credits";
 import Navbar from "./Navbar";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
+import Watchlist from "./Watchlist";
 import Home from "./Home";
 import CryptoLanding from "./CryptoLanding";
-import { useInterval } from "../api/common";
+import { useInterval } from "../common/common";
+import { getCurrUser } from "../api/api";
 import "../../style/App.css";
+import * as authConstants from "../constants/auth";
 import { TVChartContainer } from "../../components/TVChartContainer/index";
 
 export const AuthContext = createContext();
 
 const initialState = {
+  isAuthenticated: false,
   user: {},
+  error: "",
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "LOGIN":
+    case authConstants.UPDATE_USER_FAILURE:
+    case authConstants.LOGOUT_FAILURE:
+    case authConstants.LOGIN_FAILURE:
+    case authConstants.REGISTER_FAILURE:
       return {
         ...state,
+        error: action.payload.error,
+      };
+    case authConstants.GET_USER_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: true,
         user: action.payload.user,
       };
-    case "LOGOUT":
+    case authConstants.UPDATE_USER_SUCCESS:
       return {
         ...state,
+        isAuthenticated: true,
+        user: action.payload.user,
+        error: "",
+      };
+    case authConstants.ERROR_CLOSE:
+    case authConstants.REGISTER_SUCCESS:
+    case authConstants.LOGIN_SUCCESS:
+      return {
+        ...state,
+        error: "",
+      };
+    case authConstants.LOGOUT_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: false,
+        user: {},
+        error: "",
+      };
+    case authConstants.GET_USER_FAILURE:
+      return {
+        ...state,
+        isAuthenticated: false,
         user: {},
       };
     default:
@@ -39,51 +75,33 @@ function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   useEffect(() => {
-    getCurrUser();
+    getUserInfo();
   }, []);
 
   useInterval(() => {
-    getCurrUser();
-  }, 1000);
+    getUserInfo();
+  }, 500);
 
-  const getCurrUser = async () => {
+  const getUserInfo = () => {
     if (Cookies.get("user_auth")) {
-      const requestOptions = {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + Cookies.get("user_auth"),
-        },
-        body: null,
-      };
-      try {
-        let response = await fetch(
-          "http://localhost:8000/api/users/me",
-          requestOptions
-        );
-        let data = await response.json();
-        if (!response.ok) {
-          const error = data && data.detail ? data.detail : response.status;
+      getCurrUser()
+        .then((res) => {
           dispatch({
-            type: "LOGOUT",
+            type: authConstants.GET_USER_SUCCESS,
+            payload: {
+              user: res,
+            },
+          });
+        })
+        .catch((error) => {
+          dispatch({
+            type: authConstants.GET_USER_FAILURE,
           });
           console.error("There was an error!", error);
-          return;
-        }
-        dispatch({
-          type: "LOGIN",
-          payload: {
-            user: data,
-          },
         });
-      } catch (error) {
-        dispatch({
-          type: "LOGOUT",
-        });
-        console.error("There was an error!", error);
-      }
     } else {
       dispatch({
-        type: "LOGOUT",
+        type: authConstants.GET_USER_FAILURE,
       });
     }
   };
@@ -97,7 +115,7 @@ function App() {
     >
       <div className="App">
         <BrowserRouter>
-          <Navbar />
+          {/* <Navbar /> */}
           <Switch>
             <Route path="/" exact component={Home}></Route>
             <Route path="/credits" component={Credits}></Route>
@@ -112,6 +130,7 @@ function App() {
               path="/crypto/advanced/:ticker"
               component={TVChartContainer}
             ></Route>
+            <Route path="/watchlist" component={Watchlist}></Route>
           </Switch>
         </BrowserRouter>
       </div>
