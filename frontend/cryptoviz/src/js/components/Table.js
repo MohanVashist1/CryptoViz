@@ -4,17 +4,17 @@ import { Link } from 'react-router-dom';
 import { useInterval } from '../common/common';
 import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
-import { GAINERS_AREA } from '../constants/areas';
-import { updateUser, fetchGainers } from '../api/api';
+import { GAINERS_AREA, LOSERS_AREA } from '../constants/areas';
+import { updateUser, fetchLosers, fetchGainers } from '../api/api';
 import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
 import { AuthContext } from "./App";
 
-function GainersSection() {
+function Table({ isGainer }) {
 
   let mounted = true;
   const { state: authState, dispatch } = useContext(AuthContext);
-  const [gainersTimeInterval, setGainersTimeInterval] = useState("1");
-  const [gainers, setGainers] = useState([]);
+  const [timeInterval, setTimeInterval] = useState("1");
+  const [list, setList] = useState([]);
 
   useEffect(() => {
     mounted = true;
@@ -24,24 +24,39 @@ function GainersSection() {
   }, []);
 
   useInterval(() => {
-    getGainers();
+    getList();
   }, 30000);
-
+  
   useEffect(() => {
     if(mounted) {
-      setGainers([]);
+      setList([]);
     }
-    trackPromise(getGainers(), GAINERS_AREA);
-  }, [gainersTimeInterval]);
+    if(isGainer) {
+        trackPromise(getList(), GAINERS_AREA);
+    } else {
+        trackPromise(getList(), LOSERS_AREA);
+    }
+  }, [timeInterval]);
 
-  const getGainers = async () => {
-    await fetchGainers(gainersTimeInterval).then(res => {
-      if(mounted) {
-        setGainers(res);
-      }
-    }).catch(error => {
-      console.error("There was an error!", error);
-    });
+  const getList = async () => {
+    if(isGainer) {
+        await fetchGainers(timeInterval).then(res => {
+            if(mounted) {
+              setList(res);
+            }
+        }).catch(error => {
+            console.error("There was an error!", error);
+        });
+
+    } else {
+        await fetchLosers(timeInterval).then(res => {
+            if(mounted) {
+              setList(res);
+            }
+        }).catch(error => {
+            console.error("There was an error!", error);
+        });
+    }
   }
 
   const update = updatedUser => {
@@ -102,9 +117,15 @@ function GainersSection() {
       cells.push(
         <td key={count + 4}>{data[i].volume}</td>
       );
-      cells.push(
-        <td style={{color: "green"}} key={count + 5}>{data[i].percent}</td>
-      );
+      if(isGainer) {
+        cells.push(
+            <td style={{color: "green"}} key={count + 5}>{data[i].percent}</td>
+        );
+      } else {
+        cells.push(
+            <td style={{color: "red"}} key={count + 5}>{data[i].percent}</td>
+        );
+      }
       count += 6;
       if (authState.isAuthenticated) {
         if (authState.user.watchlist.includes(data[i].symbol)) {
@@ -138,7 +159,7 @@ function GainersSection() {
 
   const handleIntervalSwitch = time => {
     if(mounted) {
-      setGainersTimeInterval(time);
+      setTimeInterval(time);
     }
   }
 
@@ -155,7 +176,9 @@ function GainersSection() {
             {authState.error}
           </div>
         </div>}
-        <h1 style={{ marginTop: "2em" }}>Top Gainers [{timeMapping[gainersTimeInterval]}]</h1>
+        {isGainer ? 
+        <h1 style={{ marginTop: "2em" }}>Top Gainers [{timeMapping[timeInterval]}]</h1> :
+        <h1 style={{ marginTop: "2em" }}>Top Losers [{timeMapping[timeInterval]}]</h1>}
         <div style={{ marginTop: "2em" }}>
           <div
             className="btn-group"
@@ -167,14 +190,14 @@ function GainersSection() {
             </button>
             <div className="btn-group" role="group">
               <button
-                id="btnGroupDrop1"
+                id="btnGroupDrop2"
                 type="button"
                 className="btn btn-primary dropdown-toggle"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
               ></button>
-              <div className="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <div className="dropdown-menu" aria-labelledby="btnGroupDrop2">
                 <a
                   href="#"
                   className="dropdown-item"
@@ -206,12 +229,14 @@ function GainersSection() {
                 {authState.isAuthenticated && <th scope="col"><h5>Action</h5></th>}
               </tr>
             </thead>
-            <tbody>{createTable(gainers)}</tbody>
+            <tbody>{createTable(list)}</tbody>
           </table>
-          <Spinner area={GAINERS_AREA}/>
+          {isGainer ? 
+          <Spinner area={GAINERS_AREA}/> :
+          <Spinner area={LOSERS_AREA}/>}
         </div>
       </div>
   );
 }
 
-export default GainersSection;
+export default Table;

@@ -1,7 +1,6 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useContext } from "react";
-import LosersSection from './LosersSection';
-import GainersSection from './GainersSection';
+import Table from './Table';
 import Navbar from "./Navbar";
 import { AuthContext } from "./App";
 import Cookies from 'js-cookie';
@@ -27,10 +26,10 @@ function Home() {
             </ul>
             <div id="myTabContent" className="tab-content">
               <div className="tab-pane fade active show" id="gainers">
-                <GainersSection />
+                <Table isGainer={true}/>
               </div>
               <div className="tab-pane fade" id="losers">
-                <LosersSection />
+                <Table isGainer={false}/>
               </div>
             </div>
           </div>
