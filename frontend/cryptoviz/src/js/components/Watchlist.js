@@ -86,13 +86,13 @@ function Watchlist() {
         for(let i = start; i < end; i++) {
             buttons.push(
                 <OverlayTrigger
-                key="top"
-                placement="top"
-                overlay={
-                    <Tooltip id='tooltip-top'>
-                        Remove from watchlist
-                    </Tooltip>
-                }
+                    key={`top${i}`}
+                    placement="top"
+                    overlay={
+                        <Tooltip id='tooltip-top'>
+                            Remove from watchlist
+                        </Tooltip>
+                    }
                 >
                     <i key={i}
                     style={{color: "red", cursor:"pointer", margin: "0.85em 0"}}

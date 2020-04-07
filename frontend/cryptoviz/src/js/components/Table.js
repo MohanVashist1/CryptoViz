@@ -134,13 +134,13 @@ function Table({ isGainer }) {
           cells.push(
             <td key={count}>
                 <OverlayTrigger
-                key="top"
-                placement="top"
-                overlay={
-                    <Tooltip id='tooltip-top'>
-                        Remove from watchlist
-                    </Tooltip>
-                }
+                    key={`top${count}`}
+                    placement="top"
+                    overlay={
+                        <Tooltip id='tooltip-top'>
+                            Remove from watchlist
+                        </Tooltip>
+                    }
                 >
                     <i style={{color: "red", cursor:"pointer"}} className="fa fa-times-circle fa-lg" onClick={() => deleteFromWatchlist(data[i].symbol)}></i>
                 </OverlayTrigger>
@@ -150,13 +150,13 @@ function Table({ isGainer }) {
           cells.push(
             <td key={count}>
                 <OverlayTrigger
-                key="top"
-                placement="top"
-                overlay={
-                    <Tooltip id='tooltip-top'>
-                        Add to watchlist
-                    </Tooltip>
-                }
+                    key={`top${count}`}
+                    placement="top"
+                    overlay={
+                        <Tooltip id='tooltip-top'>
+                            Add to watchlist
+                        </Tooltip>
+                    }
                 >
                     <i style={{color: "green", cursor:"pointer"}} className="fa fa-plus-circle fa-lg" onClick={() => addToWatchlist(data[i].symbol)}></i>
                 </OverlayTrigger>
