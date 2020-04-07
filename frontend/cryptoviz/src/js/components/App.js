@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Cookies from "js-cookie";
 import Credits from "./Credits";
 import Navbar from "./Navbar";
+import Alert from "./Alert";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Watchlist from "./Watchlist";
@@ -13,7 +14,7 @@ import { useInterval } from "../common/common";
 import { getCurrUser } from "../api/api";
 import "../../style/App.css";
 import * as authConstants from "../constants/auth";
-// import { TVChartContainer } from "../../components/TVChartContainer/index";
+import { TVChartContainer } from "../../components/TVChartContainer/index";
 
 export const AuthContext = createContext();
 
@@ -106,6 +107,12 @@ function App() {
     }
   };
 
+  const handleCloseError = () => {
+    dispatch({
+      type: authConstants.ERROR_CLOSE
+    });
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -114,6 +121,7 @@ function App() {
       }}
     >
       <div className="App">
+        <Alert msg = {state.error} show={state.error} onHide = {handleCloseError} />
         <BrowserRouter>
           {/* <Navbar /> */}
           <Switch>
@@ -126,10 +134,10 @@ function App() {
               exact
               component={CryptoLanding}
             ></Route>
-            {/* <Route
+            <Route
               path="/crypto/advanced/:ticker"
               component={TVChartContainer}
-            ></Route> */}
+            ></Route>
             <Route path="/watchlist" component={Watchlist}></Route>
           </Switch>
         </BrowserRouter>
