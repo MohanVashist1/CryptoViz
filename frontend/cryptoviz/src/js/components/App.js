@@ -3,7 +3,6 @@ import React, { useEffect, createContext } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Cookies from "js-cookie";
 import Credits from "./Credits";
-import Navbar from "./Navbar";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Watchlist from "./Watchlist";
@@ -13,7 +12,7 @@ import { useInterval } from "../common/common";
 import { getCurrUser } from "../api/api";
 import "../../style/App.css";
 import * as authConstants from "../constants/auth";
-import { TVChartContainer } from "../../components/TVChartContainer/index";
+import AdvancedLandingPage from "./AdvancedCharts";
 
 export const AuthContext = createContext();
 
@@ -128,7 +127,7 @@ function App() {
             ></Route>
             <Route
               path="/crypto/advanced/:ticker"
-              component={TVChartContainer}
+              component={AdvancedLandingPage}
             ></Route>
             <Route path="/watchlist" component={Watchlist}></Route>
           </Switch>

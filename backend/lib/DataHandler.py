@@ -114,7 +114,7 @@ class BinanceWrapper:
         data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
         if len(data_df) > 0:
             temp_df = pd.DataFrame(data)
-            data_df = data_df.append(temp_df)
+            data_df = data_df.append(temp_df, sort=True)
         else:
             data_df = data
         data_df.set_index('timestamp', inplace=True)
@@ -301,9 +301,20 @@ def retrieve_top_losers_daily():
 
 
 if __name__ == "__main__":
+    # TODO: add click options
+    # TODO: add log files / logging
+    # TODO: add lock files
     # BinanceWrapper().getCryptoDataBinance("KEYUSDT", "1d")
-    print(BinanceWrapper().getCryptoDataBinance(
+    (BinanceWrapper().getCryptoDataBinance(
+        "BTCUSDT", "1m", save=True).tail())
+    (BinanceWrapper().getCryptoDataBinance(
+        "BTCUSDT", "5m", save=True).tail())
+    (BinanceWrapper().getCryptoDataBinance(
+        "BTCUSDT", "1d", save=True).tail())
+    (BinanceWrapper().getCryptoDataBinance(
         "BTCUSDT", "1w", save=True).tail())
+    (BinanceWrapper().getCryptoDataBinance(
+        "BTCUSDT", "1M", save=True).tail())
     # # dynamoTable.put_item(
     # #     item={
     # #         'Ticker': "BTCUSDT",

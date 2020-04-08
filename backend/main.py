@@ -124,7 +124,7 @@ async def cookie_set(request: Request, call_next):
 #     return response
 
 
-@app.get("/api/crypto/{ticker}")
+@app.get("/api/crypto/tickerInfo/{ticker}")
 async def get_crypto_info(ticker: str = Path(..., title="The Ticker of the Crypto to get")):
     ticker = escape(ticker)
     if(len(ticker) > 5 and len(ticker) < 10 and ticker in cryptoList):
@@ -162,15 +162,14 @@ async def get_crypto_info(ticker: str = Path(..., title="The Ticker of the Crypt
 #                 await websocket.close(code=1000)
 
 
-@app.post("/api/crypto/{ticker}")
-async def post_crypto_data(request: CryptoRequest):
-    # TODO: Security
+@app.get("/api/crypto/data/{ticker}")
+async def post_crypto_data(ticker: str = Path(..., title="The Ticker of the Crypto to get"), timeInterval: str = "1d", minDate: str = " ", maxDate: str = " "):
+    # TODO: Security and checking if exist
     cryptoData = dataHandler.retrieveCryptoData(
-        escape(request.ticker), escape(request.timeInterval))
-    cryptoData = cryptoData[(cryptoData['timestamp'] > escape(request.minDate)) & (
-        cryptoData['timestamp'] < escape(request.maxDate))]
-    cryptoData = cryptoData[["timestamp", "close",
-                             "rsi", "ema", "sma", "lbb", "ubb", "mbb"]]
+        escape(ticker), escape(timeInterval))
+    cryptoData = cryptoData[(cryptoData['timestamp'] > escape(minDate)) & (
+        cryptoData['timestamp'] < escape(maxDate))]
+    cryptoData = cryptoData[["timestamp", "close"]]
     return {"data": cryptoData.to_json(orient='records')}
 
 
