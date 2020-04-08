@@ -315,6 +315,7 @@ if __name__ == "__main__":
         "BTCUSDT", "1w", save=True).tail())
     (BinanceWrapper().getCryptoDataBinance(
         "BTCUSDT", "1M", save=True).tail())
+    print(len(BinanceWrapper().getcryptoSymbols(tether="USDT")))
     # # dynamoTable.put_item(
     # #     item={
     # #         'Ticker': "BTCUSDT",

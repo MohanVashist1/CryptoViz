@@ -157,7 +157,6 @@ export const getCurrUser = async () => {
   } catch (error) {
     return Promise.reject(error);
   }
-  return data;
 };
 
 export const fetchTickerFullName = async (ticker) => {
