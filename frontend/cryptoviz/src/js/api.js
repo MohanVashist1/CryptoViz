@@ -111,7 +111,7 @@ export const logout = async () => {
   }
 };
 
-export const updateUser = async (updatedUser, dispatch) => {
+export const updateUser = async (updatedUser) => {
   const requestOptions = {
     method: "PATCH",
     headers: {
@@ -135,7 +135,7 @@ export const updateUser = async (updatedUser, dispatch) => {
   }
 };
 
-export const getCurrUser = async (dispatch) => {
+export const getCurrUser = async () => {
   const requestOptions = {
     method: "GET",
     headers: {
@@ -157,6 +157,7 @@ export const getCurrUser = async (dispatch) => {
   } catch (error) {
     return Promise.reject(error);
   }
+  return data;
 };
 
 export const fetchTickerFullName = async (ticker) => {

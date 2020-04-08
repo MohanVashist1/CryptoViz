@@ -1,12 +1,14 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
+import OverlayTrigger  from 'react-bootstrap/OverlayTrigger';
+import Tooltip  from 'react-bootstrap/Tooltip';
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from 'react-router-dom';
-import { useInterval } from '../common/common';
+import { useInterval } from '../common';
 import { trackPromise } from 'react-promise-tracker';
 import { Spinner } from './Spinner';
 import { GAINERS_AREA, LOSERS_AREA } from '../constants/areas';
-import { updateUser, fetchLosers, fetchGainers } from '../api/api';
-import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE, ERROR_CLOSE } from '../constants/auth';
+import { updateUser, fetchLosers, fetchGainers } from '../api';
+import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE } from '../constants/auth';
 import { AuthContext } from "./App";
 
 function Table({ isGainer }) {
@@ -130,11 +132,35 @@ function Table({ isGainer }) {
       if (authState.isAuthenticated) {
         if (authState.user.watchlist.includes(data[i].symbol)) {
           cells.push(
-            <td key={count}><i style={{color: "red", cursor:"pointer"}} className="fa fa-times-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from watchlist" onClick={() => deleteFromWatchlist(data[i].symbol)}></i></td>
+            <td key={count}>
+                <OverlayTrigger
+                    key={`top${count}`}
+                    placement="top"
+                    overlay={
+                        <Tooltip id='tooltip-top'>
+                            Remove from watchlist
+                        </Tooltip>
+                    }
+                >
+                    <i style={{color: "red", cursor:"pointer"}} className="fa fa-times-circle fa-lg" onClick={() => deleteFromWatchlist(data[i].symbol)}></i>
+                </OverlayTrigger>
+            </td>
           );
         } else {
           cells.push(
-            <td key={count}><i style={{color: "green", cursor:"pointer"}} className="fa fa-plus-circle fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add to watchlist" onClick={() => addToWatchlist(data[i].symbol)}></i></td>
+            <td key={count}>
+                <OverlayTrigger
+                    key={`top${count}`}
+                    placement="top"
+                    overlay={
+                        <Tooltip id='tooltip-top'>
+                            Add to watchlist
+                        </Tooltip>
+                    }
+                >
+                    <i style={{color: "green", cursor:"pointer"}} className="fa fa-plus-circle fa-lg" onClick={() => addToWatchlist(data[i].symbol)}></i>
+                </OverlayTrigger>
+            </td>
           );
         }
         count += 1;
@@ -151,12 +177,6 @@ function Table({ isGainer }) {
     return rows;
   };
 
-  const handleCloseError = () => {
-    dispatch({
-      type: ERROR_CLOSE
-    });
-  }
-
   const handleIntervalSwitch = time => {
     if(mounted) {
       setTimeInterval(time);
@@ -165,17 +185,6 @@ function Table({ isGainer }) {
 
   return (
       <div style={{ textAlign: "center"}}>
-        {authState.error && <div style={{margin: "auto", textAlign: "center"}} className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-          <div className="toast-header">
-            <div className="mr-auto">Error</div>
-              <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={handleCloseError}>
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div className="toast-body">
-            {authState.error}
-          </div>
-        </div>}
         {isGainer ? 
         <h1 style={{ marginTop: "2em" }}>Top Gainers [{timeMapping[timeInterval]}]</h1> :
         <h1 style={{ marginTop: "2em" }}>Top Losers [{timeMapping[timeInterval]}]</h1>}

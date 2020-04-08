@@ -105,7 +105,12 @@ app.add_middleware(
 # background_thread = Thread(target=sc.schedule_tasks)
 # background_thread.start()
 
-
+#********************************************************************************************
+ #    Title: Setting SameSite flag manually when using response.set_cookie()
+ #    Author: zero-shubham
+ #    Date: March 8, 2020
+ #    Availability: https://github.com/tiangolo/fastapi/issues/1099
+ #*******************************************************************************************/
 @app.middleware("http")
 async def cookie_set(request: Request, call_next):
     response = await call_next(request)
