@@ -1,6 +1,7 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, useState, useContext } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import { Tooltip as BTooltip } from "react-bootstrap";
 import {
   LineChart,
   Brush,
@@ -155,7 +156,7 @@ function CryptoLanding({ match }) {
               //removed key
               placement="top"
               overlay={
-                <Tooltip id="tooltip-top">Remove from watchlist</Tooltip>
+                <BTooltip id="tooltip-top">Remove from watchlist</BTooltip>
               }
             >
               <i
@@ -174,7 +175,7 @@ function CryptoLanding({ match }) {
             <OverlayTrigger
               // removed key
               placement="top"
-              overlay={<Tooltip id="tooltip-top">Add to watchlist</Tooltip>}
+              overlay={<BTooltip id="tooltip-top">Add to watchlist</BTooltip>}
             >
               <i
                 style={{ color: "green", cursor: "pointer" }}
@@ -196,11 +197,13 @@ function CryptoLanding({ match }) {
       (!Cookies.get("user_auth") && !authState.isAuthenticated) ? (
         <div>
           <Navbar />
-          {displayWatchList()}
           <div style={{ textAlign: "center", marginTop: "4em" }}>
-            <h1>
-              {ticker.fullName}-({match.params.ticker})
-            </h1>
+            <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+              <h1>
+                {ticker.fullName}-[{match.params.ticker}]
+              </h1>
+              {displayWatchList()}
+            </div>
 
             <h3 style={{ marginTop: "1em" }}>
               Displaying data for Time Interval: {timeMapping[timeInterval]}
