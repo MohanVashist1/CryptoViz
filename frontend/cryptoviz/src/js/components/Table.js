@@ -194,7 +194,7 @@ function Table({ isGainer }) {
             role="group"
             aria-label="Button group with nested dropdown"
           >
-            <button type="button" className="btn btn-primary">
+            <button style={{cursor: "auto"}} type="button" className="btn btn-primary">
               Select Time Interval
             </button>
             <div className="btn-group" role="group">
