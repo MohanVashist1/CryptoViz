@@ -10,7 +10,7 @@ from pydantic import BaseModel
 import motor.motor_asyncio
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers, models
-from fastapi_users.authentication import JWTAuthentication, CookieAuthentication
+from fastapi_users.authentication import CookieAuthentication
 from fastapi_users.db import MongoDBUserDatabase
 from starlette.requests import Request
 from fastapi import BackgroundTasks
@@ -77,7 +77,6 @@ users = db["users"]
 user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
-    JWTAuthentication(secret=SECRET, lifetime_seconds=3600 * 24),
     CookieAuthentication(secret=SECRET, lifetime_seconds=3600 * 24,
                          cookie_name="user_auth", cookie_secure=False, cookie_httponly=True)
 ]
