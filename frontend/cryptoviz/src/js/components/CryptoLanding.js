@@ -160,7 +160,12 @@ function CryptoLanding({ match }) {
               }
             >
               <i
-                style={{ color: "red", cursor: "pointer" }}
+                style={{
+                  color: "red",
+                  cursor: "pointer",
+                  float: "none",
+                  margin: "auto",
+                }}
                 className="fa fa-times-circle fa-lg"
                 onClick={() =>
                   deleteFromWatchlist(match.params.ticker.replace("USDT", ""))
@@ -178,7 +183,12 @@ function CryptoLanding({ match }) {
               overlay={<BTooltip id="tooltip-top">Add to watchlist</BTooltip>}
             >
               <i
-                style={{ color: "green", cursor: "pointer" }}
+                style={{
+                  color: "green",
+                  cursor: "pointer",
+                  float: "none",
+                  margin: "auto",
+                }}
                 className="fa fa-plus-circle fa-lg"
                 onClick={() =>
                   addToWatchlist(match.params.ticker.replace("USDT", ""))
@@ -198,7 +208,13 @@ function CryptoLanding({ match }) {
         <div>
           <Navbar />
           <div style={{ textAlign: "center", marginTop: "4em" }}>
-            <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <h1>
                 {ticker.fullName}-[{match.params.ticker}]
               </h1>
@@ -208,6 +224,7 @@ function CryptoLanding({ match }) {
             <h3 style={{ marginTop: "1em" }}>
               Displaying data for Time Interval: {timeMapping[timeInterval]}
             </h3>
+
             <div style={{ marginTop: "2em" }}>
               <button
                 type="button"
