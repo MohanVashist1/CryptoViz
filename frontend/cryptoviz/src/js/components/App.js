@@ -1,9 +1,7 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useEffect, createContext } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Cookies from "js-cookie";
 import Credits from "./Credits";
-import Navbar from "./Navbar";
 import Alert from "./Alert";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
@@ -18,11 +16,13 @@ import {
   GET_USER_SUCCESS,
   GET_USER_FAILURE,
   ERROR_CLOSE,
+  APPLICATION_MOUNTED
 } from "../constants/auth";
-import AdvancedLandingPage from "./AdvancedCharts";
+// import AdvancedLandingPage from "./AdvancedCharts";
 export const AuthContext = createContext();
 
 const initialState = {
+  applicationMounted: false,
   isAuthenticated: false,
   user: {},
   error: "",
@@ -33,6 +33,9 @@ function App() {
 
   useEffect(() => {
     getUserInfo();
+    dispatch({
+      type: APPLICATION_MOUNTED
+    });
   }, []);
 
   useInterval(() => {
@@ -40,7 +43,7 @@ function App() {
   }, 500);
 
   const getUserInfo = () => {
-    if (Cookies.get("user_auth")) {
+    if (!state.applicationMounted || state.isAuthenticated) {
       getCurrUser()
         .then((res) => {
           dispatch({
@@ -94,10 +97,10 @@ function App() {
               exact
               component={CryptoLanding}
             ></Route>
-            <Route
+            {/* <Route
               path="/crypto/advanced/:ticker"
               component={AdvancedLandingPage}
-            ></Route>
+            ></Route> */}
             <Route path="/watchlist" component={Watchlist}></Route>
           </Switch>
         </BrowserRouter>

@@ -1,5 +1,3 @@
-import Cookies from "js-cookie";
-
 export const fetchLosers = async (time) => {
   try {
     let response = await fetch(
@@ -70,7 +68,7 @@ export const login = async (email, password) => {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "username=" + email + "&password=" + password,
-    credentials: "include",
+    credentials: "include"
   };
   try {
     let response = await fetch(
@@ -90,11 +88,8 @@ export const login = async (email, password) => {
 export const logout = async () => {
   const requestOptions = {
     method: "POST",
-    headers: {
-      Authorization: "Bearer " + Cookies.get("user_auth"),
-    },
     body: null,
-    credentials: "include",
+    credentials: "include"
   };
   try {
     let response = await fetch(
@@ -114,9 +109,6 @@ export const logout = async () => {
 export const updateUser = async (updatedUser) => {
   const requestOptions = {
     method: "PATCH",
-    headers: {
-      Authorization: "Bearer " + Cookies.get("user_auth"),
-    },
     body: JSON.stringify(updatedUser),
     credentials: "include",
   };
@@ -138,10 +130,8 @@ export const updateUser = async (updatedUser) => {
 export const getCurrUser = async () => {
   const requestOptions = {
     method: "GET",
-    headers: {
-      Authorization: "Bearer " + Cookies.get("user_auth"),
-    },
     body: null,
+    credentials: "include"
   };
   try {
     let response = await fetch(

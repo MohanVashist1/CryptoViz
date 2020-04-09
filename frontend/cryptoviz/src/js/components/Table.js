@@ -129,7 +129,7 @@ function Table({ isGainer }) {
         );
       }
       count += 6;
-      if (authState.isAuthenticated) {
+      if (Object.keys(authState.user).length > 0) {
         if (authState.user.watchlist.includes(data[i].symbol)) {
           cells.push(
             <td key={count}>
@@ -194,7 +194,7 @@ function Table({ isGainer }) {
             role="group"
             aria-label="Button group with nested dropdown"
           >
-            <button type="button" className="btn btn-primary">
+            <button style={{cursor: "auto"}} type="button" className="btn btn-primary">
               Select Time Interval
             </button>
             <div className="btn-group" role="group">
@@ -235,7 +235,7 @@ function Table({ isGainer }) {
                 <th scope="col"><h5>Price</h5></th>
                 <th scope="col"><h5>Volume</h5></th>
                 <th scope="col"><h5>%</h5></th>
-                {authState.isAuthenticated && <th scope="col"><h5>Action</h5></th>}
+                {Object.keys(authState.user).length > 0 && <th scope="col"><h5>Action</h5></th>}
               </tr>
             </thead>
             <tbody>{createTable(list)}</tbody>
