@@ -16,7 +16,6 @@ import Navbar from "./Navbar";
 import { fetchTickerFullName, fetchTickerData } from "../api";
 import { useHistory } from "react-router-dom";
 import Loader from "react-loader-spinner";
-import Cookies from "js-cookie";
 import { AuthContext } from "./App";
 import { updateUser } from "../api";
 import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE } from "../constants/auth";
@@ -144,7 +143,7 @@ function CryptoLanding({ match }) {
   };
 
   const displayWatchList = () => {
-    if (authState.isAuthenticated) {
+    if (Object.keys(authState.user).length > 0) {
       if (
         authState.user.watchlist.includes(
           match.params.ticker.replace("USDT", "")
@@ -193,8 +192,9 @@ function CryptoLanding({ match }) {
 
   return (
     <div>
-      {(Cookies.get("user_auth") && authState.isAuthenticated) ||
-      (!Cookies.get("user_auth") && !authState.isAuthenticated) ? (
+      {authState.applicationMounted &&
+      ((authState.isAuthenticated && Object.keys(authState.user).length > 0) ||
+      (!authState.isAuthenticated && Object.keys(authState.user).length === 0)) ? (
         <div>
           <Navbar />
           <div style={{ textAlign: "center", marginTop: "4em" }}>

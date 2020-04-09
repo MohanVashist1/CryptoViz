@@ -1,6 +1,5 @@
 import "bootswatch/dist/lux/bootstrap.min.css";
 import React, { useState, useContext } from "react";
-import Cookies from 'js-cookie';
 import { useHistory, Link, NavLink } from "react-router-dom";
 import { LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../constants/auth';
 import "../../style/navbar.css";
@@ -62,7 +61,7 @@ function Navbar() {
                 Home
               </NavLink>
             </li>
-            {Cookies.get('user_auth') &&
+            {authState.isAuthenticated &&
               <li className="nav-item">
               <NavLink to="/watchlist" className="nav-link" activeClassName="active">
                 My Watchlist

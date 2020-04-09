@@ -77,9 +77,9 @@ users = db["users"]
 user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
-    JWTAuthentication(secret=SECRET, lifetime_seconds=3600),
-    CookieAuthentication(secret=SECRET, lifetime_seconds=3600,
-                         cookie_name="user_auth", cookie_secure=False, cookie_httponly=False)
+    JWTAuthentication(secret=SECRET, lifetime_seconds=3600 * 24),
+    CookieAuthentication(secret=SECRET, lifetime_seconds=3600 * 24,
+                         cookie_name="user_auth", cookie_secure=False, cookie_httponly=True)
 ]
 
 fastapi_users = FastAPIUsers(
@@ -88,10 +88,7 @@ fastapi_users = FastAPIUsers(
 app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
 origins = [
-    "http://localhost:3000",
-    "localhost:3000",
-    "localhost:3000/crypto/*",
-    "localhost:3000/crypto/advanced/*",
+    "http://localhost:3000"
 ]
 
 app.add_middleware(

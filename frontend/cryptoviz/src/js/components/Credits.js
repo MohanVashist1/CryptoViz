@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 import "../../style/main.css";
 import Navbar from "./Navbar";
 import { AuthContext } from "./App";
-import Cookies from 'js-cookie';
 import Loader from "react-loader-spinner";
 
 function Credits() {
@@ -11,7 +10,7 @@ function Credits() {
 
   return (
     <div>
-      {(Cookies.get('user_auth') && authState.isAuthenticated) || (!Cookies.get('user_auth') && !authState.isAuthenticated) ?
+      {authState.applicationMounted && ((authState.isAuthenticated && Object.keys(authState.user).length > 0) || (!authState.isAuthenticated && Object.keys(authState.user).length === 0)) ?
       <div>
         <Navbar />
         <div className="container-fluid">
