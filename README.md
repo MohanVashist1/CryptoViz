@@ -1,5 +1,5 @@
 # Project Title: CryptoViZ
-### Team Members: Mohan Vashist (vashistm, 1004260514), Mrigank Mehta (mrigankmg, 1001309014)
+#### Team Members: Mohan Vashist (vashistm, 1004260514), Mrigank Mehta (mrigankmg, 1001309014)
 
 ## Project Proposal
 
@@ -68,9 +68,11 @@ https://www.investopedia.com/terms/t/technicalindicator.asp
       - first_name: (string) first name for new user
       - last_name: (string) last name for new user
 - response: 400
+    - content-type: `application/json`
     - body: object
       - detail: (string) REGISTER_USER_ALREADY_EXISTS
 - response: 422
+    - content-type: `application/json`
     - body: object
       - detail: (list of objects)
         - loc: (string) location of error in request body
@@ -92,9 +94,11 @@ $ curl -X POST
       - username=username&password=password
 - response: 200
 - response: 400
+    - content-type: `application/json`
     - body: object
       - detail: (string) LOGIN_BAD_CREDENTIALS
 - response: 422
+    - content-type: `application/json`
     - body: object
       - detail: (list of objects)
         - loc: (string) location of error in request body
@@ -112,11 +116,9 @@ $ curl -X POST
 
 - description: sign out a user
 - request: `POST /api/users/logout/cookie`
-    - content-type: `application/json`
-    - body: string
-      - username=username&password=password
 - response: 200
 - response: 401
+    - content-type: `application/json`
     - body: object
       - detail: (string) Unauthorized
 
@@ -125,4 +127,130 @@ $ curl -X POST
        -b cookie.txt
        -c cookie.txt
        localhost:8000/api/users/logout/cookie
+```
+
+#### Read
+
+- description: get logged in user information
+- request: `GET /api/users/me`
+- response: 200
+    - content-type: `application/json`
+    - body: object
+      - id: (string) id for logged in user
+      - email: (string) email for logged in user
+      - is_active: (boolean) logged in user active status
+      - is_superuser: (boolean) is logged in user a superuser
+      - watchlist: (list) logged in user's crypto watchlist
+      - first_name: (string) first name for logged in user
+      - last_name: (string) last name for logged in user
+- response: 401
+    - content-type: `application/json`
+    - body: object
+      - detail: (string) Unauthorized
+
+``` 
+$ curl -b cookie.txt
+       localhost:8000/api/users/me/
+```
+
+#### Update
+
+- description: update logged in user
+- request: `PATCH /api/users/me`
+    - content-type: `application/json`
+    - body: object
+      - id: (string) new id for logged in user
+      - email: (string) new email for logged in user
+      - is_active: (boolean) logged in user new active status
+      - is_superuser: (boolean) logged in user new superuser status
+      - watchlist: (list) logged in user's new crypto watchlist
+      - first_name: (string) new first name for logged in user
+      - last_name: (string) new last name for logged in user
+- response: 200
+    - body: object
+      - id: (string) id for new user
+      - email: (string) email for new user
+      - is_active: (boolean) user active status
+      - is_superuser: (boolean) is user a superuser
+      - watchlist: (list) new user's crypto watchlist
+      - first_name: (string) first name for new user
+      - last_name: (string) last name for new user
+- response: 401
+    - content-type: `application/json`
+    - body: object
+      - detail: (string) Unauthorized
+- response: 422
+    - content-type: `application/json`
+    - body: object
+      - detail: (list of objects)
+        - loc: (string) location of error in request body
+        - msg: (string) error message
+        - type: (string) error type
+
+``` 
+$ curl -X PATCH
+       -H "Content-Type: application/json"
+       -b cookie.txt
+       -d '{"first_name": "example"}'
+       localhost:8000/api/users/me/
+```
+
+### Crypto API
+
+#### Read
+
+- description: get top (max 10) gainers
+- request: `GET /api/gainers/[?time=1]`
+- response: 200
+    - content-type: `application/json`
+    - body: (object)
+      - gainers: (list of objects)
+        - symbol: crypto symbol
+        - rank: crypto rank
+        - market_cap: market cap of crypto
+        - price: price of crypto
+        - volume: crypto volume
+        - percent: crypto gain percentage
+- response: 400
+    - content-type: `application/json`
+    - body: Invalid time.
+- response: 422
+    - content-type: `application/json`
+    - body: object
+      - detail: (list of objects)
+        - loc: (string) location of error in request body
+        - msg: (string) error message
+        - type: (string) error type
+
+``` 
+$ curl -H "Content-Type: application/json"
+       localhost:8000/api/gainers/
+```
+
+- description: get top (max 10) losers
+- request: `GET /api/losers/[?time=1]`
+- response: 200
+    - content-type: `application/json`
+    - body: (object)
+      - gainers: (list of objects)
+        - symbol: crypto symbol
+        - rank: crypto rank
+        - market_cap: market cap of crypto
+        - price: price of crypto
+        - volume: crypto volume
+        - percent: crypto loss percentage
+- response: 400
+    - content-type: `application/json`
+    - body: Invalid time.
+- response: 422
+    - content-type: `application/json`
+    - body: object
+      - detail: (list of objects)
+        - loc: (string) location of error in request body
+        - msg: (string) error message
+        - type: (string) error type
+
+``` 
+$ curl -H "Content-Type: application/json"
+       localhost:8000/api/losers/
 ```
