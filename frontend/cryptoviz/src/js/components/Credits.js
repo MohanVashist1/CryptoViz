@@ -55,6 +55,11 @@ function Credits() {
               W3Schools
             </a>
           </li>
+          <li>
+            <a href="https://bootswatch.com/lux/" title="Bootswatch">
+              Bootswatch (Example Code)
+            </a>
+          </li>
         </ul>
       </div>
     </div>  :
