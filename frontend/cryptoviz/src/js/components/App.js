@@ -7,6 +7,7 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Watchlist from "./Watchlist";
 import Home from "./Home";
+import InvalidPage from "./InvalidPage";
 import CryptoLanding from "./CryptoLanding";
 import { useInterval } from "../common";
 import { getCurrUser } from "../api";
@@ -18,7 +19,7 @@ import {
   ERROR_CLOSE,
   APPLICATION_MOUNTED,
 } from "../constants/auth";
-import AdvancedLandingPage from "./AdvancedCharts";
+// import AdvancedLandingPage from "./AdvancedCharts";
 export const AuthContext = createContext();
 
 const initialState = {
@@ -89,19 +90,21 @@ function App() {
           {/* <Navbar /> */}
           <Switch>
             <Route path="/" exact component={Home}></Route>
-            <Route path="/credits" component={Credits}></Route>
-            <Route path="/signin" component={SignIn}></Route>
-            <Route path="/signup" component={SignUp}></Route>
+            <Route path="/credits" exact component={Credits}></Route>
+            <Route path="/signin" exact component={SignIn}></Route>
+            <Route path="/signup" exact component={SignUp}></Route>
             <Route
               path="/crypto/:ticker"
               exact
               component={CryptoLanding}
             ></Route>
-            <Route
+            {/* <Route
               path="/crypto/advanced/:ticker"
+              exact
               component={AdvancedLandingPage}
-            ></Route>
-            <Route path="/watchlist" component={Watchlist}></Route>
+            ></Route> */}
+            <Route path="/watchlist" exact component={Watchlist}></Route>
+            <Route path="*" component={InvalidPage}></Route>
           </Switch>
         </BrowserRouter>
       </div>
