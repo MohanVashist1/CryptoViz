@@ -61,7 +61,6 @@ class CryptoRequest(BaseModel):
 
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="build"), name="static")
 # app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
 tempCryptoList = dataHandler.getcryptoSymbols()
@@ -87,7 +86,13 @@ fastapi_users = FastAPIUsers(
 app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
 origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://35.223.52.99:3000/",
+    "http://35.223.52.99:3000/api/crypto/tickerInfo/*",
+    "http://35.223.52.99:3000/crypto/advanced/*",
+    "http://35.223.52.99:3000/crypto/",
+    "http://35.223.52.99:3000/api/crypto/data/"
+
 ]
 
 app.add_middleware(
@@ -104,10 +109,6 @@ app.add_middleware(
 # ********************************************************************************************
 #    Title: Setting SameSite flag manually when using response.set_cookie()
 #    Author: ze@app.get('/')
-
-
-def index():
-    return FileResponse('/build/index.html')o-shubham
 #    Date: March 8, 2020
 #    Availability: https://github.com/tiangolo/fastapi/issues/1099
 # *******************************************************************************************/
