@@ -87,6 +87,7 @@ app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
 origins = [
     "http://localhost:3000",
+    "http://34.70.19.205:3000",
     "http://35.223.52.99:3000/",
     "http://35.223.52.99:3000/api/crypto/tickerInfo/*",
     "http://35.223.52.99:3000/crypto/advanced/*",

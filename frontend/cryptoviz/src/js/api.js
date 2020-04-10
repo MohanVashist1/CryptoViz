@@ -1,4 +1,4 @@
-const baseURL = "http://localhost:8000";
+const baseURL = "http://34.70.19.205:5000";
 
 export const fetchLosers = async (time) => {
   try {
