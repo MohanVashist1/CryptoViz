@@ -1,8 +1,8 @@
+const baseURL = "http://localhost:8000";
+
 export const fetchLosers = async (time) => {
   try {
-    let response = await fetch(
-      `http://localhost:8000/api/losers/?time=${time}`
-    );
+    let response = await fetch(`${baseURL}/api/losers/?time=${time}`);
     let data = await response.json();
     if (!response.ok) {
       const error = data && data.detail ? data.detail : response.status;
@@ -16,9 +16,7 @@ export const fetchLosers = async (time) => {
 
 export const fetchGainers = async (time) => {
   try {
-    let response = await fetch(
-      `http://localhost:8000/api/gainers/?time=${time}`
-    );
+    let response = await fetch(`${baseURL}/api/gainers/?time=${time}`);
     let data = await response.json();
     if (!response.ok) {
       const error = data && data.detail ? data.detail : response.status;
@@ -46,10 +44,7 @@ export const register = async (email, password, firstName, lastName) => {
     }),
   };
   try {
-    let response = await fetch(
-      "http://localhost:8000/api/users/register",
-      requestOptions
-    );
+    let response = await fetch(`${baseURL}/api/users/register`, requestOptions);
     let data = await response.json();
     if (!response.ok) {
       const error = data && data.detail ? data.detail : response.status;
@@ -68,11 +63,11 @@ export const login = async (email, password) => {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "username=" + email + "&password=" + password,
-    credentials: "include"
+    credentials: "include",
   };
   try {
     let response = await fetch(
-      "http://localhost:8000/api/users/login/cookie",
+      `${baseURL}/api/users/login/cookie`,
       requestOptions
     );
     let data = await response.json();
@@ -89,11 +84,11 @@ export const logout = async () => {
   const requestOptions = {
     method: "POST",
     body: null,
-    credentials: "include"
+    credentials: "include",
   };
   try {
     let response = await fetch(
-      "http://localhost:8000/api/users/logout/cookie",
+      `${baseURL}/api/users/logout/cookie`,
       requestOptions
     );
     let data = await response.json();
@@ -113,10 +108,7 @@ export const updateUser = async (updatedUser) => {
     credentials: "include",
   };
   try {
-    let response = await fetch(
-      "http://localhost:8000/api/users/me",
-      requestOptions
-    );
+    let response = await fetch(`${baseURL}/api/users/me`, requestOptions);
     let data = await response.json();
     if (!response.ok) {
       const error = data && data.detail ? data.detail : response.status;
@@ -131,13 +123,10 @@ export const getCurrUser = async () => {
   const requestOptions = {
     method: "GET",
     body: null,
-    credentials: "include"
+    credentials: "include",
   };
   try {
-    let response = await fetch(
-      "http://localhost:8000/api/users/me",
-      requestOptions
-    );
+    let response = await fetch(`${baseURL}/api/users/me`, requestOptions);
     let data = await response.json();
     if (!response.ok) {
       const error = data && data.detail ? data.detail : response.status;
@@ -151,9 +140,7 @@ export const getCurrUser = async () => {
 
 export const fetchTickerFullName = async (ticker) => {
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/crypto/tickerInfo/${ticker}`
-    );
+    const response = await fetch(`${baseURL}/api/crypto/tickerInfo/${ticker}`);
     const fullTickerName = await response.json();
     if (!response.ok) {
       const error =
@@ -171,7 +158,7 @@ export const fetchTickerFullName = async (ticker) => {
 export const fetchTickerData = async (ticker, request) => {
   try {
     const response = await fetch(
-      `http://localhost:8000/api/crypto/data/${ticker}?minDate=${request.minDate}&maxDate=${request.maxDate}&timeInterval=${request.timeInterval}`
+      `${baseURL}/api/crypto/data/${ticker}?minDate=${request.minDate}&maxDate=${request.maxDate}&timeInterval=${request.timeInterval}`
     );
     const data = await response.json();
     if (!response.ok) {

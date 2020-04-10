@@ -6,6 +6,7 @@ import math
 from fastapi import FastAPI, HTTPException, Path, Query, WebSocket, Depends, Response, Request
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import motor.motor_asyncio
 from fastapi import FastAPI
@@ -61,7 +62,7 @@ class CryptoRequest(BaseModel):
 
 
 app = FastAPI()
-# app.mount("/static", StaticFiles(directory="./../frontend/cryptoviz/public"), name="static")
+app.mount("/static", StaticFiles(directory="build"), name="static")
 # app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
 tempCryptoList = dataHandler.getcryptoSymbols()
@@ -101,12 +102,14 @@ app.add_middleware(
 # background_thread = Thread(target=sc.schedule_tasks)
 # background_thread.start()
 
-#********************************************************************************************
- #    Title: Setting SameSite flag manually when using response.set_cookie()
- #    Author: zero-shubham
- #    Date: March 8, 2020
- #    Availability: https://github.com/tiangolo/fastapi/issues/1099
- #*******************************************************************************************/
+# ********************************************************************************************
+#    Title: Setting SameSite flag manually when using response.set_cookie()
+#    Author: zero-shubham
+#    Date: March 8, 2020
+#    Availability: https://github.com/tiangolo/fastapi/issues/1099
+# *******************************************************************************************/
+
+
 @app.middleware("http")
 async def cookie_set(request: Request, call_next):
     response = await call_next(request)

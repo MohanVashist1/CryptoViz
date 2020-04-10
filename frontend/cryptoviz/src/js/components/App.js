@@ -16,9 +16,9 @@ import {
   GET_USER_SUCCESS,
   GET_USER_FAILURE,
   ERROR_CLOSE,
-  APPLICATION_MOUNTED
+  APPLICATION_MOUNTED,
 } from "../constants/auth";
-// import AdvancedLandingPage from "./AdvancedCharts";
+import AdvancedLandingPage from "./AdvancedCharts";
 export const AuthContext = createContext();
 
 const initialState = {
@@ -34,7 +34,7 @@ function App() {
   useEffect(() => {
     getUserInfo();
     dispatch({
-      type: APPLICATION_MOUNTED
+      type: APPLICATION_MOUNTED,
     });
   }, []);
 
@@ -97,10 +97,10 @@ function App() {
               exact
               component={CryptoLanding}
             ></Route>
-            {/* <Route
+            <Route
               path="/crypto/advanced/:ticker"
               component={AdvancedLandingPage}
-            ></Route> */}
+            ></Route>
             <Route path="/watchlist" component={Watchlist}></Route>
           </Switch>
         </BrowserRouter>

@@ -15,3 +15,4 @@ frontend/cryptoviz/public/charting_library/*
 frontend/cryptoviz/public/datafeeds/*
 frontend/cryptoviz/src/charting_library/*
 frontend/cryptoviz/src/components/*
+backend/build/*
