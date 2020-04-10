@@ -6,7 +6,6 @@ import math
 from fastapi import FastAPI, HTTPException, Path, Query, WebSocket, Depends, Response, Request
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import motor.motor_asyncio
 from fastapi import FastAPI
@@ -104,7 +103,11 @@ app.add_middleware(
 
 # ********************************************************************************************
 #    Title: Setting SameSite flag manually when using response.set_cookie()
-#    Author: zero-shubham
+#    Author: ze@app.get('/')
+
+
+def index():
+    return FileResponse('/build/index.html')o-shubham
 #    Date: March 8, 2020
 #    Availability: https://github.com/tiangolo/fastapi/issues/1099
 # *******************************************************************************************/
