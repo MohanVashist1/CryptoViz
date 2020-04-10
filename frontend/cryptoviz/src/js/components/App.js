@@ -19,7 +19,7 @@ import {
   ERROR_CLOSE,
   APPLICATION_MOUNTED,
 } from "../constants/auth";
-// import AdvancedLandingPage from "./AdvancedCharts";
+import AdvancedLandingPage from "./AdvancedCharts";
 export const AuthContext = createContext();
 
 const initialState = {
@@ -98,11 +98,11 @@ function App() {
               exact
               component={CryptoLanding}
             ></Route>
-            {/* <Route
+            <Route
               path="/crypto/advanced/:ticker"
               exact
               component={AdvancedLandingPage}
-            ></Route> */}
+            ></Route>
             <Route path="/watchlist" exact component={Watchlist}></Route>
             <Route path="*" component={InvalidPage}></Route>
           </Switch>
