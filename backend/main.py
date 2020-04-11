@@ -113,8 +113,6 @@ app.add_middleware(
 #    Date: March 8, 2020
 #    Availability: https://github.com/tiangolo/fastapi/issues/1099
 # *******************************************************************************************/
-
-
 @app.middleware("http")
 async def cookie_set(request: Request, call_next):
     response = await call_next(request)
