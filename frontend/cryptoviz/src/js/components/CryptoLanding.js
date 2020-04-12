@@ -204,10 +204,10 @@ function CryptoLanding({ match }) {
   return (
     <div>
       {(Cookie.get("isLoggedIn") &&
-        Cookie.get("isLoggedIn").toLocaleLowerCase() === "true" &&
+        Cookie.get("isLoggedIn").toLowerCase() === "true" &&
         authState.isAuthenticated) ||
       ((!Cookie.get("isLoggedIn") ||
-        Cookie.get("isLoggedIn").toLocaleLowerCase() === "false") &&
+        Cookie.get("isLoggedIn").toLowerCase() === "false") &&
         !authState.isAuthenticated) ? (
         <div>
           <Navbar />

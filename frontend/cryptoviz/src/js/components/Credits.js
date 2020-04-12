@@ -11,8 +11,8 @@ function Credits() {
 
   return (
     <div>
-      {(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true' && authState.isAuthenticated) ||
-      ((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') && !authState.isAuthenticated) ?
+      {(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLowerCase() === 'true' && authState.isAuthenticated) ||
+      ((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLowerCase() === 'false') && !authState.isAuthenticated) ?
       <div>
         <Navbar />
         <div className="container-fluid">

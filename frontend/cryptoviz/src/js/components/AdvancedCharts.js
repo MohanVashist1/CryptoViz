@@ -11,8 +11,8 @@ function AdvancedLandingPage({ match }) {
 
   return (
     <>
-    {(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true' && authState.isAuthenticated) ||
-      ((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') && !authState.isAuthenticated) ?
+    {(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLowerCase() === 'true' && authState.isAuthenticated) ||
+      ((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLowerCase() === 'false') && !authState.isAuthenticated) ?
       <div>
         <Navbar />
         <TVChartContainer tickerId={match.params.ticker}></TVChartContainer>

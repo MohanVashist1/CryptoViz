@@ -40,7 +40,7 @@ function App() {
   }, 1000);
 
   const getUserInfo = () => {
-    if (Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true') {
+    if (Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLowerCase() === 'true') {
       getCurrUser()
         .then((res) => {
           dispatch({
