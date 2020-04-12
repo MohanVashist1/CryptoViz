@@ -61,7 +61,7 @@ class CryptoRequest(BaseModel):
 
 
 app = FastAPI()
-# app.add_middleware(HTTPSRedirectMiddleware)
+app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
 tempCryptoList = dataHandler.getcryptoSymbols()
 cryptoList = []
@@ -120,9 +120,9 @@ async def cookie_set(request: Request, call_next):
             cookie_arr = cookie.split('=')
             if cookie_arr[0] == 'user_auth':
                 if cookie_arr[1].split(';')[0] == '""':
-                    response.set_cookie("isLoggedIn", False, secure=True)
+                    response.set_cookie("isLoggedIn", False, secure=True, httponly=False, max_age=3600 * 24)
                 else:
-                    response.set_cookie("isLoggedIn", True, secure=True)
+                    response.set_cookie("isLoggedIn", True, secure=True, httponly=False, max_age=3600 * 24)
                 break
     for idx, header in enumerate(response.raw_headers):
         if header[0].decode("utf-8") == "set-cookie":
