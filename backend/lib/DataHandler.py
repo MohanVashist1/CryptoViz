@@ -184,7 +184,6 @@ class BinanceWrapper:
             return None
         currValuePing = float(currValuePing[0][4])
         pricescale = 100
-        # TODO: add more pricescale
         if(currValuePing > 1 and currValuePing < 9):
             pricescale = 1000
         elif(currValuePing > 9 and currValuePing < 100):

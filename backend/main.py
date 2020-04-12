@@ -103,8 +103,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# background_thread = Thread(target=sc.schedule_tasks)
-# background_thread.start()
 
 # ********************************************************************************************
 #    Title: Setting SameSite flag manually when using response.set_cookie()
@@ -182,6 +180,7 @@ async def get_top_losers(time: int = 1):
     return {"losers": res}
 
 
+# mandatory implemented endpoints (at specific urls) for charting library follow below:
 @app.get("/time")
 async def currTime(response: Response):
     response.headers['Content-Type'] = 'text/plain'
@@ -218,6 +217,7 @@ async def crypto_info(symbol: str = "BTCUSDT"):
 
 @app.get("/search")
 async def search_for_symbol(query: str = None, limit: int = 10):
+    limit = limit+1
     if(not query and limit < len(cryptoList)):
         return cryptoList[:limit]
     elif(query is not None and len(query) < 15):
@@ -262,3 +262,5 @@ async def history(request: Request, symbol: str = " ", to: int = 0, resolution: 
                 "c": list(returnVal["close"].values), "v": list(returnVal["volume"].values), 'h': list(returnVal["high"].values), 'l': list(returnVal["low"].values)}
     else:
         raise HTTPException(status_code=400, detail="Invalid request")
+
+# end mandatory implemented endpoints

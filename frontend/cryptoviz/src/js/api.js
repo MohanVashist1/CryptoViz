@@ -1,4 +1,4 @@
-const baseURL = "http://34.70.19.205:5000";
+const baseURL = "https://90ae7eb7.ngrok.io";
 
 export const fetchLosers = async (time) => {
   try {
@@ -160,6 +160,20 @@ export const fetchTickerData = async (ticker, request) => {
     const response = await fetch(
       `${baseURL}/api/crypto/data/${ticker}?minDate=${request.minDate}&maxDate=${request.maxDate}&timeInterval=${request.timeInterval}`
     );
+    const data = await response.json();
+    if (!response.ok) {
+      const error = data && data.detail ? data.detail : response.status;
+      return Promise.reject(error);
+    }
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const searchBox = async (query) => {
+  try {
+    const response = await fetch(`${baseURL}/search?query=${query}&limit=4`);
     const data = await response.json();
     if (!response.ok) {
       const error = data && data.detail ? data.detail : response.status;
