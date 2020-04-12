@@ -114,16 +114,16 @@ app.add_middleware(
 @app.middleware("http")
 async def cookie_set(request: Request, call_next):
     response = await call_next(request)
-    for idx, header in enumerate(response.raw_headers):
-        if header[0].decode("utf-8") == "set-cookie":
-            cookie = header[1].decode("utf-8")
-            cookie_arr = cookie.split('=')
-            if cookie_arr[0] == 'user_auth':
-                if cookie_arr[1].split(';')[0] == '""':
-                    response.set_cookie("isLoggedIn", "false", secure=True, httponly=False, max_age=3600 * 24)
-                else:
-                    response.set_cookie("isLoggedIn", "true", secure=True, httponly=False, max_age=3600 * 24)
-                break
+    # for idx, header in enumerate(response.raw_headers):
+    #     if header[0].decode("utf-8") == "set-cookie":
+    #         cookie = header[1].decode("utf-8")
+    #         cookie_arr = cookie.split('=')
+    #         if cookie_arr[0] == 'user_auth':
+    #             if cookie_arr[1].split(';')[0] == '""':
+    #                 response.set_cookie("isLoggedIn", "false", secure=True, httponly=False, max_age=3600 * 24)
+    #             else:
+    #                 response.set_cookie("isLoggedIn", "true", secure=True, httponly=False, max_age=3600 * 24)
+    #             break
     for idx, header in enumerate(response.raw_headers):
         if header[0].decode("utf-8") == "set-cookie":
             cookie = header[1].decode("utf-8")
