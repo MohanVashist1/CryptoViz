@@ -33,6 +33,7 @@ function App() {
 
   useEffect(() => {
     getUserInfo();
+    console.log(Cookie.get('isLoggedIn'));
   }, []);
 
   useInterval(() => {
