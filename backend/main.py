@@ -61,7 +61,7 @@ class CryptoRequest(BaseModel):
 
 
 app = FastAPI()
-# app.add_middleware(HTTPSRedirectMiddleware)
+app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
 tempCryptoList = dataHandler.getcryptoSymbols()
 cryptoList = []
@@ -87,12 +87,11 @@ app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
 origins = [
     "http://localhost:3000",
-    "http://34.70.19.205:3000",
-    "http://35.223.52.99:3000/",
-    "http://35.223.52.99:3000/api/crypto/tickerInfo/*",
-    "http://35.223.52.99:3000/crypto/advanced/*",
-    "http://35.223.52.99:3000/crypto/",
-    "http://35.223.52.99:3000/api/crypto/data/"
+    "https://e059d913.ngrok.io",
+    "https://e059d913.ngrok.io/crypto/*",
+    "https://e059d913.ngrok.io/crypto/advanced/*",
+    "https://e059d913.ngrok.io/api/crypto/data/*",
+    "https://e059d913.ngrok.io/*"
 
 ]
 
@@ -121,16 +120,10 @@ async def cookie_set(request: Request, call_next):
     for idx, header in enumerate(response.raw_headers):
         if header[0].decode("utf-8") == "set-cookie":
             cookie = header[1].decode("utf-8")
-            if "SameSite=Strict" not in cookie:
-                cookie = cookie + "; SameSite=Strict"
+            if "SameSite=None" not in cookie:
+                cookie = cookie + "; SameSite=None"
                 response.raw_headers[idx] = (header[0], cookie.encode())
     return response
-
-# @app.middleware("http")
-# async def set_cors_header(request: Request, call_next):
-#     response = await call_next(request)
-#     response.raw_headers.append((b'access-control-allow-origin', b'http://localhost:3000'))
-#     return response
 
 
 @app.get("/api/crypto/tickerInfo/{ticker}")
@@ -143,32 +136,6 @@ async def get_crypto_info(ticker: str = Path(..., title="The Ticker of the Crypt
             if(fullName):
                 return {"fullName": fullName}
     raise HTTPException(status_code=404, detail="Ticker not found")
-
-# @app.websocket("/api/crypto/")
-# async def websocket_crypto_endpoint(websocket: WebSocket):
-#     await websocket.accept()
-#     defaultIntervals = dataHandler.klines
-#     cryptoData = None
-#     # cryptoData = dataHandler.retrieveCryptoData(ticker,timeInterval)
-#     # cryptoData = cryptoData[(cryptoData['timestamp']>"2020-03-15 02:37:00") & (cryptoData['timestamp']<"2020-03-15 02:41:00")]
-#     # cryptoData = cryptoData[["timestamp", "close", "rsi","ema","sma","lbb","ubb","mbb"]]
-#     while True:
-#         # data = data["2020-03-05":"2020-03-14"]
-#         # print(data
-#         data = await websocket.receive_json()
-#         print("data is ", data)
-#         if(data["action"] == 'Update'):
-#             if("minDate" in data.keys() and "maxDate" in data.keys() and "timeInterval" in data.keys() and escape(data['timeInterval']) in defaultIntervals and "ticker" in data.keys() and escape(data['ticker']) in cryptoList ):
-#                 mindate = escape(data["minDate"])
-#                 maxDate = escape(data["maxDate"])
-#                 ticker = escape(data['ticker'])
-#                 timeInterval = escape(data['timeInterval'])
-#                 cryptoData = dataHandler.retrieveCryptoData(ticker,timeInterval)
-#                 cryptoData = cryptoData[(cryptoData['timestamp']>mindate) & (cryptoData['timestamp']<maxDate)]
-#                 cryptoData = cryptoData[["timestamp", "close", "rsi","ema","sma","lbb","ubb","mbb"]]
-#                 await websocket.send_json(cryptoData.to_json(orient='records'))
-#             else:
-#                 await websocket.close(code=1000)
 
 
 @app.get("/api/crypto/data/{ticker}")

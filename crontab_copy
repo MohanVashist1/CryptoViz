@@ -1,0 +1,6 @@
+* * * * * cd /home/mohan_l_vashist/project-migos/backend && ./taskrunner1m.sh
+*/5 * * * * cd /home/mohan_l_vashist/project-migos/backend && ./taskrunner5m.sh
+0 * * * * cd /home/mohan_l_vashist/project-migos/backend && ./taskrunner1h.sh
+3 0 * * * cd /home/mohan_l_vashist/project-migos/backend && ./taskrunner1d.sh
+0 0 * * 0 cd /home/mohan_l_vashist/project-migos/backend && ./taskrunner1w.sh
+0 0 1 * * cd /home/mohan_l_vashist/project-migos/backend && ./taskrunner1M.sh

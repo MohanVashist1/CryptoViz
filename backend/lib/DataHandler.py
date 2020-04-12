@@ -59,6 +59,7 @@ class BinanceWrapper:
         # self._chanel_calculator = channelfinder.ChannelFinder()
         self.tethers = ["USDT"]
 
+    # Sourced from https://gist.github.com/nistrup/1e724d6e450fd1da09a0782e6bfcd41a
     def getcryptoSymbols(self, tether=None):
         url = urljoin(self._urlBase, self._endpoints['exchangeInfo'])
         try:
@@ -88,6 +89,7 @@ class BinanceWrapper:
                 symbol=symbol, interval=kline_size)[-1][0], unit='ms')
         return old, new
 
+    # Sourced from https://gist.github.com/nistrup/1e724d6e450fd1da09a0782e6bfcd41a
     def getCryptoDataBinance(self, symbol, kline_size, save=False):
         Path("lib", "cryptoData").mkdir(parents=True, exist_ok=True)
         filename = Path(Path().absolute(), "lib", "cryptoData", '%s-%s-data.gz' %
@@ -119,19 +121,6 @@ class BinanceWrapper:
             data_df = data
         data_df.set_index('timestamp', inplace=True)
         closing_data = [float(price) for price in data_df['close'].tolist()]
-        data_df['rsi'] = self._indicator_calculator.rsi(closing_data)
-        data_df['ema'] = self._indicator_calculator.ema(closing_data)
-        data_df['sma'] = self._indicator_calculator.sma(closing_data)
-        data_df['lbb'] = self._indicator_calculator.lbb(closing_data)
-        data_df['ubb'] = self._indicator_calculator.ubb(closing_data)
-        data_df['mbb'] = self._indicator_calculator.mbb(closing_data)
-        # period = 3 if kline_size is "1M" or kline_size is "1w" else 20
-        # if len(data.index) > period:
-        #     closing_price = data.tail(period)['close']
-        #     closing_price.columns = ["price"]
-        #     self._chanel_calculator.find_resistance(closing_price)
-        #     closing_price = pd.DataFrame(closing_price)
-        #     closing_price.plot()
         if save:
             data_df.to_csv(filename, compression='gzip')
         print('All caught up..!')
@@ -142,6 +131,13 @@ class BinanceWrapper:
         for crypto in allCryptos:
             self.getCryptoDataBinance(
                 crypto, kline_size, save)
+
+    def updateLimitedCryptoData(self, kline_size, upperLimit, lowerLimit):
+        allCryptos = self.getcryptoSymbols(tether="USDT")
+        allCryptos.sort()
+        for crypto in allCryptos[lowerLimit: upperLimit]:
+            self.getCryptoDataBinance(
+                crypto, kline_size, save=True)
 
     def retrieveCryptoData(self, symbol, kline_size):
         filename = Path(Path().absolute(), "lib", "cryptoData", '%s-%s-data.gz' %
@@ -301,35 +297,4 @@ def retrieve_top_losers_daily():
 
 
 if __name__ == "__main__":
-    # TODO: add click options
-    # TODO: add log files / logging
-    # TODO: add lock files
-    # BinanceWrapper().getCryptoDataBinance("KEYUSDT", "1d")
-    (BinanceWrapper().getCryptoDataBinance(
-        "BTCUSDT", "1m", save=True).tail())
-    (BinanceWrapper().getCryptoDataBinance(
-        "BTCUSDT", "5m", save=True).tail())
-    (BinanceWrapper().getCryptoDataBinance(
-        "BTCUSDT", "1d", save=True).tail())
-    (BinanceWrapper().getCryptoDataBinance(
-        "BTCUSDT", "1w", save=True).tail())
-    (BinanceWrapper().getCryptoDataBinance(
-        "BTCUSDT", "1M", save=True).tail())
     print(len(BinanceWrapper().getcryptoSymbols(tether="USDT")))
-    # # dynamoTable.put_item(
-    # #     item={
-    # #         'Ticker': "BTCUSDT",
-    # #         'Price': 28
-    # #     }
-    # # )
-    # # response = dynamoTable.get_item(
-    # #     Key={
-    # #         'Ticker': "BTCUSDT"
-    # #     }
-    # # )
-    # # print(response)
-    # print(retrieve_top_gainers_hourly())
-    # print(retrieve_top_losers_hourly())
-    # print(retrieve_top_losers_daily())
-    # print(retrieve_top_gainers_daily())
-    pass
