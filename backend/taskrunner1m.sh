@@ -5,6 +5,6 @@ startingValue=0
 incrementValue=5
 
 for i in $(seq $startingValue $incrementValue  $numCryptos); do 
-    python datarunner.py -k "1m"  -l $i -u $((i+incrementValue))
+    source env/bin/activate && python datarunner.py -k "1m"  -l $i -u $((i+incrementValue))
     done
 
