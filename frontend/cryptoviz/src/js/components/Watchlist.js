@@ -31,7 +31,7 @@ function Watchlist() {
     }, 500);
 
     const checkSignedIn = () => {
-        if(!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') {
+        if(!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLowerCase() === 'false') {
             history.push('/');
         }
     };
@@ -125,7 +125,7 @@ function Watchlist() {
 
     return (
         <div>
-            {Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true' && authState.isAuthenticated ?
+            {Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLowerCase() === 'true' && authState.isAuthenticated ?
             <div>
                 <Navbar />
                 <div style={{ textAlign: "center" }}>

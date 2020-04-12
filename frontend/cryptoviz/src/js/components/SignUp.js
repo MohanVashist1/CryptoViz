@@ -27,7 +27,7 @@ function SignUp() {
     }, 500);
 
     const checkSignedIn = () => {
-        if(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true') {
+        if(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLowerCase() === 'true') {
             history.push('/');
         }
     };
@@ -65,7 +65,7 @@ function SignUp() {
 
     return (
         <div>
-            {((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') && !authState.isAuthenticated) ?
+            {((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLowerCase() === 'false') && !authState.isAuthenticated) ?
             <div>
                 <Navbar />
                 <form style={{ width: "45%", margin: "4em auto" }} onSubmit={signUp}>
