@@ -1,10 +1,14 @@
 import React from "react";
 import Navbar from "./Navbar";
+import { AuthContext } from "./App";
 import { TVChartContainer } from "../../components/TVChartContainer/index";
 import Loader from "react-loader-spinner";
 import Cookie from 'js-cookie';
 
 function AdvancedLandingPage({ match }) {
+
+  const { state: authState } = useContext(AuthContext);
+
   return (
     <>
     {(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true' && authState.isAuthenticated) ||
