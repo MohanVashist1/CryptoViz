@@ -365,7 +365,7 @@ function CryptoLanding({ match }) {
                     <a
                       className="dropdown-item"
                       onClick={() => {
-                        setminDate("2020-01-00");
+                        setminDate("2020-01-01");
                         setmaxDate(currDate + " " + currTime);
                         setTimeInterval("1w");
                       }}
