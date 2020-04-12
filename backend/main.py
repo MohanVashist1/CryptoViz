@@ -88,11 +88,11 @@ app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 origins = [
     "http://localhost:3000",
     "http://localhost:3000/crypto/*",
-    "https://e059d913.ngrok.io",
-    "https://e059d913.ngrok.io/crypto/*",
-    "https://e059d913.ngrok.io/crypto/advanced/*",
-    "https://e059d913.ngrok.io/api/crypto/data/*",
-    "https://e059d913.ngrok.io/*"
+    "https://cryptoviz.ngrok.io",
+    "https://cryptoviz.ngrok.io/crypto/*",
+    "https://cryptoviz.ngrok.io/crypto/advanced/*",
+    "https://cryptoviz.ngrok.io/api/crypto/data/*",
+    "https://cryptoviz.ngrok.io/*"
 
 ]
 
