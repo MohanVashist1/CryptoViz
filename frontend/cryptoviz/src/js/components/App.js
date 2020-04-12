@@ -40,8 +40,6 @@ function App() {
   }, 1000);
 
   const getUserInfo = () => {
-    console.log(Cookie.get('isLoggedIn'));
-    console.log(Cookie.get('user_auth'));
     if (Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLowerCase() === 'true') {
       getCurrUser()
         .then((res) => {
@@ -85,7 +83,6 @@ function App() {
           onHide={handleCloseError}
         />
         <BrowserRouter>
-          {/* <Navbar /> */}
           <Switch>
             <Route path="/" exact component={Home}></Route>
             <Route path="/credits" exact component={Credits}></Route>
