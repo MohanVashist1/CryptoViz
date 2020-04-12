@@ -152,7 +152,6 @@ async def price_crypto_data(ticker: str = Path(..., title="The Ticker of the Cry
     cryptoData = dataHandler.retrieveCryptoDataLive(
         escape(ticker), escape(timeInterval), minDate=escape(minDate), maxDate=escape(maxDate))
     cryptoData = cryptoData[["timestamp", "close"]]
-    print(cryptoData.tail())
     return {"data": cryptoData.to_json(orient='records', date_format="iso")}
 
 
