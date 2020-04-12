@@ -6,6 +6,7 @@ import { REGISTER_FAILURE, REGISTER_SUCCESS, LOGIN_SUCCESS, LOGIN_FAILURE } from
 import Navbar from "./Navbar";
 import { AuthContext } from "./App";
 import { register, login } from '../api';
+import Cookie from 'js-cookie';
 import Loader from "react-loader-spinner";
 
 function SignUp() {
@@ -26,7 +27,7 @@ function SignUp() {
     }, 500);
 
     const checkSignedIn = () => {
-        if(authState.applicationMounted && authState.isAuthenticated) {
+        if(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true') {
             history.push('/');
         }
     };
@@ -64,7 +65,7 @@ function SignUp() {
 
     return (
         <div>
-            {authState.applicationMounted && !authState.isAuthenticated && Object.keys(authState.user).length === 0 ?
+            {((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') && !authState.isAuthenticated) ?
             <div>
                 <Navbar />
                 <form style={{ width: "45%", margin: "4em auto" }} onSubmit={signUp}>

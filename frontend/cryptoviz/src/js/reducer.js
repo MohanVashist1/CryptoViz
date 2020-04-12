@@ -2,11 +2,6 @@ import * as authConstants from "./constants/auth";
 
 export const reducer = (state, action) => {
     switch (action.type) {
-      case authConstants.APPLICATION_MOUNTED:
-        return {
-          ...state,
-          applicationMounted: true,
-        };
       case authConstants.UPDATE_USER_FAILURE:
       case authConstants.LOGOUT_FAILURE:
       case authConstants.LOGIN_FAILURE:
@@ -37,7 +32,7 @@ export const reducer = (state, action) => {
       case authConstants.LOGIN_SUCCESS:
         return {
           ...state,
-          isAuthenticated: true,
+          // isAuthenticated: true,
           error: "",
         };
       case authConstants.LOGOUT_SUCCESS:

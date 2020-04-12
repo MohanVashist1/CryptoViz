@@ -18,6 +18,7 @@ import { useHistory } from "react-router-dom";
 import Loader from "react-loader-spinner";
 import { AuthContext } from "./App";
 import { updateUser } from "../api";
+import Cookie from 'js-cookie';
 import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE } from "../constants/auth";
 
 const d = new Date();
@@ -143,7 +144,7 @@ function CryptoLanding({ match }) {
   };
 
   const displayWatchList = () => {
-    if (Object.keys(authState.user).length > 0) {
+    if (authState.isAuthenticated) {
       if (
         authState.user.watchlist.includes(
           match.params.ticker.replace("USDT", "")
@@ -202,9 +203,8 @@ function CryptoLanding({ match }) {
 
   return (
     <div>
-      {authState.applicationMounted &&
-      ((authState.isAuthenticated && Object.keys(authState.user).length > 0) ||
-      (!authState.isAuthenticated && Object.keys(authState.user).length === 0)) ? (
+      {(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true' && authState.isAuthenticated) ||
+      ((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') && !authState.isAuthenticated) ? (
         <div>
           <Navbar />
           <div style={{ textAlign: "center", marginTop: "4em" }}>
