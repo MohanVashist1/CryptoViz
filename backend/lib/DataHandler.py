@@ -156,7 +156,7 @@ class BinanceWrapper:
             updatedMaxDate = datetime.strptime(
                 maxDate, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y') + " 00:00:00"
         else:
-            updatedMinDate = datetime.strptime(
+            updatedMaxDate = datetime.strptime(
                 minDate, '%Y-%m-%d').strftime('%d %b %Y %H:%M:%S')
         klines = self.binance_client.get_historical_klines(
             symbol, kline_size, updatedMinDate, updatedMaxDate, limit=1000)
