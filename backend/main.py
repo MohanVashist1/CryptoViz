@@ -61,7 +61,7 @@ class CryptoRequest(BaseModel):
 
 
 app = FastAPI()
-app.add_middleware(HTTPSRedirectMiddleware)
+# app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
 tempCryptoList = dataHandler.getcryptoSymbols()
 cryptoList = []

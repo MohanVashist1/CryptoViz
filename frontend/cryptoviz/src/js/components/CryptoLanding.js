@@ -18,7 +18,7 @@ import { useHistory } from "react-router-dom";
 import Loader from "react-loader-spinner";
 import { AuthContext } from "./App";
 import { updateUser } from "../api";
-import Cookie from 'js-cookie';
+import Cookie from "js-cookie";
 import { UPDATE_USER_SUCCESS, UPDATE_USER_FAILURE } from "../constants/auth";
 
 const d = new Date();
@@ -203,8 +203,12 @@ function CryptoLanding({ match }) {
 
   return (
     <div>
-      {(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true' && authState.isAuthenticated) ||
-      ((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') && !authState.isAuthenticated) ? (
+      {(Cookie.get("isLoggedIn") &&
+        Cookie.get("isLoggedIn").toLocaleLowerCase() === "true" &&
+        authState.isAuthenticated) ||
+      ((!Cookie.get("isLoggedIn") ||
+        Cookie.get("isLoggedIn").toLocaleLowerCase() === "false") &&
+        !authState.isAuthenticated) ? (
         <div>
           <Navbar />
           <div style={{ textAlign: "center", marginTop: "4em" }}>
@@ -240,7 +244,11 @@ function CryptoLanding({ match }) {
                 role="group"
                 aria-label="Button group with nested dropdown"
               >
-                <button type="button" style={{cursor: "auto"}} className="btn btn-primary">
+                <button
+                  type="button"
+                  style={{ cursor: "auto" }}
+                  className="btn btn-primary"
+                >
                   Select Time Interval
                 </button>
                 <div className="btn-group" role="group">
@@ -357,7 +365,7 @@ function CryptoLanding({ match }) {
                     <a
                       className="dropdown-item"
                       onClick={() => {
-                        setminDate("2020-00-00");
+                        setminDate("2020-01-00");
                         setmaxDate(currDate + " " + currTime);
                         setTimeInterval("1w");
                       }}
@@ -367,7 +375,7 @@ function CryptoLanding({ match }) {
                     <a
                       className="dropdown-item"
                       onClick={() => {
-                        setminDate("2019-00-01");
+                        setminDate("2019-01-01");
                         setmaxDate(currDate + " " + currTime);
                         setTimeInterval("1M");
                       }}
