@@ -61,7 +61,7 @@ class CryptoRequest(BaseModel):
 
 
 app = FastAPI()
-app.add_middleware(HTTPSRedirectMiddleware)
+# app.add_middleware(HTTPSRedirectMiddleware)
 dataHandler = DataHandler.BinanceWrapper()
 tempCryptoList = dataHandler.getcryptoSymbols()
 cryptoList = []
@@ -77,7 +77,7 @@ user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
     CookieAuthentication(secret=SECRET, lifetime_seconds=3600 * 24,
-                         cookie_name="user_auth", cookie_secure=True, cookie_httponly=False)
+                         cookie_name="user_auth", cookie_secure=False, cookie_httponly=False)
 ]
 
 fastapi_users = FastAPIUsers(
