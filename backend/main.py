@@ -87,6 +87,7 @@ app.include_router(fastapi_users.router, prefix="/api/users", tags=["users"])
 
 origins = [
     "http://localhost:3000",
+    "http://localhost:3000/crypto/*",
     "https://e059d913.ngrok.io",
     "https://e059d913.ngrok.io/crypto/*",
     "https://e059d913.ngrok.io/crypto/advanced/*",
@@ -145,14 +146,14 @@ async def get_crypto_info(ticker: str = Path(..., title="The Ticker of the Crypt
 
 
 @app.get("/api/crypto/data/{ticker}")
-async def post_crypto_data(ticker: str = Path(..., title="The Ticker of the Crypto to get"), timeInterval: str = "1d", minDate: str = " ", maxDate: str = " "):
-    # TODO: Security and checking if exist
-    cryptoData = dataHandler.retrieveCryptoData(
-        escape(ticker), escape(timeInterval))
-    cryptoData = cryptoData[(cryptoData['timestamp'] > escape(minDate)) & (
-        cryptoData['timestamp'] < escape(maxDate))]
+async def price_crypto_data(ticker: str = Path(..., title="The Ticker of the Crypto to get"), timeInterval: str = "1d", minDate: str = " ", maxDate: str = " "):
+    if(escape(ticker) not in cryptoList or escape(timeInterval) not in dataHandler.klines):
+        raise HTTPException(status_code=400, detail="Malformed Payload.")
+    cryptoData = dataHandler.retrieveCryptoDataLive(
+        escape(ticker), escape(timeInterval), minDate=escape(minDate), maxDate=escape(maxDate))
     cryptoData = cryptoData[["timestamp", "close"]]
-    return {"data": cryptoData.to_json(orient='records')}
+    print(cryptoData.tail())
+    return {"data": cryptoData.to_json(orient='records', date_format="iso")}
 
 
 @fastapi_users.on_after_register()
@@ -257,19 +258,24 @@ async def history(request: Request, symbol: str = "BTCUSDT", to: int = 0, resolu
     to = int(escape(to))
     symbol = escape(symbol)
     resolution = escape(resolution)
-    returnVal = dataHandler.history(
+    returnVal = dataHandler.historyConstantTime(
         to=to, fromDate=fromDate, symbol=symbol, resolution=resolution)
-    if(not returnVal.empty):
-        tTemp = (returnVal["timestamp"].values)
+    if(len(returnVal) > 0):
         t = []
-        for currTime in tTemp:
-            if ":" in currTime:
-                t.append(timegm(time.strptime(currTime, "%Y-%m-%d %H:%M:%S")))
-            else:
-                t.append(timegm(time.strptime(
-                    currTime.strip(), "%Y-%m-%d")))
-        return {"s": "ok", "t": t, "o": list(returnVal["open"].values),
-                "c": list(returnVal["close"].values), "v": list(returnVal["volume"].values), 'h': list(returnVal["high"].values), 'l': list(returnVal["low"].values)}
+        c = []
+        v = []
+        h = []
+        l = []
+        o = []
+        for currVal in returnVal:
+            t.append(int((currVal[0])/1000))
+            o.append(currVal[1])
+            h.append(currVal[2])
+            l.append(currVal[3])
+            c.append(currVal[4])
+            v.append(currVal[5])
+        return {"s": "ok", "t": t, "o": o,
+                "c": c, "v": v, 'h': h, 'l': l}
     else:
         raise HTTPException(status_code=400, detail="Invalid request")
 
