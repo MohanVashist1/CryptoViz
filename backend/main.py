@@ -77,7 +77,7 @@ user_db = MongoDBUserDatabase(UserDB, users)
 
 auth_backends = [
     CookieAuthentication(secret=SECRET, lifetime_seconds=3600 * 24,
-                         cookie_name="user_auth", cookie_secure=False, cookie_httponly=True)
+                         cookie_name="user_auth", cookie_secure=True, cookie_httponly=True)
 ]
 
 fastapi_users = FastAPIUsers(
