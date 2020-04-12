@@ -36,6 +36,8 @@ def main(kline, lowerLimit, upperLimit):
     else:
         datahandler.getAllCryptoDataBinance(kline_size=kline, save=True)
     os.remove(pid_file)
+    print("completed kline size: {}, lowerLimit: {}, upperLimit: {}".format(
+        kline, lowerLimit, upperLimit))
 
 
 if __name__ == "__main__":

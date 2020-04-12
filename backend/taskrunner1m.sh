@@ -5,6 +5,6 @@ startingValue=0
 incrementValue=5
 
 for i in $(seq $startingValue $incrementValue  $numCryptos); do 
-    source env/bin/activate && python datarunner.py -k "1m"  -l $i -u $((i+incrementValue))
+    source env/bin/activate && python datarunner.py -k "1m"  -l $i -u $((i+incrementValue)) &>> log1m.txt &
     done
 
