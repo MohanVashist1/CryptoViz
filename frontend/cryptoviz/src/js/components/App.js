@@ -33,7 +33,6 @@ function App() {
 
   useEffect(() => {
     getUserInfo();
-    console.log(Cookie.get('isLoggedIn'));
   }, []);
 
   useInterval(() => {
@@ -41,6 +40,7 @@ function App() {
   }, 1000);
 
   const getUserInfo = () => {
+    console.log(Cookie.get('isLoggedIn'));
     if (Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLowerCase() === 'true') {
       getCurrUser()
         .then((res) => {
