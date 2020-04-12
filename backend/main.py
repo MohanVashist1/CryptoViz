@@ -240,7 +240,7 @@ async def search_for_symbol(query: str = None, limit: int = 10):
 
 
 @app.get("/history")
-async def history(request: Request, symbol: str = " ", to: int = 0, resolution: str = " "):
+async def history(request: Request, symbol: str = "BTCUSDT", to: int = 0, resolution: str = " "):
     if(symbol not in cryptoList or 'from' not in request.query_params or not to):
         raise HTTPException(status_code=400, detail="Invalid request")
     fromDate = int(escape(request.query_params['from']))
