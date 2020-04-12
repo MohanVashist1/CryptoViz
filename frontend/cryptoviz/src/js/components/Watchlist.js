@@ -9,6 +9,7 @@ import { updateUser } from '../api';
 import { AuthContext } from "./App";
 import Navbar from "./Navbar";
 import Loader from "react-loader-spinner";
+import Cookie from 'js-cookie';
 
 function Watchlist() {
 
@@ -30,7 +31,7 @@ function Watchlist() {
     }, 500);
 
     const checkSignedIn = () => {
-        if(authState.applicationMounted && !authState.isAuthenticated) {
+        if(!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') {
             history.push('/');
         }
     };
@@ -124,7 +125,7 @@ function Watchlist() {
 
     return (
         <div>
-            {authState.applicationMounted && authState.isAuthenticated && Object.keys(authState.user).length > 0 ?
+            {Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true' && authState.isAuthenticated ?
             <div>
                 <Navbar />
                 <div style={{ textAlign: "center" }}>

@@ -7,6 +7,7 @@ import Navbar from "./Navbar";
 import { login } from '../api';
 import { AuthContext } from "./App";
 import Loader from "react-loader-spinner";
+import Cookie from 'js-cookie';
 
 function SignIn() {
 
@@ -24,7 +25,7 @@ function SignIn() {
     }, 500);
 
     const checkSignedIn = () => {
-        if(authState.applicationMounted && authState.isAuthenticated) {
+        if(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true') {
             history.push('/');
         }
     };
@@ -49,7 +50,7 @@ function SignIn() {
 
     return (
         <div>
-            {authState.applicationMounted && !authState.isAuthenticated && Object.keys(authState.user).length === 0 ?
+            {((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') && !authState.isAuthenticated) ?
             <div>
                 <Navbar />
                 <form style={{ width: "45%", margin: "auto", marginTop: "15vh" }} onSubmit={signIn}>

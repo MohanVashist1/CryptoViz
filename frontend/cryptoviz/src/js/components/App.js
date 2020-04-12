@@ -13,17 +13,16 @@ import { useInterval } from "../common";
 import { getCurrUser } from "../api";
 import { reducer } from "../reducer";
 import "../../style/App.css";
+import Cookie from 'js-cookie';
 import {
   GET_USER_SUCCESS,
   GET_USER_FAILURE,
-  ERROR_CLOSE,
-  APPLICATION_MOUNTED,
+  ERROR_CLOSE
 } from "../constants/auth";
 import AdvancedLandingPage from "./AdvancedCharts";
 export const AuthContext = createContext();
 
 const initialState = {
-  applicationMounted: false,
   isAuthenticated: false,
   user: {},
   error: "",
@@ -34,17 +33,14 @@ function App() {
 
   useEffect(() => {
     getUserInfo();
-    dispatch({
-      type: APPLICATION_MOUNTED,
-    });
   }, []);
 
   useInterval(() => {
     getUserInfo();
-  }, 500);
+  }, 1000);
 
   const getUserInfo = () => {
-    if (!state.applicationMounted || state.isAuthenticated) {
+    if (Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true') {
       getCurrUser()
         .then((res) => {
           dispatch({

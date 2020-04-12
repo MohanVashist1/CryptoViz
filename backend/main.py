@@ -117,6 +117,16 @@ async def cookie_set(request: Request, call_next):
     for idx, header in enumerate(response.raw_headers):
         if header[0].decode("utf-8") == "set-cookie":
             cookie = header[1].decode("utf-8")
+            cookie_arr = cookie.split('=')
+            if cookie_arr[0] == 'user_auth':
+                if cookie_arr[1].split(';')[0] == '""':
+                    response.set_cookie("isLoggedIn", False, secure=True)
+                else:
+                    response.set_cookie("isLoggedIn", True, secure=True)
+                break
+    for idx, header in enumerate(response.raw_headers):
+        if header[0].decode("utf-8") == "set-cookie":
+            cookie = header[1].decode("utf-8")
             if "SameSite=None" not in cookie:
                 cookie = cookie + "; SameSite=None"
                 response.raw_headers[idx] = (header[0], cookie.encode())

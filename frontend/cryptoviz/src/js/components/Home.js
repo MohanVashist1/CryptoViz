@@ -4,6 +4,7 @@ import Table from './Table';
 import Navbar from "./Navbar";
 import { AuthContext } from "./App";
 import Loader from "react-loader-spinner";
+import Cookie from 'js-cookie';
 
 function Home() {
 
@@ -11,7 +12,8 @@ function Home() {
 
   return (
     <div>
-      {authState.applicationMounted && ((authState.isAuthenticated && Object.keys(authState.user).length > 0) || (!authState.isAuthenticated && Object.keys(authState.user).length === 0)) ?
+      {(Cookie.get('isLoggedIn') && Cookie.get('isLoggedIn').toLocaleLowerCase() === 'true' && authState.isAuthenticated) ||
+      ((!Cookie.get('isLoggedIn') || Cookie.get('isLoggedIn').toLocaleLowerCase() === 'false') && !authState.isAuthenticated) ?
         <div>
         <Navbar />
           <div>
