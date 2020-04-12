@@ -254,3 +254,49 @@ $ curl -H "Content-Type: application/json"
 $ curl -H "Content-Type: application/json"
        localhost:8000/api/losers/
 ```
+
+- description: get top (max 10) losers
+- request: `GET /api/crypto/tickerInfo/{ticker}`
+  - path parameter: ticker
+    - The ticker of the crypto currency you would like to retrieve more info from
+- response: 200
+    - content-type: `application/json`
+    - body: (object)
+      - fullName: full name of the crypto currency  (e.g for /api/crypto/tickerInfo/BTCUSDT, fullName would be Bitcoin)
+- response: 404
+    - content-type: `application/json`
+    - detail: "Ticker not found"
+
+
+``` 
+curl --location --request GET 'localhost:8000/api/crypto/tickerInfo/BTCUSDT'
+```
+
+- description: retrieve current UTC time
+- request: `GET /time`
+- response: 200
+    - content-type: `text/plain`
+    - body: (str)
+      - currentUTCTime
+
+
+``` 
+curl --location --request GET 'localhost:8000/time'
+```
+
+
+- description: get top (max 10) losers
+- request: `GET /api/crypto/tickerInfo/{ticker}`
+  - path parameter: ticker
+    - The ticker of the crypto currency you would like to retrieve more info from
+- response: 200
+    - content-type: `application/json`
+    - body: (object)
+      - fullName: full name of the crypto currency  (e.g for /api/crypto/tickerInfo/BTCUSDT, fullName would be Bitcoin)
+- response: 404
+    - content-type: `application/json`
+    - detail: "Ticker not found"
+
+``` 
+curl --location --request GET 'localhost:8000/time'
+```
