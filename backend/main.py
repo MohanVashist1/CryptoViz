@@ -112,8 +112,6 @@ app.add_middleware(
 #    Date: March 8, 2020
 #    Availability: https://github.com/tiangolo/fastapi/issues/1099
 # *******************************************************************************************/
-
-
 @app.middleware("http")
 async def cookie_set(request: Request, call_next):
     response = await call_next(request)
@@ -164,14 +162,6 @@ def on_after_forgot_password(user: User, token: str, request: Request):
 async def get_top_gainers(time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    # collection = None
-    # if time == 1:
-    #     collection = db["top_gainers_hourly"]
-    # else:
-    #     collection = db["top_gainers_daily"]
-    # res = []
-    # for document in await collection.find({}, {'_id': 0}).to_list(length=100):
-    #     res.append(document)
     res = None
     if time == 1:
         res = DataHandler.retrieve_top_gainers_hourly()
@@ -184,14 +174,6 @@ async def get_top_gainers(time: int = 1):
 async def get_top_losers(time: int = 1):
     if time != 1 and time != 24:
         raise HTTPException(status_code=400, detail="Invalid time.")
-    # collection = None
-    # if time == 1:
-    #     collection = db["top_losers_hourly"]
-    # else:
-    #     collection = db["top_losers_daily"]
-    # res = []
-    # for document in await collection.find({}, {'_id': 0}).to_list(length=100):
-    #     res.append(document)
     res = None
     if time == 1:
         res = DataHandler.retrieve_top_losers_hourly()
@@ -280,19 +262,3 @@ async def history(request: Request, symbol: str = " ", to: int = 0, resolution: 
                 "c": list(returnVal["close"].values), "v": list(returnVal["volume"].values), 'h': list(returnVal["high"].values), 'l': list(returnVal["low"].values)}
     else:
         raise HTTPException(status_code=400, detail="Invalid request")
-
-    # def initiate_background(background_tasks):
-    #     global background_tasks_running
-    #     if not background_tasks_running:
-    #         background_tasks_running = True
-    #         background_tasks.add_task(sc.schedule_tasks)
-    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1m", True)
-    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "5m", True)
-    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1h", True)
-    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1d", True)
-    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1w", True)
-    #         background_tasks.add_task(dataHandler.getAllCryptoDataBinance, "1M", True)
-
-    # @app.get('/protected-route')
-    # def protected_route(user: User = Depends(fastapi_users.get_current_user)):
-    #     return f'Hello, {user.email}'
