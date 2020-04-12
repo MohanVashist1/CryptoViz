@@ -71,6 +71,8 @@ function CryptoLanding({ match }) {
         console.error("There was an error!", error);
       });
     fetchTickerData(match.params.ticker, request).then((res) => {
+      setminPrice(1000000);
+      setmaxPrice(0);
       var currData = JSON.parse(res.data);
       for (var i = 0; i < currData.length; i++) {
         if (parseFloat(currData[i]["close"]) < minPrice) {
@@ -89,7 +91,8 @@ function CryptoLanding({ match }) {
       for (var i = 0; i < currData.length; i++) {
         if (parseFloat(currData[i]["close"]) < minPrice) {
           setminPrice(parseFloat(currData[i]["close"]));
-        } else if (parseFloat(currData[i]["close"]) > maxPrice) {
+        }
+        if (parseFloat(currData[i]["close"]) > maxPrice) {
           setmaxPrice(parseFloat(currData[i]["close"]));
         }
       }
@@ -365,7 +368,7 @@ function CryptoLanding({ match }) {
                     <a
                       className="dropdown-item"
                       onClick={() => {
-                        setminDate("2020-01-01");
+                        setminDate("2020-01-01" + " " + currTime);
                         setmaxDate(currDate + " " + currTime);
                         setTimeInterval("1w");
                       }}
@@ -375,7 +378,7 @@ function CryptoLanding({ match }) {
                     <a
                       className="dropdown-item"
                       onClick={() => {
-                        setminDate("2019-01-01");
+                        setminDate("2019-01-01" + " " + currTime);
                         setmaxDate(currDate + " " + currTime);
                         setTimeInterval("1M");
                       }}

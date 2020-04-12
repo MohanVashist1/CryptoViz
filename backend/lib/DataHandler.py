@@ -146,20 +146,21 @@ class BinanceWrapper:
         return pd.read_csv(filename)
 
     def retrieveCryptoDataLive(self, symbol, kline_size, minDate, maxDate):
-        if(":" in minDate):
-            updatedMinDate = datetime.strptime(
-                minDate, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M:%S')
-        else:
-            updatedMinDate = datetime.strptime(
-                minDate, '%Y-%m-%d').strftime('%d %b %Y') + " 00:00:00"
-        if(":" in minDate):
-            updatedMaxDate = datetime.strptime(
-                maxDate, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y') + " 00:00:00"
-        else:
-            updatedMaxDate = datetime.strptime(
-                minDate, '%Y-%m-%d').strftime('%d %b %Y %H:%M:%S')
+        # print(maxDate, minDate)
+        # if(":" in minDate):
+        #     updatedMinDate = datetime.strptime(
+        #         minDate, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M:%S')
+        # else:
+        #     updatedMinDate = datetime.strptime(
+        #         minDate, '%Y-%m-%d').strftime('%d %b %Y')
+        # if(":" in minDate):
+        #     updatedMaxDate = datetime.strptime(
+        #         maxDate, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y')
+        # else:
+        #     updatedMaxDate = datetime.strptime(
+        #         minDate, '%Y-%m-%d').strftime('%d %b %Y %H:%M:%S')
         klines = self.binance_client.get_historical_klines(
-            symbol, kline_size, updatedMinDate, updatedMaxDate, limit=1000)
+            symbol, kline_size, minDate, maxDate, limit=1000)
         data = pd.DataFrame(klines, columns=['timestamp', 'open', 'high', 'low', 'close',
                                              'volume', 'close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore'])
         data['timestamp'] = pd.to_datetime(
