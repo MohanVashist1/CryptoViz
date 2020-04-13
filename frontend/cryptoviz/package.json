@@ -18,6 +18,7 @@
     "react-scripts": "3.4.0",
     "recharts": "^1.8.5",
     "socket.io-client": "^2.3.0",
+    "universal-cookie": "^4.0.3",
     "websocket": "^1.0.31"
   },
   "scripts": {
