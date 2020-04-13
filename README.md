@@ -2,7 +2,9 @@
 
 #### Team Members: Mohan Vashist (vashistm, 1004260514), Mrigank Mehta (mrigankmg, 1001309014)
 
-#### URL: https://afe20f7f.ngrok.io/
+### Demo Video URL: https://youtu.be/ZdXBcqWCirI
+
+#### Application URL: https://afe20f7f.ngrok.io/
 
 ## Project Proposal
 
