@@ -32,7 +32,6 @@ export const reducer = (state, action) => {
       case authConstants.LOGIN_SUCCESS:
         return {
           ...state,
-          // isAuthenticated: true,
           error: "",
         };
       case authConstants.LOGOUT_SUCCESS:

@@ -83,7 +83,6 @@ function App() {
           onHide={handleCloseError}
         />
         <BrowserRouter>
-          {/* <Navbar /> */}
           <Switch>
             <Route path="/" exact component={Home}></Route>
             <Route path="/credits" exact component={Credits}></Route>
