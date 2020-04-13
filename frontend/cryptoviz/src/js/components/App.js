@@ -13,7 +13,7 @@ import { useInterval } from "../common";
 import { getCurrUser } from "../api";
 import { reducer } from "../reducer";
 import "../../style/App.css";
-import Cookies from "universal-cookie";
+import Cookie from "js-cookie";
 import {
   GET_USER_SUCCESS,
   GET_USER_FAILURE,
@@ -29,7 +29,6 @@ const initialState = {
 };
 
 function App() {
-  const cookies = new Cookies();
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -41,10 +40,9 @@ function App() {
   }, 1000);
 
   const getUserInfo = () => {
-    console.log(cookies.get("isLoggedIn"));
     if (
-      cookies.get("isLoggedIn") &&
-      cookies.get("isLoggedIn").toLowerCase() === "true"
+      Cookie.get("isLoggedIn") &&
+      Cookie.get("isLoggedIn").toLowerCase() === "true"
     ) {
       getCurrUser()
         .then((res) => {

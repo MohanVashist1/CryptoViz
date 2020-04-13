@@ -4,19 +4,18 @@ import Table from "./Table";
 import Navbar from "./Navbar";
 import { AuthContext } from "./App";
 import Loader from "react-loader-spinner";
-import Cookies from "universal-cookie";
+import Cookie from "js-cookie";
 
 function Home() {
-  const cookies = new Cookies();
   const { state: authState } = useContext(AuthContext);
 
   return (
     <div>
-      {(cookies.get("isLoggedIn") &&
-        cookies.get("isLoggedIn").toLowerCase() === "true" &&
+      {(Cookie.get("isLoggedIn") &&
+        Cookie.get("isLoggedIn").toLowerCase() === "true" &&
         authState.isAuthenticated) ||
-      ((!cookies.get("isLoggedIn") ||
-        cookies.get("isLoggedIn").toLowerCase() === "false") &&
+      ((!Cookie.get("isLoggedIn") ||
+      Cookie.get("isLoggedIn").toLowerCase() === "false") &&
         !authState.isAuthenticated) ? (
         <div>
           <Navbar />
