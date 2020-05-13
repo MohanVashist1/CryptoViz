@@ -31,6 +31,12 @@ Run the backend
 ```
 uvicorn main:app --reload
 ```
+Place you mongodb url and secret key in a file called .env in the same direcotry as main.py
+```
+DATABASE_URL=......
+SECRET=......
+```
+
 
 #### How to run the frontend
 ```
