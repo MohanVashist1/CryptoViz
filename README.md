@@ -42,6 +42,10 @@ npm run dev
 If you have access to the TradingView Charting Library add the chrating library and datafeed folders from it to src/public, and the charting library to src. Then add the component from https://github.com/tradingview/charting-library-examples/tree/master/react-javascript/src/components/TVChartContainer to src in a directory call components
 
 
+### Screenshots
+
+https://imgur.com/a/lsNaTgv
+
 
 ## REST API Documentation
 
