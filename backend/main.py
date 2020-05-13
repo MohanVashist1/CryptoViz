@@ -2,7 +2,9 @@ import time
 import pymongo
 import pydantic
 import math
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI, HTTPException, Path, Query, WebSocket, Depends, Response, Request
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,8 +28,8 @@ from threading import Thread
 from pydantic import EmailStr
 
 background_tasks_running = False
-DATABASE_URL = "mongodb+srv://admin:RERWw4ifyreSYuiG@cryptoviz-f2rwb.azure.mongodb.net/test?retryWrites=true&w=majority"
-SECRET = "|X|Th!5iS@S3CR3t|X|"
+DATABASE_URL = os.environ['DATABASE_URL']
+SECRET = os.environ['SECRET']
 
 
 class User(models.BaseUser):
@@ -61,7 +63,7 @@ class CryptoRequest(BaseModel):
 
 
 app = FastAPI()
-app.add_middleware(HTTPSRedirectMiddleware)
+# app.add_middleware(HTTPSRedirectMiddleware) # enable for https
 dataHandler = DataHandler.BinanceWrapper()
 tempCryptoList = dataHandler.getcryptoSymbols()
 cryptoList = []
