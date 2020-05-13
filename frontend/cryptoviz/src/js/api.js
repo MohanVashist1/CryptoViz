@@ -1,4 +1,4 @@
-const baseURL = "https://90ae7eb7.ngrok.io";
+const baseURL = "http://127.0.0.1:8000";
 
 export const fetchLosers = async (time) => {
   try {
