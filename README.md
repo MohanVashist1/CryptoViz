@@ -15,6 +15,34 @@
 
 We created a specialized application to view crypto currency data. Currently you can view data for the Binance exchange, due to the fact that it is the largest crypto currency exchange (in terms of volume traded per day). However, it can easily be modified for other Exchanges. Additionally, our application has integration with the Trading View charting library.
 
+### How to run the application
+#### For the backend:
+Create a new virtual enviroment 
+```
+cd backend
+python3 -m venv env
+source env/bin/activate
+```
+Install dependencies
+```
+pip3 install -r requirements.txt
+```
+Run the backend
+```
+uvicorn main:app --reload
+```
+
+#### How to run the frontend
+```
+cd frontend/cryptoviz
+npm i
+npm run dev
+```
+#### Optional
+If you have access to the TradingView Charting Library add the chrating library and datafeed folders from it to src/public, and the charting library to src
+
+
+
 ## REST API Documentation
 
 ### Authentication API
