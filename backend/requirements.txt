@@ -22,7 +22,7 @@ dateparser==0.7.2
 dnspython==1.16.0
 docutils==0.15.2
 email-validator==1.0.5
-fastapi==0.52.0
+fastapi==0.65.2
 fastapi-users==0.7.1
 Flask==1.1.1
 graphene==2.1.8
