@@ -44,7 +44,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.1
 jmespath==0.9.5
 lazy-object-proxy==1.4.3
-lxml==4.4.2
+lxml==4.9.1
 MarkupSafe==1.1.1
 mccabe==0.6.1
 motor==2.1.0
